@@ -1,0 +1,685 @@
+import { useState, useEffect, useMemo, useCallback } from "react";
+
+// ══════════════════════════════════════════════════════════════════
+//  ⚙️  在這裡貼上你的 Apps Script 部署網址
+// ══════════════════════════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-0YSM4qdIXjSZP8DSHaEKyl-I829hJEuv5d5QilR7z-qLY8ngUi2jKOFZfH6dSjRXeA/exec";
+// ══════════════════════════════════════════════════════════════════
+
+const uuid = () => Math.random().toString(36).slice(2, 10);
+const fmt  = (n) => "NT$" + Number(n || 0).toLocaleString();
+const monthKey = (y, m) => `${y}-${String(m).padStart(2, "0")}`;
+const growthVal = (a, b) => b === 0 ? (a > 0 ? "+∞%" : "—") : ((a - b) / b * 100).toFixed(1) + "%";
+const growthColor = (a, b) => a >= b ? "#6B9E78" : "#C4706A";
+
+// ── API ──────────────────────────────────────────────────────────
+async function api(action, body = {}) {
+  const url = `${SCRIPT_URL}?action=${action}`;
+  const res = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "text/plain" }, // avoid CORS preflight
+  });
+  return res.json();
+}
+
+// ── DESIGN ───────────────────────────────────────────────────────
+const C = {
+  bg: "#FAF6F1", card: "#FFFFFF", border: "#EAE0D4",
+  tan1: "#C8A882", tan2: "#B8987A", tan3: "#8C6E52",
+  text: "#3D2B1F", muted: "#9A8070", light: "#F5EDE0",
+  green: "#6B9E78", red: "#C4706A",
+};
+
+const useIsMobile = () => {
+  const [m, setM] = useState(window.innerWidth < 768);
+  useEffect(() => {
+    const fn = () => setM(window.innerWidth < 768);
+    window.addEventListener("resize", fn);
+    return () => window.removeEventListener("resize", fn);
+  }, []);
+  return m;
+};
+
+// ── SHARED UI ────────────────────────────────────────────────────
+const Card = ({ children, style }) => (
+  <div style={{ background: C.card, borderRadius: 16, border: `1px solid ${C.border}`, padding: "20px 22px", boxShadow: "0 2px 20px rgba(140,110,82,0.10)", marginBottom: 16, ...style }}>
+    {children}
+  </div>
+);
+
+const StatBox = ({ label, value, color }) => (
+  <div style={{ background: C.light, borderRadius: 12, padding: "14px 16px", textAlign: "center", border: `1px solid ${C.border}` }}>
+    <div style={{ fontSize: 20, fontWeight: 700, color: color || C.tan3 }}>{value}</div>
+    <div style={{ fontSize: 11, color: C.muted, marginTop: 4 }}>{label}</div>
+  </div>
+);
+
+const Badge = ({ level }) => {
+  const map = { "優良": ["#D4EDDA","#2E7D32"], "尚可": ["#FFF3CD","#856404"], "欠佳": ["#F8D7DA","#721C24"] };
+  const [bg, clr] = map[level] || ["#eee","#666"];
+  return <span style={{ background: bg, color: clr, borderRadius: 20, padding: "3px 14px", fontSize: 12, fontWeight: 700 }}>{level}</span>;
+};
+
+const Btn = ({ children, onClick, danger, sm, style, disabled }) => (
+  <button onClick={onClick} disabled={disabled} style={{
+    background: danger ? "#F8D7DA" : C.tan1, color: danger ? C.red : "#fff",
+    border: "none", borderRadius: sm ? 6 : 10, padding: sm ? "5px 12px" : "9px 22px",
+    cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.6 : 1,
+    fontSize: sm ? 12 : 14, fontFamily: "inherit", fontWeight: 600, ...style
+  }}>{children}</button>
+);
+
+const Inp = ({ label, ...p }) => (
+  <div style={{ flex: 1 }}>
+    {label && <div style={{ fontSize: 11, color: C.muted, marginBottom: 4, fontWeight: 600 }}>{label}</div>}
+    <input {...p} style={{ border: `1px solid ${C.border}`, borderRadius: 8, padding: "9px 12px", fontSize: 14, fontFamily: "inherit", color: C.text, background: C.bg, outline: "none", width: "100%", boxSizing: "border-box", ...p.style }} />
+  </div>
+);
+
+const Sel = ({ label, children, ...p }) => (
+  <div style={{ flex: 1 }}>
+    {label && <div style={{ fontSize: 11, color: C.muted, marginBottom: 4, fontWeight: 600 }}>{label}</div>}
+    <select {...p} style={{ border: `1px solid ${C.border}`, borderRadius: 8, padding: "9px 12px", fontSize: 14, fontFamily: "inherit", color: C.text, background: C.bg, width: "100%", ...p.style }}>{children}</select>
+  </div>
+);
+
+const ST = ({ children }) => (
+  <div style={{ fontSize: 17, fontWeight: 700, color: C.text, marginBottom: 18, paddingBottom: 10, borderBottom: `2px solid ${C.border}` }}>{children}</div>
+);
+
+const TH = ({ children }) => <th style={{ background: C.light, padding: "9px 12px", textAlign: "left", fontWeight: 700, color: C.tan3, fontSize: 11, whiteSpace: "nowrap" }}>{children}</th>;
+const TD = ({ children, bold, color, nowrap }) => <td style={{ padding: "9px 12px", borderBottom: `1px solid ${C.border}`, color: color || C.text, fontWeight: bold ? 700 : 400, whiteSpace: nowrap ? "nowrap" : "normal" }}>{children}</td>;
+
+const YMPicker = ({ year, month, setYear, setMonth, years }) => (
+  <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+    <select value={year} onChange={e => setYear(Number(e.target.value))} style={{ border: `1px solid ${C.border}`, borderRadius: 8, padding: "7px 12px", fontSize: 13, fontFamily: "inherit", background: C.bg }}>
+      {years.map(y => <option key={y} value={y}>{y}年</option>)}
+    </select>
+    <select value={month} onChange={e => setMonth(Number(e.target.value))} style={{ border: `1px solid ${C.border}`, borderRadius: 8, padding: "7px 12px", fontSize: 13, fontFamily: "inherit", background: C.bg }}>
+      {[1,2,3,4,5,6,7,8,9,10,11,12].map(m => <option key={m} value={m}>{m}月</option>)}
+    </select>
+  </div>
+);
+
+const Spinner = () => (
+  <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200, flexDirection: "column", gap: 12 }}>
+    <div style={{ width: 36, height: 36, border: `3px solid ${C.border}`, borderTop: `3px solid ${C.tan2}`, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+    <div style={{ color: C.muted, fontSize: 13 }}>載入中…</div>
+    <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+  </div>
+);
+
+// ── TABS ─────────────────────────────────────────────────────────
+const TABS = [
+  { id: "overview", label: "總覽",  icon: "📊" },
+  { id: "sales",    label: "營業",  icon: "💰" },
+  { id: "purchase", label: "進貨",  icon: "🛒" },
+  { id: "payroll",  label: "人事",  icon: "👥" },
+  { id: "pnl",      label: "損益",  icon: "📋" },
+  { id: "compare",  label: "年比",  icon: "📈" },
+];
+
+// ══════════════════════════════════════════════════════════════════
+//  APP ROOT
+// ══════════════════════════════════════════════════════════════════
+export default function App() {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [tab, setTab] = useState("overview");
+  const [editBrand, setEditBrand] = useState(false);
+  const [brandInput, setBrandInput] = useState("");
+  const [error, setError] = useState("");
+  const isMobile = useIsMobile();
+
+  // Load all data from Sheets
+  const loadAll = useCallback(async () => {
+    setLoading(true); setError("");
+    try {
+      const d = await api("getAll");
+      if (d.error) throw new Error(d.error);
+      setData(d);
+    } catch (e) {
+      setError("⚠️ 無法連線 Google Sheets：" + e.message);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { loadAll(); }, [loadAll]);
+
+  const allYears = useMemo(() => {
+    if (!data) return [new Date().getFullYear()];
+    const ys = new Set([new Date().getFullYear()]);
+    data.dailySales.forEach(s => ys.add(new Date(s.date).getFullYear()));
+    data.purchases.forEach(p => ys.add(p.year));
+    return [...ys].sort((a, b) => b - a);
+  }, [data]);
+
+  // Generic action helper
+  const act = async (action, body, optimisticFn) => {
+    if (optimisticFn) setData(prev => optimisticFn(structuredClone(prev)));
+    setSaving(true);
+    try {
+      const r = await api(action, body);
+      if (!r.ok) throw new Error(r.msg || "失敗");
+    } catch (e) {
+      setError("儲存失敗：" + e.message);
+      await loadAll(); // rollback
+    }
+    setSaving(false);
+  };
+
+  if (loading) return <div style={{ fontFamily:"'Noto Serif TC',serif", background: C.bg, minHeight:"100vh" }}><Spinner /></div>;
+
+  if (error && !data) return (
+    <div style={{ fontFamily:"'Noto Serif TC',serif", background: C.bg, minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", flexDirection:"column", gap:16 }}>
+      <div style={{ fontSize:16, color: C.red, textAlign:"center", maxWidth:400, padding:20 }}>{error}</div>
+      <div style={{ fontSize:13, color: C.muted, textAlign:"center", maxWidth:420, padding:"0 20px", lineHeight:1.7 }}>
+        請確認已將 Apps Script 部署網址貼入程式頂端的 <code>SCRIPT_URL</code>
+      </div>
+      <Btn onClick={loadAll}>重試</Btn>
+    </div>
+  );
+
+  const tabProps = { data, setData, act, loadAll, allYears, saving };
+
+  const renderTab = () => {
+    switch(tab) {
+      case "overview": return <Overview {...tabProps} />;
+      case "sales":    return <DailySales {...tabProps} />;
+      case "purchase": return <Purchases {...tabProps} />;
+      case "payroll":  return <Payroll {...tabProps} />;
+      case "pnl":      return <PnL {...tabProps} />;
+      case "compare":  return <YearlyCompare {...tabProps} />;
+    }
+  };
+
+  const BrandArea = ({ mobile }) => editBrand ? (
+    <div style={{ display:"flex", gap:8, flex:1 }}>
+      <input style={{ border:`1px solid ${C.border}`, borderRadius:8, padding:"6px 10px", fontSize:13, fontFamily:"inherit", flex:1 }}
+        value={brandInput} onChange={e => setBrandInput(e.target.value)} placeholder="品牌名稱" autoFocus />
+      <Btn sm onClick={async () => {
+        await act("setBrand", { value: brandInput }, d => { d.brandName = brandInput; return d; });
+        setEditBrand(false);
+      }}>儲存</Btn>
+    </div>
+  ) : (
+    <>
+      <span style={{ fontWeight:700, fontSize: mobile ? 15 : 16, color: C.tan3 }}>{data.brandName || "設定品牌名稱"}</span>
+      <button onClick={() => { setBrandInput(data.brandName); setEditBrand(true); }} style={{ background:"none", border:"none", fontSize:15, cursor:"pointer", marginLeft:8 }}>✏️</button>
+      {saving && <span style={{ fontSize:11, color: C.muted, marginLeft:8 }}>儲存中…</span>}
+    </>
+  );
+
+  // ── MOBILE ──
+  if (isMobile) return (
+    <div style={{ fontFamily:"'Noto Serif TC',serif", background: C.bg, minHeight:"100vh", color: C.text }}>
+      <div style={{ background: C.card, borderBottom:`1px solid ${C.border}`, padding:"12px 18px", display:"flex", alignItems:"center", position:"sticky", top:0, zIndex:20, boxShadow:"0 1px 8px rgba(140,110,82,0.08)" }}>
+        <BrandArea mobile />
+      </div>
+      {error && <div style={{ background:"#FFF3CD", color:"#856404", padding:"8px 16px", fontSize:13 }}>{error}</div>}
+      <div style={{ padding:"16px 14px", paddingBottom:90 }}>{renderTab()}</div>
+      <div style={{ position:"fixed", bottom:0, left:0, right:0, background: C.card, borderTop:`1px solid ${C.border}`, display:"flex", zIndex:20, paddingBottom:"env(safe-area-inset-bottom)" }}>
+        {TABS.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{ flex:1, border:"none", background:"transparent", padding:"8px 0 6px", display:"flex", flexDirection:"column", alignItems:"center", gap:2, cursor:"pointer", color: tab===t.id ? C.tan2 : C.muted, borderTop: tab===t.id ? `2px solid ${C.tan2}` : "2px solid transparent", fontFamily:"inherit", transition:"all 0.15s" }}>
+            <span style={{ fontSize:18 }}>{t.icon}</span>
+            <span style={{ fontSize:10, fontWeight: tab===t.id?700:400 }}>{t.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  // ── DESKTOP ──
+  return (
+    <div style={{ fontFamily:"'Noto Serif TC',serif", background: C.bg, minHeight:"100vh", color: C.text, display:"flex" }}>
+      <div style={{ width:210, background: C.card, borderRight:`1px solid ${C.border}`, display:"flex", flexDirection:"column", position:"fixed", top:0, left:0, bottom:0, zIndex:10 }}>
+        <div style={{ padding:"24px 20px 18px", borderBottom:`1px solid ${C.border}` }}>
+          <BrandArea />
+        </div>
+        <nav style={{ marginTop:10, flex:1 }}>
+          {TABS.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ display:"flex", alignItems:"center", gap:10, width:"100%", textAlign:"left", padding:"12px 22px", border:"none", background: tab===t.id ? C.light : "transparent", color: tab===t.id ? C.tan3 : C.muted, fontFamily:"inherit", fontSize:14, fontWeight: tab===t.id?700:400, cursor:"pointer", borderLeft: tab===t.id ? `3px solid ${C.tan2}` : "3px solid transparent" }}>
+              <span style={{ fontSize:16 }}>{t.icon}</span><span>{t.label}</span>
+            </button>
+          ))}
+        </nav>
+        <div style={{ padding:"12px 20px", borderTop:`1px solid ${C.border}`, fontSize:11, color: C.muted, textAlign:"center" }}>
+          ☁️ 雲端同步至 Google Sheets
+        </div>
+      </div>
+      <div style={{ marginLeft:210, flex:1, padding:"32px 40px" }}>
+        {error && <div style={{ background:"#FFF3CD", color:"#856404", padding:"10px 16px", borderRadius:8, marginBottom:16, fontSize:13 }}>{error} <button onClick={()=>setError("")} style={{ background:"none",border:"none",cursor:"pointer",float:"right" }}>✕</button></div>}
+        {renderTab()}
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════════════════════════
+
+function Overview({ data, allYears }) {
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth()+1);
+  const isMobile = useIsMobile();
+  const key = monthKey(year, month);
+
+  const sales = data.dailySales.filter(s => { const d=new Date(s.date); return d.getFullYear()===year&&d.getMonth()+1===month; });
+  const totalSales = sales.reduce((s,r)=>s+Number(r.amount),0);
+  const purchases = data.purchases.filter(p=>p.year===year&&p.month===month);
+  const totalPurchase = purchases.reduce((s,p)=>s+Number(p.amount),0);
+  const payroll = data.payroll.filter(p=>p.year===year&&p.month===month);
+  const totalPayroll = payroll.reduce((s,p)=>s+Number(p.hourlyRate)*Number(p.hours),0);
+  const exp = data.expenses[key]||{};
+  const fixedExp=(Number(exp.rent)||0)+(Number(exp.telecom)||0)+(Number(exp.electricity)||0)+(Number(exp.water)||0)+((exp.others||[]).reduce((s,o)=>s+Number(o.amount),0));
+  const profit = totalSales-totalPayroll-totalPurchase-fixedExp;
+  const workDays = data.workDays[key]||0;
+  const avgDaily = workDays ? Math.round(totalSales/workDays) : 0;
+  const yearTotal = data.dailySales.filter(s=>new Date(s.date).getFullYear()===year).reduce((s,r)=>s+Number(r.amount),0);
+  const g4 = isMobile?"1fr 1fr":"repeat(4,1fr)";
+
+  return (
+    <div>
+      <ST>📊 營運總覽</ST>
+      <YMPicker year={year} month={month} setYear={setYear} setMonth={setMonth} years={allYears} />
+      <div style={{ display:"grid", gridTemplateColumns:g4, gap:10, marginBottom:12 }}>
+        <StatBox label="當月營業額" value={fmt(totalSales)} />
+        <StatBox label="當月進貨" value={fmt(totalPurchase)} />
+        <StatBox label="當月人事" value={fmt(totalPayroll)} />
+        <StatBox label="當月實賺" value={(profit>=0?"+":"")+fmt(profit)} color={profit>=0?C.green:C.red} />
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr", gap:10, marginBottom:16 }}>
+        <StatBox label="工作天數" value={`${workDays} 天`} />
+        <StatBox label="平均日營業" value={fmt(avgDaily)} />
+        <StatBox label={`${year}年度累計`} value={fmt(yearTotal)} />
+      </div>
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>{year}年{month}月 每日明細</div>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead><tr><TH>日期</TH><TH>單號</TH><TH>金額</TH></tr></thead>
+            <tbody>
+              {sales.length===0 ? <tr><td colSpan={3} style={{ padding:"20px", color:C.muted, textAlign:"center" }}>無資料</td></tr>
+                : sales.sort((a,b)=>a.date.localeCompare(b.date)).map(s=>(
+                  <tr key={s.id}><TD nowrap>{s.date}</TD><TD>{s.orderID||"—"}</TD><TD bold>{fmt(s.amount)}</TD></tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function DailySales({ data, act, allYears, saving }) {
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth()+1);
+  const [form, setForm] = useState({ date:now.toISOString().slice(0,10), orderID:"", amount:"" });
+  const isMobile = useIsMobile();
+
+  const records = data.dailySales.filter(s=>{const d=new Date(s.date);return d.getFullYear()===year&&d.getMonth()+1===month;}).sort((a,b)=>a.date.localeCompare(b.date));
+  const total = records.reduce((s,r)=>s+Number(r.amount),0);
+
+  const add = async () => {
+    if (!form.date||!form.amount) return;
+    const row = { id:uuid(), ...form, amount:Number(form.amount) };
+    await act("addSale", row, d=>{d.dailySales.push(row);return d;});
+    setForm(f=>({...f,orderID:"",amount:""}));
+  };
+  const del = (id) => act("delSale",{id}, d=>{d.dailySales=d.dailySales.filter(s=>s.id!==id);return d;});
+
+  return (
+    <div>
+      <ST>💰 每日營業額紀錄</ST>
+      <YMPicker year={year} month={month} setYear={setYear} setMonth={setMonth} years={allYears} />
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>新增記錄</div>
+        <div style={{ display:"flex", flexDirection:isMobile?"column":"row", gap:10 }}>
+          <Inp label="日期" type="date" value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))} />
+          <Inp label="單號（選填）" value={form.orderID} onChange={e=>setForm(f=>({...f,orderID:e.target.value}))} placeholder="選填" />
+          <Inp label="金額 NT$" type="number" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} placeholder="0" />
+          <div style={{display:"flex",alignItems:"flex-end"}}><Btn onClick={add} disabled={saving}>＋ 新增</Btn></div>
+        </div>
+      </Card>
+      <Card>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+          <span style={{ fontWeight:700, color:C.tan3, fontSize:14 }}>{year}年{month}月 明細</span>
+          <span style={{ fontWeight:700, color:C.tan3 }}>{fmt(total)}</span>
+        </div>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead><tr><TH>日期</TH><TH>單號</TH><TH>金額</TH><TH></TH></tr></thead>
+            <tbody>
+              {records.length===0 ? <tr><td colSpan={4} style={{ padding:"20px", color:C.muted, textAlign:"center" }}>無資料</td></tr>
+                : records.map(r=>(
+                  <tr key={r.id}><TD nowrap>{r.date}</TD><TD>{r.orderID||"—"}</TD><TD bold>{fmt(r.amount)}</TD><TD><Btn sm danger onClick={()=>del(r.id)} disabled={saving}>刪除</Btn></TD></tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>{year}年 月度統計</div>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead><tr><TH>月份</TH><TH>營業額</TH><TH>筆數</TH></tr></thead>
+            <tbody>
+              {[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>{
+                const ms=data.dailySales.filter(s=>{const d=new Date(s.date);return d.getFullYear()===year&&d.getMonth()+1===m;});
+                const mt=ms.reduce((s,r)=>s+Number(r.amount),0);
+                return(<tr key={m} style={{background:m===month?"#FDF4E8":"transparent"}}>
+                  <TD>{m}月</TD><TD bold color={C.tan3}>{mt>0?fmt(mt):"—"}</TD><TD>{ms.length||"—"}</TD>
+                </tr>);
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function Purchases({ data, act, allYears, saving }) {
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth()+1);
+  const [form, setForm] = useState({ date:now.toISOString().slice(0,10), category:"A", vendor:"", item:"", amount:"" });
+  const isMobile = useIsMobile();
+
+  const records = data.purchases.filter(p=>p.year===year&&p.month===month);
+  const catA = records.filter(r=>r.category.startsWith("A"));
+  const catB = records.filter(r=>r.category.startsWith("B"));
+  const gv = (arr,k) => arr.reduce((acc,r)=>{acc[r[k]]=(acc[r[k]]||0)+Number(r.amount);return acc;},{});
+  const vA=gv(catA,"vendor"), vB=gv(catB,"vendor");
+  const tA=catA.reduce((s,r)=>s+Number(r.amount),0);
+  const tB=catB.reduce((s,r)=>s+Number(r.amount),0);
+
+  const add = async () => {
+    if (!form.vendor||!form.amount) return;
+    const row={id:uuid(),year,month,...form,amount:Number(form.amount)};
+    await act("addPurchase",row,d=>{d.purchases.push(row);return d;});
+    setForm(f=>({...f,vendor:"",item:"",amount:""}));
+  };
+  const del=(id)=>act("delPurchase",{id},d=>{d.purchases=d.purchases.filter(p=>p.id!==id);return d;});
+
+  return (
+    <div>
+      <ST>🛒 進貨管理</ST>
+      <YMPicker year={year} month={month} setYear={setYear} setMonth={setMonth} years={allYears} />
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>新增進貨</div>
+        <div style={{ display:"flex", flexDirection:isMobile?"column":"row", gap:10, flexWrap:"wrap" }}>
+          <Inp label="日期" type="date" value={form.date} onChange={e=>setForm(f=>({...f,date:e.target.value}))} />
+          <Sel label="類別" value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>
+            <option value="A">A 食材</option><option value="A-other">A 其他</option>
+            <option value="B">B 耗材</option><option value="B-other">B 其他</option>
+          </Sel>
+          <Inp label="廠商" value={form.vendor} onChange={e=>setForm(f=>({...f,vendor:e.target.value}))} placeholder="廠商名稱" />
+          <Inp label="品項（選填）" value={form.item} onChange={e=>setForm(f=>({...f,item:e.target.value}))} placeholder="品項" />
+          <Inp label="金額 NT$" type="number" value={form.amount} onChange={e=>setForm(f=>({...f,amount:e.target.value}))} placeholder="0" />
+          <div style={{display:"flex",alignItems:"flex-end"}}><Btn onClick={add} disabled={saving}>＋ 新增</Btn></div>
+        </div>
+      </Card>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr", gap:10, marginBottom:16 }}>
+        <Card style={{ marginBottom:0 }}>
+          <div style={{ fontWeight:700, color:"#6B8F71", marginBottom:8, fontSize:13 }}>🥬 A 食材合計</div>
+          <div style={{ fontSize:20, fontWeight:700, color:"#6B8F71" }}>{fmt(tA)}</div>
+          {Object.entries(vA).map(([v,a])=><div key={v} style={{ fontSize:12, color:C.muted, marginTop:4 }}>{v}: {fmt(a)}</div>)}
+        </Card>
+        <Card style={{ marginBottom:0 }}>
+          <div style={{ fontWeight:700, color:"#8F7B6B", marginBottom:8, fontSize:13 }}>📦 B 耗材合計</div>
+          <div style={{ fontSize:20, fontWeight:700, color:"#8F7B6B" }}>{fmt(tB)}</div>
+          {Object.entries(vB).map(([v,a])=><div key={v} style={{ fontSize:12, color:C.muted, marginTop:4 }}>{v}: {fmt(a)}</div>)}
+        </Card>
+        <Card style={{ marginBottom:0, background:C.light, gridColumn:isMobile?"1/-1":"auto" }}>
+          <div style={{ fontWeight:700, color:C.tan3, marginBottom:8, fontSize:13 }}>📊 A+B 總進貨</div>
+          <div style={{ fontSize:22, fontWeight:700, color:C.tan3 }}>{fmt(tA+tB)}</div>
+          <div style={{ fontSize:12, color:C.muted, marginTop:4 }}>A {fmt(tA)} ＋ B {fmt(tB)}</div>
+        </Card>
+      </div>
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>明細列表</div>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead><tr><TH>日期</TH><TH>類</TH><TH>廠商</TH><TH>品項</TH><TH>金額</TH><TH></TH></tr></thead>
+            <tbody>
+              {records.length===0 ? <tr><td colSpan={6} style={{ padding:"20px", color:C.muted, textAlign:"center" }}>無資料</td></tr>
+                : records.map(r=>(
+                  <tr key={r.id}>
+                    <TD nowrap>{r.date}</TD>
+                    <TD><span style={{ background:r.category.startsWith("A")?"#D4EDDA":"#FFF3CD", color:r.category.startsWith("A")?"#2E7D32":"#856404", borderRadius:4, padding:"2px 6px", fontSize:11, fontWeight:700 }}>{r.category}</span></TD>
+                    <TD>{r.vendor}</TD><TD>{r.item||"—"}</TD><TD bold nowrap>{fmt(r.amount)}</TD>
+                    <TD><Btn sm danger onClick={()=>del(r.id)} disabled={saving}>刪除</Btn></TD>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function Payroll({ data, act, allYears, saving }) {
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth()+1);
+  const [form, setForm] = useState({ name:"", hourlyRate:"", hours:"" });
+  const isMobile = useIsMobile();
+
+  const records = data.payroll.filter(p=>p.year===year&&p.month===month);
+  const total = records.reduce((s,p)=>s+Number(p.hourlyRate)*Number(p.hours),0);
+
+  const add = async () => {
+    if (!form.name||!form.hourlyRate||!form.hours) return;
+    const row={id:uuid(),year,month,...form,hourlyRate:Number(form.hourlyRate),hours:Number(form.hours)};
+    await act("addPayroll",row,d=>{d.payroll.push(row);return d;});
+    setForm({name:"",hourlyRate:"",hours:""});
+  };
+  const del=(id)=>act("delPayroll",{id},d=>{d.payroll=d.payroll.filter(p=>p.id!==id);return d;});
+
+  return (
+    <div>
+      <ST>👥 人事薪資</ST>
+      <YMPicker year={year} month={month} setYear={setYear} setMonth={setMonth} years={allYears} />
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>新增員工</div>
+        <div style={{ display:"flex", flexDirection:isMobile?"column":"row", gap:10 }}>
+          <Inp label="姓名" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="員工姓名" />
+          <Inp label="時薪 NT$" type="number" value={form.hourlyRate} onChange={e=>setForm(f=>({...f,hourlyRate:e.target.value}))} placeholder="0" />
+          <Inp label="工時（小時）" type="number" value={form.hours} onChange={e=>setForm(f=>({...f,hours:e.target.value}))} placeholder="0" />
+          <div style={{display:"flex",alignItems:"flex-end"}}><Btn onClick={add} disabled={saving}>＋ 新增</Btn></div>
+        </div>
+      </Card>
+      <Card>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+          <span style={{ fontWeight:700, color:C.tan3, fontSize:14 }}>{year}年{month}月 薪資表</span>
+          <span style={{ fontWeight:700, color:C.tan3 }}>{fmt(total)}</span>
+        </div>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead><tr><TH>姓名</TH><TH>時薪</TH><TH>工時</TH><TH>薪資</TH><TH></TH></tr></thead>
+            <tbody>
+              {records.length===0 ? <tr><td colSpan={5} style={{ padding:"20px", color:C.muted, textAlign:"center" }}>無資料</td></tr>
+                : records.map(r=>(
+                  <tr key={r.id}><TD bold>{r.name}</TD><TD nowrap>{fmt(r.hourlyRate)}/hr</TD><TD>{r.hours}h</TD><TD bold color={C.tan3} nowrap>{fmt(Number(r.hourlyRate)*Number(r.hours))}</TD><TD><Btn sm danger onClick={()=>del(r.id)} disabled={saving}>刪除</Btn></TD></tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function PnL({ data, act, allYears, saving }) {
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth()+1);
+  const [newLabel, setNewLabel] = useState(""); const [newAmt, setNewAmt] = useState("");
+  const [wdInput, setWdInput] = useState("");
+  const isMobile = useIsMobile();
+  const key = monthKey(year, month);
+
+  const exp = data.expenses[key]||{rent:"",telecom:"",electricity:"",water:"",others:[]};
+
+  const saveExp = (patch) => {
+    const next = { ...exp, ...patch };
+    act("setExpense",{ key, ...next }, d=>{
+      if(!d.expenses[key]) d.expenses[key]={rent:"",telecom:"",electricity:"",water:"",others:[]};
+      Object.assign(d.expenses[key], patch); return d;
+    });
+  };
+
+  const addOther = () => {
+    if (!newLabel||!newAmt) return;
+    const others = [...(exp.others||[]), { id:uuid(), label:newLabel, amount:Number(newAmt) }];
+    saveExp({ others }); setNewLabel(""); setNewAmt("");
+  };
+  const delOther = (id) => saveExp({ others:(exp.others||[]).filter(o=>o.id!==id) });
+
+  const sales = data.dailySales.filter(s=>{const d=new Date(s.date);return d.getFullYear()===year&&d.getMonth()+1===month;});
+  const totalSales=sales.reduce((s,r)=>s+Number(r.amount),0);
+  const totalPurchase=data.purchases.filter(p=>p.year===year&&p.month===month).reduce((s,p)=>s+Number(p.amount),0);
+  const totalPayroll=data.payroll.filter(p=>p.year===year&&p.month===month).reduce((s,p)=>s+Number(p.hourlyRate)*Number(p.hours),0);
+  const fixedItems=[{label:"租金",val:Number(exp.rent)||0},{label:"電信費",val:Number(exp.telecom)||0},{label:"台電",val:Number(exp.electricity)||0},{label:"水電",val:Number(exp.water)||0},...(exp.others||[]).map(o=>({label:o.label,val:Number(o.amount)||0}))];
+  const totalFixed=fixedItems.reduce((s,i)=>s+i.val,0);
+  const totalExp=totalPayroll+totalPurchase+totalFixed;
+  const profit=totalSales-totalExp;
+  const workDays=data.workDays[key]||0;
+  const avgDaily=workDays?Math.round(totalSales/workDays):0;
+  const pr=totalSales?(totalPurchase/totalSales)*100:0;
+  const wr=totalSales?(totalPayroll/totalSales)*100:0;
+
+  return (
+    <div>
+      <ST>📋 損益報告</ST>
+      <YMPicker year={year} month={month} setYear={setYear} setMonth={setMonth} years={allYears} />
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>工作天數</div>
+        <div style={{ display:"flex", gap:10, alignItems:"center", flexWrap:"wrap" }}>
+          <span style={{ fontSize:14 }}>目前：{workDays} 天</span>
+          <input type="number" style={{ border:`1px solid ${C.border}`, borderRadius:8, padding:"7px 10px", width:80, fontSize:14, fontFamily:"inherit" }} value={wdInput} onChange={e=>setWdInput(e.target.value)} placeholder="天數" />
+          <Btn onClick={()=>{ const v=Number(wdInput); if(!v) return; act("setWorkDays",{key,days:v},d=>{d.workDays[key]=v;return d;}); }} disabled={saving}>更新</Btn>
+        </div>
+      </Card>
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:14, color:C.tan3, fontSize:14 }}>固定支出（每月填寫）</div>
+        <div style={{ display:"grid", gridTemplateColumns:isMobile?"1fr 1fr":"repeat(4,1fr)", gap:12, marginBottom:14 }}>
+          {[["rent","租金"],["telecom","電信費"],["electricity","台電"],["water","水電"]].map(([f,l])=>(
+            <Inp key={f} label={l+" NT$"} type="number" value={exp[f]||""} onChange={e=>saveExp({[f]:e.target.value})} placeholder="0" />
+          ))}
+        </div>
+        <div style={{ fontWeight:600, fontSize:13, color:C.muted, marginBottom:8 }}>其他支出</div>
+        {(exp.others||[]).map(o=>(
+          <div key={o.id} style={{ display:"flex", gap:10, alignItems:"center", marginBottom:8, padding:"8px 12px", background:C.light, borderRadius:8 }}>
+            <span style={{ flex:1, fontSize:14 }}>{o.label}</span>
+            <span style={{ fontWeight:700, fontSize:14 }}>{fmt(o.amount)}</span>
+            <Btn sm danger onClick={()=>delOther(o.id)} disabled={saving}>刪除</Btn>
+          </div>
+        ))}
+        <div style={{ display:"flex", gap:10, marginTop:10 }}>
+          <Inp value={newLabel} onChange={e=>setNewLabel(e.target.value)} placeholder="項目名稱" />
+          <Inp type="number" value={newAmt} onChange={e=>setNewAmt(e.target.value)} placeholder="金額" style={{ maxWidth:120 }} />
+          <div style={{display:"flex",alignItems:"flex-end"}}><Btn sm onClick={addOther} disabled={saving}>新增</Btn></div>
+        </div>
+      </Card>
+      <Card style={{ background:profit>=0?"#F0FBF3":"#FBF0F0" }}>
+        <div style={{ fontWeight:700, marginBottom:14, color:C.tan3, fontSize:14 }}>{year}年{month}月 損益總結</div>
+        {[
+          { label:"當月總營業額", val:fmt(totalSales), color:C.green },
+          { label:"人事薪資", val:"－"+fmt(totalPayroll) },
+          { label:"進貨支出", val:"－"+fmt(totalPurchase) },
+          ...fixedItems.map(i=>({ label:i.label, val:"－"+fmt(i.val) })),
+          { label:"總支出", val:"－"+fmt(totalExp), color:C.red, sep:true },
+          { label:"當月實賺金額", val:(profit>=0?"+":"")+fmt(profit), color:profit>=0?C.green:C.red, big:true },
+        ].map((row,i)=>(
+          <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"9px 0", borderBottom:row.sep?`2px solid ${C.tan1}`:`1px solid ${C.border}` }}>
+            <span style={{ fontSize:row.big?16:14, fontWeight:row.big||row.sep?700:400 }}>{row.label}</span>
+            <span style={{ fontSize:row.big?20:14, fontWeight:700, color:row.color||C.text }}>{row.val}</span>
+          </div>
+        ))}
+        <div style={{ marginTop:14 }}><StatBox label={`平均日營業（${workDays}天）`} value={fmt(avgDaily)} /></div>
+      </Card>
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:14, color:C.tan3, fontSize:14 }}>⚠️ 成本佔比分析</div>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+          {[
+            { label:"進貨佔比", pct:pr, level:pr<=30?"優良":pr<=45?"尚可":"欠佳", hint:"建議≤30%" },
+            { label:"人事佔比", pct:wr, level:wr<=25?"優良":wr<=35?"尚可":"欠佳", hint:"建議≤25%" },
+          ].map(({ label, pct:p, level, hint })=>(
+            <div key={label} style={{ background:C.light, borderRadius:12, padding:"14px 16px", border:`1px solid ${C.border}` }}>
+              <div style={{ fontSize:11, color:C.muted, marginBottom:6 }}>{label}（{hint}）</div>
+              <div style={{ fontSize:24, fontWeight:700, marginBottom:8 }}>{p.toFixed(1)}%</div>
+              <Badge level={level} />
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function YearlyCompare({ data, allYears }) {
+  const now = new Date();
+  const [yearA, setYearA] = useState(now.getFullYear());
+  const [yearB, setYearB] = useState(now.getFullYear()-1);
+  const [viewMonth, setViewMonth] = useState(now.getMonth()+1);
+  const isMobile = useIsMobile();
+  const mS=(y,m)=>data.dailySales.filter(s=>{const d=new Date(s.date);return d.getFullYear()===y&&d.getMonth()+1===m;}).reduce((s,r)=>s+Number(r.amount),0);
+  const yT=(y)=>data.dailySales.filter(s=>new Date(s.date).getFullYear()===y).reduce((s,r)=>s+Number(r.amount),0);
+  const ytA=yT(yearA), ytB=yT(yearB), sA=mS(yearA,viewMonth), sB=mS(yearB,viewMonth);
+
+  return (
+    <div>
+      <ST>📈 年度比較</ST>
+      <div style={{ display:"flex", gap:8, marginBottom:16, flexWrap:"wrap", alignItems:"center" }}>
+        <select value={yearA} onChange={e=>setYearA(Number(e.target.value))} style={{ border:`1px solid ${C.border}`, borderRadius:8, padding:"7px 12px", fontSize:13, fontFamily:"inherit", background:C.bg }}>
+          {allYears.map(y=><option key={y} value={y}>{y}年（本期）</option>)}
+        </select>
+        <span style={{ color:C.muted, fontWeight:700 }}>vs</span>
+        <select value={yearB} onChange={e=>setYearB(Number(e.target.value))} style={{ border:`1px solid ${C.border}`, borderRadius:8, padding:"7px 12px", fontSize:13, fontFamily:"inherit", background:C.bg }}>
+          {allYears.map(y=><option key={y} value={y}>{y}年（對比）</option>)}
+        </select>
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr", gap:10, marginBottom:16 }}>
+        <StatBox label={`${yearA}年度`} value={fmt(ytA)} />
+        <StatBox label={`${yearB}年度`} value={fmt(ytB)} />
+        <StatBox label="年度成長率" value={growthVal(ytA,ytB)} color={growthColor(ytA,ytB)} />
+      </div>
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>月度對比：{yearA} vs {yearB}</div>
+        <div style={{ overflowX:"auto" }}>
+          <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13 }}>
+            <thead><tr><TH>月份</TH><TH>{yearA}年</TH><TH>{yearB}年</TH><TH>成長率</TH></tr></thead>
+            <tbody>
+              {[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>{
+                const sa=mS(yearA,m), sb=mS(yearB,m);
+                return(<tr key={m} style={{background:m===viewMonth?"#FDF4E8":"transparent"}}>
+                  <TD bold={m===viewMonth}>{m}月</TD><TD>{sa>0?fmt(sa):"—"}</TD><TD>{sb>0?fmt(sb):"—"}</TD>
+                  <TD bold color={(sa>0||sb>0)?growthColor(sa,sb):C.muted}>{(sa>0||sb>0)?growthVal(sa,sb):"—"}</TD>
+                </tr>);
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+      <Card>
+        <div style={{ fontWeight:700, marginBottom:12, color:C.tan3, fontSize:14 }}>單月詳細比較</div>
+        <select value={viewMonth} onChange={e=>setViewMonth(Number(e.target.value))} style={{ border:`1px solid ${C.border}`, borderRadius:8, padding:"7px 12px", fontSize:13, fontFamily:"inherit", marginBottom:14 }}>
+          {[1,2,3,4,5,6,7,8,9,10,11,12].map(m=><option key={m} value={m}>{m}月</option>)}
+        </select>
+        <div style={{ display:"grid", gridTemplateColumns:isMobile?"1fr 1fr":"1fr 1fr 1fr", gap:10 }}>
+          <StatBox label={`${yearA}年${viewMonth}月`} value={fmt(sA)} />
+          <StatBox label={`${yearB}年${viewMonth}月`} value={fmt(sB)} />
+          <StatBox label="月成長率" value={growthVal(sA,sB)} color={growthColor(sA,sB)} />
+        </div>
+      </Card>
+    </div>
+  );
+}
