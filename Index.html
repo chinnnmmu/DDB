@@ -1,0 +1,2360 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>DDB 工作台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f7f3ef; --card:#ffffff; --card2:#fdf9f6; --border:#ede5dc; --border2:#ddd0c4;
+  --text:#2d2118; --text2:#7a6254; --text3:#b5a090; --rose:#e8637a; --rose-light:#fce8ec;
+  --rose-border:#f0b0bc; --sage:#5a9068; --sage-light:#e6f2ea; --sage-border:#a8d0b4;
+  --sky:#4a7ab5; --sky-light:#e4eef8; --peach:#d4784a; --peach-light:#faeade;
+  --gold:#b8860b; --gold-light:#fdf5dc; --cream:#faf7f2; --surface:#fffcf8;
+  --accent:#8c765c; --accent2:#a38e77; --danger:#c96b7e; --green:#6a9e7a;
+  --font:'Noto Sans TC',system-ui,sans-serif; --mono:'DM Mono',monospace;
+  --nav-h:56px; --bottom-h:60px; --r:8px; --r-sm:6px;
+}
+
+body.dark-theme {
+  --bg:#3a3530; --card:#2f2a26; --card2:#352f2a; --border:#4a4239; --border2:#5a524a;
+  --text:#e8e0d8; --text2:#b8a898; --text3:#8a7a68; --rose:#f08898; --rose-light:#4a2838;
+  --rose-border:#6a4858; --sage:#88c8a8; --sage-light:#3a5548; --sage-border:#5a8a78;
+  --sky:#7a9fd5; --sky-light:#3a4a68; --peach:#e5a878; --peach-light:#5a4a38;
+  --gold:#d4b878; --gold-light:#4a4428;
+}
+
+body.light-theme {
+  --bg:#f9f6f0; --card:#fefdfb; --card2:#faf8f4; --border:#e8e3db; --border2:#ddd5cd;
+  --text:#5a4a38; --text2:#8a7a68; --text3:#b8a898; --rose:#d8647a; --rose-light:#f5e8eb;
+  --rose-border:#e8bcc8; --sage:#6a9876; --sage-light:#e8f3ed; --sage-border:#b8d8c4;
+  --sky:#5a8aa5; --sky-light:#e8eef8; --peach:#c88a5a; --peach-light:#f5ebe0;
+  --gold:#a8806a; --gold-light:#f8f3e8;
+}
+
+body.warm-theme {
+  --bg:#f5f0e8; --card:#fdfaf7; --card2:#faf5f0; --border:#e8ddd2; --border2:#ddd0c4;
+  --text:#3a2818; --text2:#6a5a48; --text3:#9a8a78; --rose:#e08878; --rose-light:#fce8e4;
+  --rose-border:#f0c8c0; --sage:#78a878; --sage-light:#e8f5e8; --sage-border:#b8dab8;
+  --sky:#6a8ab5; --sky-light:#e8f0f8; --peach:#d88860; --peach-light:#f5e8d8;
+  --gold:#b8906a; --gold-light:#faf5e8;
+}
+
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:0.9375rem;line-height:1.5;min-height:100vh;transition:background 0.3s,color 0.3s;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--bottom-h);background:var(--card);border-top:1px solid var(--border);display:flex;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.06);}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:0.25rem;color:var(--text3);font-size:0.6875rem;font-weight:500;border:none;background:none;min-height:44px;}
+.bnav-item.active{color:var(--rose)}
+.bnav-icon{font-size:1.25rem;line-height:1}
+.top-nav{display:none;position:sticky;top:0;z-index:200;background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5rem;height:var(--nav-h);align-items:center;gap:0;box-shadow:0 1px 8px rgba(0,0,0,.05);}
+.tnav-logo{font-size:1rem;font-weight:600;color:var(--text);margin-right:2rem;letter-spacing:.02em}
+.tnav-item{padding:0 1.125rem;font-size:0.875rem;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;height:var(--nav-h);display:flex;align-items:center;border:none;background:none;white-space:nowrap;}
+.tnav-item.active{color:var(--rose);border-bottom-color:var(--rose)}
+.app{padding-bottom:var(--bottom-h)}
+.panel{display:none;padding:0.4rem;max-width:1400px;margin:0 auto}
+.panel.active{display:block}
+.sub-panel{display:none}
+.sub-panel.active{display:block}
+.sub-nav{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:0.3rem;overflow-x:auto;overflow-y:hidden;-ms-overflow-style:none;scrollbar-width:none}
+.sub-nav::-webkit-scrollbar{display:none}
+.sub-tab{padding:0.3rem 0.7rem;font-size:0.875rem;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;min-height:36px;display:flex;align-items:center;background:none;border-top:none;border-left:none;border-right:none}
+.sub-tab.active{color:var(--rose);border-bottom-color:var(--rose);font-weight:600}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:0.3rem;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card-head{padding:0.4rem 0.7rem;border-bottom:1px solid var(--border);background:var(--card2);display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap}
+.card-title{font-size:0.9375rem;font-weight:600;color:var(--text)}
+.card-sub{font-size:0.75rem;color:var(--text3);font-family:var(--mono);background:var(--border);padding:0.125rem 0.5rem;border-radius:99px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.25rem;padding:0.3rem 0.7rem;font-size:0.875rem;font-family:var(--font);font-weight:500;border-radius:var(--r-sm);cursor:pointer;border:1.5px solid;white-space:nowrap;min-height:34px;transition:opacity .1s}
+.btn:active{opacity:.7}
+.btn-rose{background:var(--rose);border-color:var(--rose);color:#fff}
+.btn-rose-outline{background:var(--rose-light);border-color:var(--rose-border);color:var(--rose)}
+.btn-sage{background:var(--sage-light);border-color:var(--sage-border);color:var(--sage)}
+.btn-sky{background:var(--sky-light);border-color:var(--sky);color:var(--sky)}
+.btn-plain{background:var(--card);border-color:var(--border2);color:var(--text2)}
+.btn-sm{min-height:30px;padding:0.25rem 0.5rem;font-size:0.8125rem}
+input,select,textarea{font-family:var(--font);font-size:0.9375rem;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:0.3rem 0.5rem;width:100%;transition:.1s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,99,122,.1)}
+.cal-nav-row{display:flex;align-items:center;justify-content:space-between;padding:0.3rem 0.7rem;border-bottom:1px solid var(--border);background:var(--card2); flex-wrap:wrap; gap:4px;}
+.cal-month{font-size:0.9375rem;font-weight:600;color:var(--text); min-width:60px; text-align:center;}
+.cal-arrow{background:none;border:none;cursor:pointer;font-size:1.25rem;color:var(--text2);padding:0 0.5rem;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm)}
+.cal-wd{display:grid;grid-template-columns:repeat(7,1fr);background:var(--card2);border-bottom:1px solid var(--border)}
+.cal-wd span{text-align:center;font-size:0.6875rem;font-weight:600;color:var(--text3);padding:0.25rem 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0.2rem}
+.cal-day{display:flex;flex-direction:column;align-items:center;padding:0.1rem;cursor:pointer;border-radius:var(--r-sm);min-height:36px;justify-content:center}
+.dn{font-size:0.8125rem;font-weight:500;color:var(--text);width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.cal-day.other .dn{color:var(--text3)}
+.cal-day.today .dn{background:var(--text);color:#fff}
+.cal-day.selected .dn{background:var(--rose);color:#fff}
+.ddots{display:flex;gap:2px;margin-top:2px;height:4px;align-items:center;justify-content:center}
+.dot{width:4px;height:4px;border-radius:50%;background:var(--rose)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.etbl{width:100%;border-collapse:collapse;font-size:0.875rem;table-layout:fixed}
+.etbl thead{position:sticky;top:0;z-index:50;}
+.etbl th{text-align:center;padding:0.5rem 0.375rem;font-size:0.8125rem;color:var(--text2);font-weight:600;background:var(--card2);border:1px solid var(--border);white-space:nowrap;vertical-align:middle;cursor:default;user-select:none;}
+.etbl th.sortable{cursor:pointer;transition:background-color 0.15s ease;}
+.etbl th.sortable:hover{background:var(--border);}
+.sort-arrow{display:inline-block;margin-left:0.3rem;font-size:0.7rem;font-weight:700;color:var(--rose);vertical-align:middle;}
+.etbl td{padding:0;border:1px solid var(--border);vertical-align:middle}
+.etbl tr.settled-row{opacity:0.6;background-color:#f0f0f0!important;}
+.etbl tr.settled-row .wc{text-decoration:line-through;text-decoration-color:var(--text3);text-decoration-thickness:1px;text-underline-offset:2px;}
+.etbl tr:nth-child(even) td{background:#fdfaf7}
+.cv{padding:0.375rem;min-height:2.25rem;cursor:cell;white-space:nowrap;overflow:hidden;font-size:0.875rem;display:flex;align-items:center;justify-content:flex-start;text-align:left}
+.cv.mono{font-family:var(--mono);font-size:0.8125rem;justify-content:center;text-align:center}
+.cv.bold{font-weight:600;justify-content:flex-start;text-align:left}
+.cv.green{color:var(--sage);font-weight:700;font-family:var(--mono);font-size:0.8125rem;justify-content:center;text-align:center}
+.cv.redc{color:var(--rose);font-weight:700;font-family:var(--mono);font-size:0.8125rem;justify-content:center;text-align:center}
+.wc{padding:0.375rem;min-height:2.25rem;cursor:cell;white-space:nowrap;overflow:hidden;font-size:0.875rem;display:flex;align-items:center;justify-content:flex-start;text-align:left}
+.wc.mono{font-family:var(--mono);font-size:0.8125rem;justify-content:center;text-align:center}
+.wc.bold{font-weight:600;justify-content:flex-start;text-align:left}
+.wc.green{color:var(--sage);font-weight:700;font-family:var(--mono);font-size:0.8125rem;justify-content:center;text-align:center}
+.wc.redc{color:var(--rose);font-weight:700;font-family:var(--mono);font-size:0.8125rem;justify-content:center;text-align:center}
+.etbl td.sel{outline:2px solid var(--rose);outline-offset:-1px;position:relative;z-index:4}
+.cinp{width:100%;border:none;outline:none;padding:0.375rem;font-size:0.875rem;font-family:var(--font);background:var(--sky-light);color:var(--text);display:block;height:2.25rem;text-align:left}
+.cinp.mono{font-family:var(--mono);font-size:0.8125rem;text-align:center}
+.tbl-add{padding:0.5rem 1rem;font-size:0.875rem;color:var(--text3);cursor:pointer;background:var(--card2);border-top:1px solid var(--border);display:none;text-align:center}
+.wo-empty{text-align:center;color:var(--text3);padding:1.2rem;font-size:0.875rem;line-height:2}
+.qa-fields { display: grid; grid-template-columns: 80px 100px 2fr 100px 80px 80px 2fr; gap: 6px; }
+@media(max-width: 1023px){
+  .qa-fields { grid-template-columns: repeat(3, 1fr); }
+  .qa-place { grid-column: span 3; }
+  .qa-note { grid-column: span 3; }
+}
+@media(max-width: 560px){
+  .qa-fields { grid-template-columns: 1fr 1fr; }
+  .qa-name { grid-column: span 1; }
+  .qa-place { grid-column: span 2; }
+  .qa-note { grid-column: span 2; }
+}
+.week-row{display:flex;gap:0;border-bottom:1px solid var(--border);min-height:1.75rem;align-items:center}
+.wc{padding:0.25rem 0.5rem;font-size:0.8125rem;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex-shrink:0;text-align:left}
+.wc.mono{font-family:var(--mono);text-align:center;margin:0 auto}
+.wc.bold{font-weight:600;text-align:left}
+.wc.g{color:var(--sage);font-weight:700;text-align:center;margin:0 auto}
+.wc.r{color:var(--rose);font-weight:700;text-align:center;margin:0 auto}
+.split-container{display:flex; gap:0.6rem; height:calc(100vh - 140px);}
+.split-list{width:280px; border:1px solid var(--border); border-radius:6px; display:flex; flex-direction:column; background:var(--card); flex-shrink:0;}
+.split-editor{flex:1; border:1px solid var(--border); border-radius:6px; background:var(--card); display:none; flex-direction:column; min-height:0;}
+.bbp{padding:0.4rem 0.7rem;border-bottom:1px solid var(--border);line-height:1.6}
+.prow{margin-bottom:0.125rem}
+.pprice{font-family:var(--mono);font-weight:700;font-size:0.9375rem}
+.pname{font-weight:700;font-size:0.9375rem;margin:0 0.25rem}
+.pspec{font-family:var(--mono);font-size:0.75rem;color:var(--text3);margin-right:0.375rem}
+.ptime{font-family:var(--mono);font-size:0.75rem;background:var(--border);padding:1px 6px;border-radius:4px;margin-right:0.375rem}
+.ptag{display:inline-block;font-size:0.75rem;padding:1px 7px;border-radius:4px;margin:1px 2px;white-space:nowrap;font-weight:500}
+.tsage{background:var(--sage-light);color:var(--sage)}
+.tsky{background:var(--sky-light);color:var(--sky)}
+.trose{background:var(--rose-light);color:var(--rose)}
+.tpeach{background:var(--peach-light);color:var(--peach)}
+.tlatte{background:var(--border);color:var(--text2)}
+.tmatch{background:var(--gold-light);color:var(--gold);border:1px solid #d4aa40;font-weight:700}
+.tmuted{font-size:0.6875rem;color:var(--text3);margin-right:0.25rem}
+.paste-area{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:0.4rem;margin-top:0.4rem;display:none}
+.paste-area.open{display:block}
+.bb-stats{font-size:0.8125rem;color:var(--text3);margin:0.2rem 0}
+.chips{display:flex;gap:0.375rem;flex-wrap:wrap;margin-bottom:0.3rem}
+.chip{padding:0.25rem 0.625rem;font-size:0.8125rem;border-radius:99px;border:1.5px solid var(--border2);background:var(--card);color:var(--text2);cursor:pointer;user-select:none;white-space:nowrap;font-weight:500;min-height:28px;display:inline-flex;align-items:center;}
+.chip.on{background:var(--rose-light);border-color:var(--rose-border);color:var(--rose);font-weight:600}
+.row-gap{display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;margin-top:0.4rem}
+.imp-msg{margin-top:0.4rem;font-size:0.8125rem;color:var(--text2);min-height:1.25rem}
+.sched-hdr { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.sched-hdr-title { font-family: "Noto Serif TC", serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+.sched-hdr-ver { font-size: 11px; color: var(--text3); }
+.sched-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-sm); box-shadow: 0 1px 4px rgba(140,118,92,.07); padding: 8px; margin-bottom: 6px; }
+.sched-lbl { font-size: 13px; font-weight: 700; color: var(--accent2); letter-spacing: .05em; margin-bottom: 5px; }
+.sched-hint { font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+.sched-ta { font-family: var(--font); width: 100%; border: 1px solid var(--border); border-radius: var(--r-sm); padding: 7px; font-size: 13px; background: var(--surface); color: var(--text); outline: none; resize: none; overflow-y: auto; line-height: 1.5; }
+#inputA { height: 233px; }
+#weekInput { height: 73px; }
+#db { height: 173px; }
+.ro-box { font-family: var(--font); white-space: pre-wrap; border: 1px solid var(--border); border-radius: var(--r-sm); padding: 7px; font-size: 13px; background: var(--surface); color: var(--text); line-height: 1.5; overflow-y: auto; }
+#outputDiv { height: 350px; border-left: 3px solid var(--accent); }
+#pureOutput { height: 110px; }
+.sched-btn-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; align-items: center; }
+.sched-btn { font-family: var(--font); border-radius: 4px; border: 1.5px solid #b8a89d; background: var(--card); color: #8a7a6f; padding: 4px 10px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .1s; white-space: nowrap; height: auto; min-height: 26px; }
+.sched-btn.primary { background: linear-gradient(135deg, #d4988a, #dfa89d); color: #fff; border: none; font-weight: 600; }
+.copy-wide { display: block; width: 100%; margin-top: 5px; padding: 5px; border-radius: 4px; border: none; background: linear-gradient(135deg, #c4a9d4, #d4bad4); color: #fff; font-weight: 600; font-size: 12px; font-family: var(--font); cursor: pointer; text-align: center; }
+.copy-wide.alt { background: linear-gradient(135deg, #d4c9a8, #ddd4b8); }
+#missing { font-size: 11px; color: var(--danger); font-weight: 600; margin-top: 3px; min-height: 14px; }
+.top-zone { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; align-items: stretch; margin-bottom: 6px; min-height: 600px; }
+.top-left, .top-middle, .top-right { display: flex; flex-direction: column; }
+.top-left .sched-card, .top-middle .sched-card, .top-right .sched-card { flex: 1; display: flex; flex-direction: column; }
+.top-left .sched-ta, .top-left .ro-box, .top-middle .ro-box, .top-right #notepad { flex: 1; min-height: 0; }
+.week-zone { display: grid; grid-template-columns: 50fr 50fr; gap: 6px; margin-bottom: 6px; }
+.day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 5px; }
+.day-box { background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 5px; display: flex; flex-direction: column; min-height: 220px; }
+.day-hdr { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0e5d5; padding-bottom: 3px; margin-bottom: 3px; }
+.day-name { font-size: 12px; font-weight: 700; color: var(--accent); font-family: "Noto Serif TC", serif; }
+.day-count { font-size: 10px; color: var(--text3); }
+.day-list { flex: 1; font-size: 11px; line-height: 1.4; }
+.day-item { margin-bottom: 2px; padding-bottom: 2px; border-bottom: 1px dashed #f0e5d5; display: flex; justify-content: space-between; align-items: center; }
+.day-item-name { font-weight: 700; color: var(--text); }
+.day-item-time { font-size: 10px; color: var(--accent2); margin-left: 4px; }
+.day-copy { width: 100%; margin-top: 3px; padding: 3px 0; font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #a8d4d4, #b8ddd9); border: none; color: #fff; border-radius: 4px; cursor: pointer; font-family: var(--font); }
+.db-collapsible { border: 1px solid var(--border); border-radius: 8px; background: var(--surface); margin-top: 5px; overflow: hidden; }
+.db-collapsible summary { cursor: pointer; padding: 7px 10px; font-size: 12px; font-weight: 600; color: var(--accent2); background: var(--cream); border-bottom: 1px solid var(--border); user-select: none; display: flex; align-items: center; gap: 8px; }
+.db-collapsible[open] summary { border-bottom-color: var(--border2); color: var(--accent); }
+.db-content { padding: 7px 10px; }
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(30,22,14,.62); backdrop-filter: blur(3px); align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #2c251e; border: 1px solid #4a3e32; border-radius: 12px; padding: 16px; width: 460px; max-width: 94vw; box-shadow: 0 10px 40px rgba(0,0,0,.45); display: flex; flex-direction: column; gap: 10px; }
+.modal-title-box { font-family: "Noto Serif TC", serif; font-size: 14px; font-weight: 700; color: #e8d9c5; }
+.modal-hint-box { font-size: 11px; color: #9a8a78; line-height: 1.5; }
+.modal-box textarea { height: 200px; background: #1e1812; border: 1px solid #4a3e32; color: #e8d9c5; font-size: 12px; line-height: 1.5; border-radius: 6px; padding: 8px; resize: none; outline: none; }
+.modal-footer-box { display: flex; justify-content: flex-end; gap: 8px; }
+.modal-cancel { background: transparent; border: 1px solid #4a3e32; color: #9a8a78; border-radius: 20px; padding: 4px 14px; font-size: 12px; cursor: pointer; }
+.modal-confirm { background: linear-gradient(135deg, #6a9e7a, #8fbc9e); color: #fff; border: none; border-radius: 20px; padding: 4px 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+#patchResult { font-size: 11px; color: var(--green); min-height: 14px; }
+#toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: rgba(40,28,18,.92); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 12px; z-index: 2000; opacity: 0; transition: opacity .25s; pointer-events: none; white-space: nowrap; }
+#toast.show { opacity: 1; }
+.stat-collapsible { border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--card); margin-bottom: 0.4rem; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.stat-summary { cursor: pointer; padding: 0.6rem 0.8rem; background: var(--card2); user-select: none; display: flex; align-items: center; justify-content: space-between; font-size: 0.9375rem; }
+.stat-summary-left { display: flex; align-items: center; gap: 0.6rem; font-weight: 600; }
+.stat-summary-right { display: flex; align-items: center; gap: 1rem; }
+.stat-content { padding: 0.6rem; border-top: 1px solid var(--border); background: var(--surface); }
+.stat-btn-row { display: flex; gap: 0.4rem; margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px dashed var(--border); justify-content: flex-end; align-items: center; }
+
+@media(min-width:1024px){
+  .bottom-nav{display:none}
+  .top-nav{display:flex}
+  .app{padding-bottom:0;padding-top:0}
+  .panel{padding:0.8rem}
+  .wo-desktop{display:grid;grid-template-columns:260px 1fr;gap:0.6rem;align-items:start}
+  .cal-col{position:sticky;top:calc(var(--nav-h)+0.8rem);align-self:start;display:flex;flex-direction:column;gap:0.4rem;width:100%}
+  #toast { bottom: 20px; }
+}
+@media(max-width:1023px){
+  .bottom-nav{display:flex}
+  .top-nav{display:none}
+  .wo-desktop{display:flex;flex-direction:column;gap:0.4rem}
+  .cal-col{display:flex;flex-direction:column;gap:0.4rem}
+  .top-zone { grid-template-columns: 1fr; min-height: auto; }
+  .week-zone { grid-template-columns: 1fr; }
+  .day-grid { grid-template-columns: repeat(4,1fr); }
+  .split-container { flex-direction:column; height:auto; }
+  .split-list { width:100%; height:300px; }
+  .split-editor { height:400px; }
+}
+@media (max-width: 560px) {
+  .day-grid { grid-template-columns: repeat(2,1fr); }
+}
+.empty{text-align:center;color:var(--text3);padding:1rem;font-size:0.875rem}
+.msg{font-size:0.8125rem;color:var(--text2)}
+.theme-toggle-btn {
+  position: fixed; top: 8px; right: 8px; z-index: 9999; display: flex; gap: 3px;
+  background: var(--card); padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,.1);
+}
+.theme-toggle-btn button {
+  padding: 4px 8px; font-size: 11px; border: 1px solid var(--border2);
+  background: var(--card2); color: var(--text2); border-radius: 3px; cursor: pointer; font-weight: 500; transition: all 0.2s; min-height: 28px; font-family: var(--font);
+}
+.theme-toggle-btn button:hover { background: var(--border); }
+.theme-toggle-btn button.active { background: var(--rose); color: #fff; border-color: var(--rose) }
+</style>
+</head>
+<body>
+
+<div class="theme-toggle-btn" id="themeToggle">
+  <button onclick="setTheme('default')" class="active">🌞</button>
+  <button onclick="setTheme('warm-theme')">🔥</button>
+  <button onclick="setTheme('dark-theme')">🌙</button>
+  <button onclick="setTheme('light-theme')">☁️</button>
+</div>
+
+<nav class="top-nav">
+  <span class="tnav-logo">DDB</span>
+  <button class="tnav-item active" onclick="ST('wo')">📋 工單</button>
+  <button class="tnav-item" onclick="ST('bb')">🔍 搜尋</button>
+  <button class="tnav-item" onclick="ST('sched')">📅 班表</button>
+  <button class="tnav-item" onclick="ST('stat')">📊 統計</button>
+</nav>
+
+<div class="app">
+
+<div id="tab-wo" class="panel active">
+  <div class="sub-nav">
+    <button class="sub-tab" onclick="SST('note')">📝 便簽</button>
+    <button class="sub-tab active" onclick="SST('cal')">📅 每日訂單</button>
+    <button class="sub-tab" onclick="SST('all')">🔍 所有工單</button>
+  </div>
+
+  <div id="sub-note" class="sub-panel">
+    <div style="padding: 0.6rem 0.4rem;">
+      <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap;">
+        <div style="font-size:1rem; font-weight:600; color:var(--accent);">📝 多行程便簽（5區）</div>
+        <div style="flex:1"></div>
+<button class="btn btn-sage btn-sm" onclick="addMultiNote()" style="height:32px;">＋ 新增</button>
+<button onclick="saveAllDataToCloud()" style="margin-left:6px; padding:6px 10px; font-size:12px; background:var(--sky-light); border:1px solid var(--sky); color:var(--sky); border-radius:4px; cursor:pointer; font-weight:500;">上傳到試算表</button>
+<button onclick="loadAllDataFromCloud()" style="margin-left:6px; padding:6px 10px; font-size:12px; background:var(--peach-light); border:1px solid var(--peach); color:var(--peach); border-radius:4px; cursor:pointer; font-weight:500;">從試算表載入</button>
+      </div>
+
+      <div style="display:flex; gap:10px; height: calc(100vh - 170px);">
+        
+        <!-- 左側清單 -->
+        <div style="width: 280px; background: var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(0,0,0,.04);">
+          <div style="padding:10px; background:#E8F0F8; border-bottom:1px solid var(--border);">
+            <input type="text" id="multi-note-search" placeholder="搜尋行程或人名..." 
+                   style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;" 
+                   onkeyup="filterMultiNoteList()">
+          </div>
+          <div id="multi-note-list" style="flex:1; overflow-y:auto; padding:8px; font-size:13px;"></div>
+        </div>
+
+        <!-- 右側 5 個彩色編輯區 -->
+        <div style="flex:1; display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;">
+
+          <!-- 1. Sky -->
+          <div style="flex:1; min-width:210px; background:white; border:2px solid #B8D4E8; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
+            <div style="padding:6px 10px; background:#B8D4E8; color:#2a4a5a; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
+              <span id="multi-time1">Sky</span>
+              <button onclick="saveMultiNote(1)" style="padding:1px 8px; background:white; border:1px solid #B8D4E8; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+            </div>
+            <textarea id="multi-editor1" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第1個行程..."></textarea>
+          </div>
+
+          <!-- 2. Sand -->
+          <div style="flex:1; min-width:210px; background:white; border:2px solid #F5E0D4; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
+            <div style="padding:6px 10px; background:#F5E0D4; color:#5a4a3a; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
+              <span id="multi-time2">Sand</span>
+              <button onclick="saveMultiNote(2)" style="padding:1px 8px; background:white; border:1px solid #F5E0D4; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+            </div>
+            <textarea id="multi-editor2" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第2個行程..."></textarea>
+          </div>
+
+          <!-- 3. Mint -->
+          <div style="flex:1; min-width:210px; background:white; border:2px solid #C8E6D8; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
+            <div style="padding:6px 10px; background:#C8E6D8; color:#2a5a45; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
+              <span id="multi-time3">Mint</span>
+              <button onclick="saveMultiNote(3)" style="padding:1px 8px; background:white; border:1px solid #C8E6D8; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+            </div>
+            <textarea id="multi-editor3" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第3個行程..."></textarea>
+          </div>
+
+          <!-- 4. Lilac -->
+          <div style="flex:1; min-width:210px; background:white; border:2px solid #D9CECD; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
+            <div style="padding:6px 10px; background:#D9CECD; color:#8a7a6f; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
+              <span id="multi-time4">Lilac</span>
+              <button onclick="saveMultiNote(4)" style="padding:1px 8px; background:white; border:1px solid #E0D4E8; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+            </div>
+            <textarea id="multi-editor4" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第4個行程..."></textarea>
+          </div>
+
+          <!-- 5. Peach -->
+          <div style="flex:1; min-width:210px; background:white; border:2px solid #F5E6D4; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
+            <div style="padding:6px 10px; background:#F5E6D4; color:#5a4a35; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
+              <span id="multi-time5">Peach</span>
+              <button onclick="saveMultiNote(5)" style="padding:1px 8px; background:white; border:1px solid #F5E6D4; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+            </div>
+            <textarea id="multi-editor5" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第5個行程..."></textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sub-cal" class="sub-panel active">
+    <div class="wo-desktop">
+      <div class="cal-col">
+        <div class="card" id="cal-card-el">
+          <div class="cal-nav-row">
+            <button class="cal-arrow" onclick="MM(-1)">‹</button>
+            <span class="cal-month" id="mtitle"></span>
+            <button class="cal-arrow" onclick="MM(1)">›</button>
+            <div style="flex:1"></div>
+            <button class="btn btn-sky btn-sm" onclick="SD(today.getFullYear(),today.getMonth(),today.getDate())">今日</button>
+            <input id="jump-date" placeholder="M/D 或 Y/M/D" style="width:5.5rem; height:28px; padding:0 4px; font-size:0.8125rem; text-align:center; border:1px solid var(--border);" onkeydown="if(event.key==='Enter') jumpDate()">
+            <button class="btn btn-plain btn-sm" onclick="toggleCalMode()" style="min-width: 50px;">↕ 月/週</button>
+          </div>
+          <div class="cal-wd"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+          <div class="cal-grid" id="calgrid"></div>
+        </div>
+        
+        <div class="card" id="imp-card-el">
+          <div class="card-head"><span class="card-title">⚡ 快速輸入</span></div>
+          <div style="padding:0.5rem">
+            <textarea id="imp-raw" style="height:15rem;font-size:0.9375rem;font-family:var(--mono)" placeholder=""></textarea>
+            <div class="row-gap">
+              <select id="imp-date-sel" style="flex:1;min-width:8rem"><option value="">選擇已有日期...</option></select>
+              <input id="imp-date-inp" placeholder="或手動輸入 M/D" style="flex:1;min-width:8rem">
+              <button class="btn btn-sage" id="imp-btn">匯入</button>
+            </div>
+            <div class="imp-msg" id="imp-msg"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div id="daily-wo-wrap" style="display: none;">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title" id="wo-htitle"></span>
+              <span class="card-sub" id="wo-cnt" style="display: inline-block;"></span>
+              <div style="flex:1"></div>
+              <button class="btn btn-plain btn-sm" id="btn-view-week" onclick="setWoView('week')">查看本週</button>
+              <button class="btn btn-sage btn-sm" id="btn-add" onclick="addRow()">＋</button>
+              <button class="btn btn-plain btn-sm" id="btn-sn" onclick="SR('name')">妹妹</button>
+              <button class="btn btn-plain btn-sm" id="btn-st" onclick="SR('time')">時間</button>
+              <button class="btn btn-sky btn-sm" id="btn-ex" onclick="exportDay()">💾</button>
+            </div>
+
+            <div id="quick-add-wrap" style="padding: 0.8rem; background: var(--card2); border-bottom: 1px solid var(--border);">
+              <div class="qa-fields">
+                <input id="qa-pai" class="qa-pai" placeholder="牌價" type="number" oninput="previewQaEE()" onkeydown="if(event.key==='Enter') submitQa(true)">
+                <input id="qa-name" class="qa-name" placeholder="人名" onkeydown="if(event.key==='Enter') submitQa(true)">
+                <input id="qa-place" class="qa-place" placeholder="時間地點" onkeydown="if(event.key==='Enter') submitQa(true)">
+                <input id="qa-auntie" class="qa-auntie" placeholder="阿姨" onkeydown="if(event.key==='Enter') submitQa(true)">
+                <input id="qa-shi" class="qa-shi" placeholder="實收" type="number" oninput="previewQaEE()" onkeydown="if(event.key==='Enter') submitQa(true)">
+                <input id="qa-rebate" class="qa-rebate" placeholder="退" type="number" oninput="previewQaEE()" onkeydown="if(event.key==='Enter') submitQa(true)">
+                <input id="qa-note" class="qa-note" placeholder="備記" onkeydown="if(event.key==='Enter') submitQa(true)">
+              </div>
+              <div style="display:flex; gap:6px; margin-top:8px; align-items:center; flex-wrap:wrap;">
+                <span style="font-size:0.875rem; color:var(--text2); font-weight:600; margin-right:auto;">預計 EE：<span id="qa-ee-preview" style="color:var(--text); font-family:var(--mono);">0</span></span>
+                <button class="btn btn-plain btn-sm" onclick="copyLastQa()">複製上一筆</button>
+                <button class="btn btn-rose-outline btn-sm" onclick="submitQa(false)">只新增一筆</button>
+                <button class="btn btn-sage btn-sm" onclick="submitQa(true)">新增並繼續 (Enter)</button>
+              </div>
+            </div>
+
+            <div style="padding:0.5rem; background:var(--card2); border-bottom:1px solid var(--border); display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+              <span style="font-size:0.875rem; color:var(--text2); font-weight:600;">🔍 篩選：</span>
+              <input id="filter-name" placeholder="人名..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
+              <input id="filter-auntie" placeholder="阿姨..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
+              <input id="filter-time" placeholder="時間..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
+              <select id="filter-status" style="width:100px; height:28px; font-size:0.8125rem;" onchange="applyWorkorderFilters()">
+                <option value="">全部狀態</option>
+                <option value="unsettled">未結清</option>
+                <option value="settled">已結清</option>
+              </select>
+              <button class="btn btn-plain btn-sm" onclick="clearWorkorderFilters()">清除篩選</button>
+            </div>
+
+            <div class="tbl-wrap">
+              <table class="etbl" id="etbl" style="display: table; min-width: 600px;">
+                <thead><tr>
+                  <th style="width:3rem">刪除</th><th style="width:3.5rem">牌</th><th style="width:5.5rem; text-align:left; padding-left:0.4rem;">人名</th>
+                  <th style="width:8.5rem; text-align:left; padding-left:0.4rem; cursor:pointer;" onclick="SR('time')">時間地點</th>
+                  <th style="width:5rem; text-align:left; padding-left:0.4rem;">阿姨</th><th style="width:3.5rem">實收</th>
+                  <th style="width:3.5rem">EE</th><th style="width:3rem">退</th>
+                  <th style="width:6.5rem; text-align:left; padding-left:0.4rem;">備記</th><th style="width:5.5rem">狀態</th>
+                </tr></thead>
+                <tbody id="etbody"></tbody>
+              </table>
+              <div class="tbl-add" id="tbl-add" onclick="addRow()" style="display: block;">＋ 新增一筆</div>
+              <div id="daily-stats-wrap" style="display: flex; padding: 0.6rem 1rem; background: var(--card2); border-top: 1px solid var(--border); gap: 1.5rem; font-size: 0.875rem; font-weight: 600; flex-wrap: wrap;">
+                <div style="color:var(--text)">本日未結 EE：<span id="ds-total">0</span></div>
+                <div style="color:var(--rose)">公司應收：<span id="ds-recv">0</span></div>
+                <div style="color:var(--sage)">公司應付：<span id="ds-pay">0</span></div>
+              </div>
+              <div id="daily-auntie-board" style="display:none; padding:0.6rem 1rem; background:var(--card2); border-top:1px dashed var(--border2);">
+                <div style="font-size:0.875rem; font-weight:600; color:var(--accent); margin-bottom:0.4rem; display:flex; align-items:center; gap:6px;">
+                  👩‍🦰 當天阿姨統計看板 <span style="font-size:0.75rem; color:var(--text3);">(包含跨週未結清)</span>
+                </div>
+                <div id="daily-auntie-cards" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:6px;"></div>
+              </div>
+              <div class="wo-empty" id="wo-empty" style="display: none;">尚無工單，可在上方快速新增</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="week-wo-card" style="display: none;">
+          <div class="card-head">
+            <span class="card-title">本週工單</span>
+            <span class="card-sub" id="week-range"></span>
+            <div style="flex:1"></div>
+            <button class="btn btn-plain btn-sm" id="btn-view-day" onclick="setWoView('day')">返回單日</button>
+          </div>
+          <div class="tbl-wrap">
+            <table class="etbl" style="min-width:650px">
+              <thead><tr>
+                <th style="width:5.5rem; text-align:left; padding-left:0.4rem;">日期</th><th style="width:3rem">牌</th>
+                <th style="width:5rem; text-align:left; padding-left:0.4rem;">人名</th><th style="width:7.5rem; text-align:left; padding-left:0.4rem;">時間地點</th>
+                <th style="width:4.5rem; text-align:left; padding-left:0.4rem;">阿姨</th><th style="width:3.5rem">實收</th>
+                <th style="width:3.5rem">EE</th><th style="width:3rem">退</th>
+                <th style="width:5.5rem; text-align:left; padding-left:0.4rem;">備記</th><th style="width:4rem">狀態</th>
+              </tr></thead>
+              <tbody id="week-body"></tbody>
+            </table>
+            <div id="week-stats-wrap" style="display: flex; padding: 0.6rem 1rem; background: var(--card2); border-top: 1px solid var(--border); gap: 1.5rem; font-size: 0.875rem; font-weight: 600; justify-content: space-around; align-items: center;">
+              <div style="color:var(--text)">本週未結 EE：<span id="ws-total">0</span></div>
+              <div style="color:var(--rose)">公司應收：<span id="ws-recv">0</span></div>
+              <div style="color:var(--sage)">公司應付：<span id="ws-pay">0</span></div>
+            </div>
+            <div id="week-auntie-summary" style="display: block; margin: 0.2rem 1rem 1rem;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sub-all" class="sub-panel">
+    <div class="card">
+      <div class="card-head" style="display:flex; gap:8px;">
+        <input id="search-all-input" placeholder="輸入妹妹名字、阿姨、地點或日期 (例如 6/19) 來搜尋歷史工單..." oninput="renderAllOrders()" style="flex:1;">
+      </div>
+      <div class="tbl-wrap" style="max-height: calc(100vh - 200px); overflow-y: auto;">
+        <table class="etbl" style="min-width:650px">
+          <thead>
+            <tr>
+              <th style="width:3rem; text-align:center;">刪除</th>
+              <th class="sortable" onclick="sortAllOrders('date')" style="width:5.5rem; text-align:center;">日期</th>
+              <th style="width:3rem; text-align:center;">牌</th>
+              <th class="sortable" onclick="sortAllOrders('name')" style="width:5rem; text-align:center;">人名</th>
+              <th class="sortable" onclick="sortAllOrders('place')" style="width:7.5rem; text-align:center;">時間地點</th>
+              <th style="width:4.5rem;">阿姨</th>
+              <th style="width:3.5rem; text-align:center;">實收</th>
+              <th style="width:3.5rem; text-align:center;">EE</th>
+              <th style="width:3rem; text-align:center;">退</th>
+              <th style="width:5.5rem;">備記</th>
+              <th style="width:4rem; text-align:center;">狀態</th>
+            </tr>
+          </thead>
+          <tbody id="all-orders-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-sched" class="panel">
+  <div class="sched-hdr">
+    <div class="sched-hdr-title">班表與週報管理系統</div>
+    <div class="sched-hdr-ver" id="versionLabel"></div>
+  </div>
+  <div class="top-zone">
+    <div class="top-left">
+      <div class="sched-card">
+        <div class="sched-lbl">📋 當日班表輸入</div>
+        <textarea class="sched-ta" id="inputA" placeholder="在此貼上本日班表…" oninput="saveLS('sch-input-day',this.value)" spellcheck="false"></textarea>
+        <div class="sched-btn-row">
+          <button class="sched-btn primary" onclick="convertDay()">執行轉檔</button>
+          <button class="sched-btn" onclick="sortDayInput()">↕ 排序</button>
+          <button class="sched-btn" onclick="clearDayInput()" style="color:#c9949b; border-color:#dcc9d0;">清除</button>
+        </div>
+      </div>
+    </div>
+    <div class="top-middle">
+      <div class="sched-card">
+        <div class="sched-lbl">✨ 轉換結果</div>
+        <div id="outputDiv" class="ro-box"></div>
+        <div id="missing"></div>
+        <button class="copy-wide" onclick="copyOutput()">📋 複製結果</button>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="sched-card">
+        <div class="sched-lbl">📝 自由編輯區</div>
+        <textarea class="sched-ta" id="notepad" placeholder="在此自由輸入或整理內容…" oninput="saveLS('sch-notepad',this.value)" spellcheck="false"></textarea>
+        <div class="sched-btn-row">
+          <button class="sched-btn primary" onclick="copyNotepad()">📋 複製此欄</button>
+          <button class="sched-btn" onclick="clearNotepad()" style="color:#c9949b; border-color:#dcc9d0;">清除</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="week-zone">
+    <div class="sched-card">
+      <div class="sched-lbl">本週預報輸入</div>
+      <div class="sched-hint">支援：30米莎➜㈣㈤ 或 18悅潔➜㈢㈣1300-2200㈤1200-1700</div>
+      <textarea class="sched-ta" id="weekInput" placeholder="在此貼上整週預報內容…" oninput="saveLS('sch-input-week',this.value)" spellcheck="false"></textarea>
+      <div class="sched-btn-row">
+        <button class="sched-btn primary" onclick="convertWeek()">⚡ 彙整週報</button>
+        <button class="sched-btn" onclick="clearWeekInput()" style="color:#c9949b; border-color:#dcc9d0;">清除</button>
+      </div>
+    </div>
+    <div class="sched-card">
+      <div class="sched-lbl">預報乾淨名單</div>
+      <div class="sched-hint">已去除時間，只顯示每人出班日期。</div>
+      <div id="pureOutput" class="ro-box"></div>
+      <button class="copy-wide alt" onclick="copyPure()">📋 複製乾淨名單</button>
+    </div>
+  </div>
+  <div class="day-panel sched-card">
+    <div class="sched-lbl">📅 週間排程一覽</div>
+    <div class="day-grid" id="weekGrid"></div>
+  </div>
+  <div class="db-zone">
+    <div class="sched-card">
+      <div class="sched-lbl">🗂 母檔資料庫</div>
+      <div class="sched-hint">點「整理並儲存」自動去重 + 降序排好。</div>
+      <div class="sched-btn-row db-top-buttons" style="margin: 5px 0 3px;">
+        <button class="sched-btn primary" onclick="sortDB()">整理並儲存</button>
+        <button class="sched-btn" onclick="openPatchModal()">🔄 一鍵覆蓋更新</button>
+      </div>
+      <details id="dbCollapsible" class="db-collapsible" open="">
+        <summary>▶ 點擊展開母檔內容（可編輯資料）</summary>
+        <div class="db-content">
+          <textarea class="sched-ta" id="db" placeholder="請在此貼入母檔資料…" oninput="saveLS('sch-db',this.value)" spellcheck="false"></textarea>
+          <div class="sched-btn-row">
+            <button class="sched-btn primary" style="background: linear-gradient(135deg, #7a6650, #968169);" onclick="exportNewVersion()">產生最新版本</button>
+          </div>
+          <div id="dbStatus" style="font-size:11px; margin-top:4px; color:var(--green)"></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div id="tab-bb" class="panel">
+  <div class="card">
+    <div style="padding:0.5rem">
+      <div class="chips" id="chips">
+        <span class="chip" data-f="真奶" onclick="TC(this)">真奶</span>
+        <span class="chip" data-f="無刺青" onclick="TC(this)">無刺青</span>
+        <span class="chip" data-f="雙飛" onclick="TC(this)">雙飛</span>
+        <span class="chip" data-f="二王" onclick="TC(this)">二王</span>
+        <span class="chip" data-f="外帶" onclick="TC(this)">外帶</span>
+        <span class="chip" data-f="住家" onclick="TC(this)">住家</span>
+        <span class="chip" data-f="無套內" onclick="TC(this)">無套內</span>
+        <span class="chip" data-f="無套外" onclick="TC(this)">無套外</span>
+        <span class="chip" data-f="口爆" onclick="TC(this)">口爆</span>
+        <span class="chip" data-f="顏射" onclick="TC(this)">顏射</span>
+        <span class="chip" data-f="毒龍" onclick="TC(this)">毒龍</span>
+        <span class="chip" data-f="後門" onclick="TC(this)">後門</span>
+        <span class="chip" data-f="入珠" onclick="TC(this)">入珠</span>
+        <span class="chip" data-f="攝影" onclick="TC(this)">攝影</span>
+        <span class="chip" data-f="SM" onclick="TC(this)">SM</span>
+        <span class="chip" data-f="自慰秀" onclick="TC(this)">自慰秀</span>
+        <span class="chip" data-f="情趣用品" onclick="TC(this)">情趣用品</span>
+        <span class="chip" data-f="2+1" onclick="TC(this)">2+1</span>
+        <span class="chip" data-f="日韓" onclick="TC(this)">日韓</span>
+        <span class="chip" data-f="台妹" onclick="TC(this)">台妹</span>
+      </div>
+      <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
+        <input id="bbq" placeholder="搜尋人名、服務..." oninput="RBB()" style="flex:1;min-width:10rem">
+        <div style="display:flex;gap:0.4rem;font-size:0.875rem;color:var(--text2)">
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="bm" value="and" checked onchange="RBB()"> AND</label>
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="bm" value="or" onchange="RBB()"> OR</label>
+        </div>
+        <button class="btn btn-rose-outline btn-sm" onclick="resetBB()">清除</button>
+      </div>
+      <div class="bb-stats" id="bb-stats">共 0 位｜顯示 0 位</div>
+    </div>
+  </div>
+  <div class="card" id="bb-list"><div class="empty">請先貼入班表並解析</div></div>
+  <div style="text-align:center;margin:0.4rem 0">
+    <button class="btn btn-plain btn-sm" id="paste-btn" onclick="togglePaste()">▲ 貼入班表</button>
+  </div>
+  <div class="paste-area" id="bb-paste">
+    <textarea style="height:4.5rem;font-size:0.9375rem" id="bb-raw" placeholder="貼上班表原始文字..."></textarea>
+    <div style="display:flex;gap:0.4rem;margin-top:0.4rem;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-sage btn-sm" onclick="parseBB()">⚡ 解析班表</button>
+      <button class="btn btn-rose-outline btn-sm" onclick="clearBB()">清除</button>
+      <span class="msg" id="bb-msg"></span>
+    </div>
+  </div>
+</div>
+
+<div id="tab-stat" class="panel">
+  <div class="card">
+    <div class="card-head" style="background:var(--cream)">
+      <span class="card-title">⚠️ 阿姨未結應收催收看板 (跨週滾動累計)</span>
+      <span class="card-sub" id="stat-unpaid-count">0 位阿姨未回款</span>
+    </div>
+    <div style="padding:0.5rem" id="stat-dashboard-list"></div>
+  </div>
+</div>
+
+</div> 
+
+<nav class="bottom-nav">
+  <button class="bnav-item active" onclick="ST('wo')"><span class="bnav-icon">📋</span>工單</button>
+  <button class="bnav-item" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
+  <button class="bnav-item" onclick="ST('sched')"><span class="bnav-icon">📅</span>班表</button>
+  <button class="bnav-item" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
+</nav>
+
+<div class="modal-overlay" id="patchModal" onclick="modalOverlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-title-box">🔄 一鍵覆蓋更新</div>
+    <div class="modal-hint-box">貼入要新增或覆蓋的人員資料。</div>
+    <textarea id="dbPatch" placeholder="在此貼入要新增或覆蓋的資料…" spellcheck="false"></textarea>
+    <div id="patchResult"></div>
+    <div class="modal-footer-box">
+      <button class="modal-cancel" onclick="closePatchModal()">取消</button>
+      <button class="modal-confirm" onclick="patchDB()">✓ 確定覆蓋</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class=""></div>
+
+<script>
+function setTheme(themeName) {
+  document.body.classList.remove('dark-theme', 'light-theme', 'warm-theme');
+  if (themeName !== 'default') {
+    document.body.classList.add(themeName);
+  }
+  const btns = document.querySelectorAll('.theme-toggle-btn button');
+  btns.forEach(btn => btn.classList.remove('active'));
+  const btnMap = {'default': 0, 'warm-theme': 1, 'dark-theme': 2, 'light-theme': 3};
+  if (btnMap[themeName] !== undefined) {
+    btns[btnMap[themeName]].classList.add('active');
+  }
+  localStorage.setItem('ddb-theme', themeName);
+}
+window.addEventListener('load', function() {
+  const savedTheme = localStorage.getItem('ddb-theme') || 'default';
+  setTheme(savedTheme);
+}, false);
+
+var SK='ddb9',SNK='ddb9s';
+
+var notes={},stickies=[],bbData=[];
+var selDate=null,selR=-1,selC=-1,pDel=-1;
+var vy=new Date().getFullYear(),vm=new Date().getMonth();
+var today=new Date();
+var noteFilter = 'all';
+var currentStickyId = null;
+var multiNotes = [];
+var workorderFilters = { name: '', auntie: '', time: '', status: '' };
+
+var COLS = ['pai','name','place','auntie','shi','ee','rebate','note'];
+var WDS=['一','二','三','四','五','六','日'];
+var calMode = 'month';
+var sortDir = { name: 1, time: 1 }; 
+
+const EMBEDDED_DB = ``; 
+const EMBEDDED_DATE = `2026/6/20`;
+let weekData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
+const CIRCLE_MAP = {'㈠':'一','㈡':'二','㈢':'三','㈣':'四','㈤':'五','㈥':'六','①':'一','②':'二','③':'三','④':'四','⑤':'五','⑥':'六','⑦':'七'};
+const DAY_MAP   = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'日':7};
+const TO_CIRCLE = {1:'㈠',2:'㈡',3:'㈢',4:'㈣',5:'㈤',6:'㈥',7:'㈦'};
+const DAY_NAMES = {1:'週一',2:'週二',3:'週三',4:'週四',5:'週五',6:'週六',7:'週日'};
+
+function load(){
+  try{notes=JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){notes={};}
+  try{stickies=JSON.parse(localStorage.getItem(SNK)||'[]');}catch(e){stickies=[];}
+  try{multiNotes=JSON.parse(localStorage.getItem('ddb-multi-notes')||'[]');}catch(e){multiNotes=[];}
+}
+function save(){
+  try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
+}
+function saveS(){try{localStorage.setItem(SNK,JSON.stringify(stickies));}catch(e){}}
+function saveMultiNotes(){try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}}
+
+function saveAllDataToCloud() {
+  var payload = {
+    action: 'saveAllData',
+    multiNotes: multiNotes,
+    workOrders: notes  // 同時上傳工單資料
+  };
+
+  google.script.run
+    .withSuccessHandler(function(result) {
+      if (result.success) {
+        toast('✓ 已成功同步到雲端');
+      } else {
+        toast('同步失敗：' + result.message);
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error(error);
+      toast('同步發生錯誤');
+    })
+    .saveAllData(payload);
+}
+
+function loadAllDataFromCloud() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      var changed = false;
+      if (data.multiNotes && Array.isArray(data.multiNotes) && data.multiNotes.length > 0) {
+        multiNotes = data.multiNotes;
+        saveMultiNotes();
+        renderMultiNoteList();
+        changed = true;
+      }
+      if (data.workOrders && Object.keys(data.workOrders).length > 0) {
+        notes = data.workOrders;
+        save();
+        RC(); RR(); RW(); renderUnpaidDashboard(); renderAllOrders();
+        changed = true;
+      }
+      if (changed) toast('✓ 已從試算表載入資料');
+    })
+    .withFailureHandler(function(error) {
+      console.error(error);
+      toast('載入發生錯誤');
+    })
+    .loadAllData();
+}
+
+// ==================== 全自動同步（debounce） ====================
+let autoSyncTimer = null;
+
+function autoSyncToSheet() {
+  clearTimeout(autoSyncTimer);
+  autoSyncTimer = setTimeout(() => {
+    // 收集目前 5 個編輯區的內容
+    const editors = [];
+    for (let i = 1; i <= 5; i++) {
+      const editor = document.getElementById('multi-editor' + i);
+      if (editor) {
+        editors.push({
+          slot: i,
+          text: editor.value.trim(),
+          time: new Date().toLocaleString('zh-TW', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})
+        });
+      }
+    }
+
+    // 更新 multiNotes（簡單覆蓋邏輯）
+    multiNotes = editors.filter(e => e.text.length > 0).map(e => ({
+      id: Date.now() + e.slot,
+      text: e.text,
+      time: e.time
+    }));
+
+    saveMultiNotes();
+    renderMultiNoteList();
+
+    // 自動上傳到試算表
+    saveAllDataToCloud();
+  }, 1500); // 停止輸入 1.5 秒後才同步
+}
+
+// 給 5 個編輯區加上自動同步監聽
+function initAutoSync() {
+  for (let i = 1; i <= 5; i++) {
+    const editor = document.getElementById('multi-editor' + i);
+    if (editor) {
+      editor.addEventListener('input', autoSyncToSheet);
+    }
+  }
+}
+
+// ===== 多便簽功能 =====
+function renderMultiNoteList(filter = "") {
+  const container = document.getElementById('multi-note-list');
+  if(!container) return;
+  container.innerHTML = '';
+
+  let filtered = multiNotes;
+  if (filter) {
+    filtered = multiNotes.filter(n => 
+      (n.text || '').toLowerCase().includes(filter.toLowerCase())
+    );
+  }
+
+  filtered.forEach((note, index) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:8px 10px; margin-bottom:5px; background:#fdfaf7; border:1px solid var(--border); border-radius:6px; cursor:pointer; font-size:12.5px; line-height:1.4;';
+    
+    const preview = (note.text || '').split('\n').slice(0, 3).join('<br>');
+    div.innerHTML = `
+      <div style="font-size:11px; color:#8a7a68; margin-bottom:2px;">${note.time || ''}</div>
+      <div>${preview}</div>
+    `;
+    
+    div.onclick = () => loadMultiNoteToFirstEmpty(index);
+    container.appendChild(div);
+  });
+}
+
+function filterMultiNoteList() {
+  const val = document.getElementById('multi-note-search').value;
+  renderMultiNoteList(val);
+}
+
+function loadMultiNoteToFirstEmpty(noteIndex) {
+  const note = multiNotes[noteIndex];
+  if (!note) return;
+
+  for (let i = 1; i <= 5; i++) {
+    const editor = document.getElementById('multi-editor' + i);
+    if (editor && !editor.value.trim()) {
+      editor.value = note.text || '';
+      document.getElementById('multi-time' + i).innerText = note.time || '';
+      return;
+    }
+  }
+  document.getElementById('multi-editor1').value = note.text || '';
+  document.getElementById('multi-time1').innerText = note.time || '';
+}
+
+function addMultiNote() {
+  const newNote = {
+    id: Date.now(),
+    text: '',
+    time: new Date().toLocaleString('zh-TW', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})
+  };
+  multiNotes.unshift(newNote);
+  saveMultiNotes();
+  renderMultiNoteList();
+  
+  setTimeout(() => {
+    for (let i = 1; i <= 5; i++) {
+      const editor = document.getElementById('multi-editor' + i);
+      if (editor && !editor.value.trim()) {
+        editor.focus();
+        return;
+      }
+    }
+  }, 50);
+}
+
+function saveMultiNote(num) {
+  const editor = document.getElementById('multi-editor' + num);
+  const text = editor.value.trim();
+  if (!text) {
+    toast('這個編輯區是空的');
+    return;
+  }
+
+  let existing = multiNotes.find(n => n.text.trim() === text);
+  if (existing) {
+    existing.text = text;
+  } else {
+    multiNotes.unshift({
+      id: Date.now(),
+      text: text,
+      time: new Date().toLocaleString('zh-TW', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})
+    });
+  }
+  
+  saveMultiNotes();
+  renderMultiNoteList();
+  toast('第 ' + num + ' 個已儲存！');
+}
+
+// ===== 工單篩選和刪除功能 =====
+function applyWorkorderFilters() {
+  workorderFilters.name = document.getElementById('filter-name').value.toLowerCase();
+  workorderFilters.auntie = document.getElementById('filter-auntie').value.toLowerCase();
+  workorderFilters.time = document.getElementById('filter-time').value.toLowerCase();
+  workorderFilters.status = document.getElementById('filter-status').value;
+  
+  RR(); // 重新渲染表格
+}
+
+function clearWorkorderFilters() {
+  document.getElementById('filter-name').value = '';
+  document.getElementById('filter-auntie').value = '';
+  document.getElementById('filter-time').value = '';
+  document.getElementById('filter-status').value = '';
+  workorderFilters = { name: '', auntie: '', time: '', status: '' };
+  RR();
+}
+
+function deleteWorkorder(rowIndex) {
+  if(!confirm('確定要刪除這筆工單嗎？此操作無法復原。')) return;
+  var k = selKey();
+  if(!k || !notes[k] || !notes[k][rowIndex]) return;
+  notes[k].splice(rowIndex, 1);
+  save(); RR(); RC(); RW(); renderUnpaidDashboard(); renderAllOrders();
+  toast('工單已刪除');
+}
+
+function calculateEE(pai, shi, rebate = 0) {
+  var p = parseFloat(pai);
+  if (isNaN(p) || p <= 0) return '';
+  var base = Math.round(p * 6);
+  var r = parseFloat(rebate) || 0;
+  if (shi === '' || shi == null || typeof shi === 'undefined') return '';
+  var s = parseFloat(shi);
+  if (isNaN(s)) return '';
+  if (s === 0) return String(Math.round(-base + r));
+  return String(Math.round(s - base + r));
+}
+
+function extractStartTime(place) {
+  if (!place) return 9999;
+  var match = place.match(/\d{3,4}/);
+  return match ? parseInt(match[0], 10) : 9999;
+}
+
+function toggleSettled(ri, checked) {
+  var k = selKey();
+  if (!k || !notes[k] || !notes[k][ri]) return;
+  var row = notes[k][ri];
+  row.settled = checked;
+  if (checked) {
+    var now = new Date();
+    row.settledDate = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate();
+    row.settledAmount = row.ee;
+  } else {
+    row.settledDate = '';
+    row.settledAmount = '';
+  }
+  save(); RR(); RW(); renderUnpaidDashboard();
+}
+
+function renderDailyAuntieStats() {
+  var board = document.getElementById('daily-auntie-board');
+  var container = document.getElementById('daily-auntie-cards');
+  if (!board || !container) return;
+  
+  var k = selKey();
+  if (!k) { board.style.display = 'none'; return; }
+  
+  var rows = (notes[k] || []).filter(r => !r.settled);
+  if (rows.length === 0) { board.style.display = 'none'; return; }
+  
+  var map = {};
+  rows.forEach(function(row) {
+    var name = (row.auntie || '未填').trim();
+    if (!map[name]) map[name] = { count:0, shiSum:0, eeSum:0, items:[] };
+    map[name].count++;
+    map[name].shiSum += parseFloat(row.shi)||0;
+    map[name].eeSum += parseFloat(row.ee)||0;
+    map[name].items.push(row);
+  });
+  
+  var aunties = Object.keys(map).map(function(n){ return {name:n, ...map[n]}; });
+  
+  if(aunties.length === 0) { board.style.display = 'none'; return; }
+  board.style.display = 'block';
+  
+  aunties.sort(function(a,b){
+    var sa = a.eeSum > 0 ? 1 : (a.eeSum < 0 ? 2 : 0);
+    var sb = b.eeSum > 0 ? 1 : (b.eeSum < 0 ? 2 : 0);
+    if (sa !== sb) return sa - sb;
+    return Math.abs(b.eeSum) - Math.abs(a.eeSum);
+  });
+  
+  container.innerHTML = aunties.map(function(a){
+    var isPay = a.eeSum > 0;
+    var color = isPay ? 'var(--rose-light)' : '#e6f2ea';
+    var border = isPay ? 'var(--rose-border)' : 'var(--sage-border)';
+    var label = isPay ? '🔴 我要付' : '🟢 阿姨給我';
+    var amtColor = isPay ? 'var(--rose)' : 'var(--sage)';
+    return `<div style="background:${color}; border:1px solid ${border}; border-radius:6px; padding:8px; font-size:0.75rem; box-shadow:0 1px 3px rgba(0,0,0,.04);">
+      <div style="font-weight:700; color:var(--text);">${a.name}</div>
+      <div style="color:var(--text2); font-size:0.6875rem;">${a.count}筆未結</div>
+      <div style="font-weight:700; color:${amtColor}; font-family:var(--mono); margin:4px 0; font-size:0.9375rem;">$${Math.abs(Math.round(a.eeSum))}</div>
+      <div style="font-size:0.6875rem; color:${amtColor};">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateDailyStats() {
+  var k = selKey();
+  var rows = k && notes[k] ? notes[k] : [];
+  var wrap = document.getElementById('daily-stats-wrap');
+  if (!wrap) return;
+  if (!rows.length) { wrap.style.display = 'none'; document.getElementById('daily-auntie-board').style.display='none'; return; }
+  
+  var total = 0, recv = 0, pay = 0;
+  rows.forEach(function(r) {
+    if (r.settled) return; 
+    var e = parseFloat(r.ee);
+    if (!isNaN(e)) {
+      total += e;
+      if (e > 0) recv += e;
+      if (e < 0) pay += Math.abs(e);
+    }
+  });
+  
+  wrap.style.display = 'flex';
+  document.getElementById('ds-total').textContent = total;
+  document.getElementById('ds-recv').textContent = recv;
+  document.getElementById('ds-pay').textContent = pay;
+  
+  renderDailyAuntieStats();
+}
+
+function updateWeekStats(days) {
+  var wrap = document.getElementById('week-stats-wrap');
+  if (!wrap) return;
+  
+  var total = 0, recv = 0, pay = 0, hasData = false;
+  days.forEach(function(d) {
+    var k = DK(d.getFullYear(), d.getMonth(), d.getDate());
+    var rows = notes[k] || [];
+    if (rows.length) hasData = true;
+    rows.forEach(function(r) {
+      if (r.settled) return; 
+      var e = parseFloat(r.ee);
+      if (!isNaN(e)) {
+        total += e;
+        if (e > 0) recv += e;
+        if (e < 0) pay += Math.abs(e);
+      }
+    });
+  });
+  
+  if (!hasData) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  document.getElementById('ws-total').textContent = total;
+  document.getElementById('ws-recv').textContent = recv;
+  document.getElementById('ws-pay').textContent = pay;
+}
+
+function updateWeeklyAuntieSummary(days) {
+  var wrap = document.getElementById('week-auntie-summary');
+  if (!wrap) return;
+  var auntieMap = {};
+  var hasData = false;
+  days.forEach(function(d) {
+    var k = DK(d.getFullYear(), d.getMonth(), d.getDate());
+    var rows = notes[k] || [];
+    rows.forEach(function(r) {
+      var name = (r.auntie || '').trim();
+      if (!name) return; 
+      hasData = true;
+      if (!auntieMap[name]) {
+        auntieMap[name] = { count: 0, unsettledAmount: 0, hasUnsettled: false };
+      }
+      auntieMap[name].count++;
+      if (r.settled !== true) {
+        auntieMap[name].hasUnsettled = true;
+        var ee = parseFloat(r.ee);
+        if (!isNaN(ee) && ee > 0) {
+          auntieMap[name].unsettledAmount += ee;
+        }
+      }
+    });
+  });
+
+  if (!hasData || Object.keys(auntieMap).length === 0) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  var allAunties = Object.keys(auntieMap).map(function(name) {
+    return { name: name, count: auntieMap[name].count, unsettledAmount: auntieMap[name].unsettledAmount, hasUnsettled: auntieMap[name].hasUnsettled };
+  });
+
+  allAunties.sort(function(a, b) {
+    if (a.hasUnsettled !== b.hasUnsettled) return a.hasUnsettled ? -1 : 1;
+    if (b.unsettledAmount !== a.unsettledAmount) return b.unsettledAmount - a.unsettledAmount;
+    return b.count - a.count;
+  });
+
+  var unsettledAunties = allAunties.filter(function(a) { return a.hasUnsettled; });
+  var totalAunties = allAunties.length;
+  var topUnsettled = unsettledAunties.slice(0, 6); 
+  var remainingCount = unsettledAunties.length - topUnsettled.length;
+
+  var html = '<div style="background:var(--cream); border:1px solid var(--border); border-radius:var(--r-sm); padding:0.8rem; margin-top:0.8rem;">';
+  html += '<div style="font-size:0.875rem; font-weight:600; color:var(--text); margin-bottom:0.6rem; display:flex; justify-content:space-between; align-items:center;">';
+  html += '<span>👩‍🦰 本週阿姨結算摘要</span>';
+  html += '<span style="color:var(--text3); font-size:0.8125rem;">共 ' + totalAunties + ' 位阿姨｜未結清 ' + unsettledAunties.length + ' 位</span>';
+  html += '</div>';
+  html += '<div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">';
+  if (unsettledAunties.length === 0) {
+    html += '<div style="font-size:0.8125rem; color:var(--text3); padding:0.2rem 0;">本週所有阿姨皆已結清 🎉</div>';
+  } else {
+    topUnsettled.forEach(function(a) {
+      html += '<div style="background:var(--card); border:1px solid var(--sage-border); padding:0.3rem 0.6rem; border-radius:4px; font-size:0.8125rem; display:flex; align-items:center; gap:4px; box-shadow: 0 1px 2px rgba(0,0,0,.02);">';
+      html += '<span style="font-weight:600;">' + a.name + '</span>';
+      html += '<span style="color:var(--text3);">(' + a.count + '筆)</span>';
+      html += '<span style="color:var(--sage); font-weight:700; margin-left:4px;">$' + a.unsettledAmount + '</span>';
+      html += '</div>';
+    });
+  }
+  html += '</div>';
+
+  if (remainingCount > 0) {
+    html += '<div style="font-size:0.75rem; color:var(--text2); margin-bottom:0.6rem; padding-left:0.2rem;">還有 ' + remainingCount + ' 位未結清... 點擊下方查看完整列表。</div>';
+  }
+
+  html += '<details style="border-top:1px dashed var(--border2); padding-top:0.6rem; margin-top:0.6rem;">';
+  html += '<summary style="font-size:0.8125rem; color:var(--sky); cursor:pointer; font-weight:600; user-select:none; outline:none;">查看完整阿姨結算列表</summary>';
+  html += '<div style="margin-top:0.6rem; background:var(--card); border:1px solid var(--border); border-radius:4px; overflow:hidden;">';
+  html += '<table style="width:100%; border-collapse:collapse; font-size:0.8125rem; text-align:center;">';
+  html += '<thead style="background:var(--card2); border-bottom:1px solid var(--border); color:var(--text2); font-weight:600;">';
+  html += '<tr><th style="padding:0.4rem; text-align:left; padding-left:1rem;">阿姨名字</th><th style="padding:0.4rem;">本週筆數</th><th style="padding:0.4rem; text-align:right;">未結金額 (EE)</th><th style="padding:0.4rem; padding-right:1rem;">狀態</th></tr>';
+  html += '</thead><tbody>';
+
+  allAunties.forEach(function(a) {
+    var isSettled = !a.hasUnsettled;
+    var amountText = isSettled ? '-' : '$' + a.unsettledAmount;
+    var statusHtml = isSettled 
+        ? '<span style="color:var(--rose); font-weight:600;">✓ 已結清</span>' 
+        : '<span style="color:var(--sage); font-weight:600;">尚有未結</span>';
+    var amountStyle = isSettled ? 'color:var(--text3);' : 'color:var(--sage); font-weight:700;';
+
+    html += '<tr style="border-bottom:1px solid var(--border);">';
+    html += '<td style="padding:0.4rem; text-align:left; padding-left:1rem; font-weight:600;">' + a.name + '</td>';
+    html += '<td style="padding:0.4rem; color:var(--text2);">' + a.count + '</td>';
+    html += '<td style="padding:0.4rem; text-align:right; ' + amountStyle + '">' + amountText + '</td>';
+    html += '<td style="padding:0.4rem; padding-right:1rem;">' + statusHtml + '</td>';
+    html += '</tr>';
+  });
+  html += '</tbody></table></div></details></div>';
+  wrap.innerHTML = html;
+  wrap.style.display = 'block';
+}
+
+function renderUnpaidDashboard() {
+  var listEl = document.getElementById('stat-dashboard-list');
+  if (!listEl) return;
+  
+  var auntieMap = {};
+
+  Object.keys(notes).forEach(function(dateKey) {
+    var rows = notes[dateKey] || [];
+    rows.forEach(function(row, ri) {
+      if (row.settled === true) return; 
+      
+      var eeVal = parseFloat(row.ee);
+      if (isNaN(eeVal) || eeVal <= 0) return; 
+
+      var auntieName = (row.auntie || '').trim();
+      if (!auntieName) auntieName = '未填阿姨';
+
+      if (!auntieMap[auntieName]) {
+        auntieMap[auntieName] = { totalAmount: 0, items: [] };
+      }
+      auntieMap[auntieName].totalAmount += eeVal;
+      auntieMap[auntieName].items.push({ dateKey: dateKey, rowIndex: ri, row: row });
+    });
+  });
+
+  var auntieNames = Object.keys(auntieMap);
+  document.getElementById('stat-unpaid-count').textContent = auntieNames.length + ' 位阿姨未回款';
+
+  if (auntieNames.length === 0) {
+    listEl.innerHTML = '<div class="empty">目前沒有任何未結清的阿姨應收工單 🎉</div>';
+    return;
+  }
+
+  auntieNames.sort(function(a, b) {
+    return auntieMap[b].totalAmount - auntieMap[a].totalAmount;
+  });
+
+  var html = '';
+  auntieNames.forEach(function(auntieName, ui) {
+    var data = auntieMap[auntieName];
+    html += '<div class="stat-collapsible">';
+    html += '  <div class="stat-summary" onclick="toggleStatPanel('+ui+')">';
+    html += '    <div class="stat-summary-left">👩‍🦰 <span>' + auntieName + '</span></div>';
+    html += '    <div class="stat-summary-right">';
+    html += '      <span style="font-size:0.8125rem; color:var(--text3)">共 ' + data.items.length + ' 筆</span>';
+    html += '      <span style="color:var(--rose); font-weight:700; font-family:var(--mono)">$' + data.totalAmount + '</span>';
+    html += '      <span id="stat-arrow-'+ui+'" style="font-size:0.75rem; color:var(--text3)">▼</span>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '  <div class="stat-content" id="stat-content-'+ui+'" style="display:none;">';
+    html += '    <table style="width:100%; border-collapse:collapse; font-size:0.8125rem; text-align:center;">';
+    html += '      <thead style="background:var(--card2); border-bottom:1px solid var(--border); color:var(--text2); font-weight:600;">';
+    html += '        <tr>';
+    html += '          <th style="padding:0.35rem; width:2.5rem;"><input type="checkbox" id="stat-main-cb-'+ui+'" onchange="toggleStatAllCb('+ui+', this.checked)"></th>';
+    html += '          <th style="padding:0.35rem; text-align:left; padding-left:0.5rem;">日期 / 妹妹 / 地點</th>';
+    html += '          <th style="padding:0.35rem; width:4rem;">實收</th>';
+    html += '          <th style="padding:0.35rem; text-align:left; padding-left:0.5rem;">應回</th>';
+    html += '        </tr>';
+    html += '      </thead>';
+    html += '      <tbody>';
+    
+    data.items.forEach(function(item, ii) {
+      var displayDate = item.dateKey.substring(5); 
+      html += '      <tr style="border-bottom:1px solid var(--border);">';
+      html += '        <td style="padding:0.4rem;"><input type="checkbox" class="stat-sub-cb-'+ui+'" data-dk="'+item.dateKey+'" data-ri="'+item.rowIndex+'" onchange="checkStatMainCb('+ui+')"></td>';
+      html += '        <td style="padding:0.4rem; text-align:left; padding-left:0.5rem;">';
+      html += '          <span style="font-weight:600; color:var(--accent)">' + displayDate + '</span> ';
+      html += '          <span style="color:var(--text); font-weight:600;">[' + (item.row.name || '未填妹妹') + ']</span> ';
+      html += '          <span style="color:var(--text2); font-size:0.75rem;">' + (item.row.place || '未填地點') + '</span>';
+      html += '        </td>';
+      html += '        <td style="padding:0.4rem; color:var(--rose); font-weight:700; font-family:var(--mono)">$' + (item.row.shi || '0') + '</td>';
+    html += '        <td style="padding:0.4rem; color:var(--sage); font-weight:700; font-family:var(--mono)">$' + (item.row.ee || '0') + '</td>';
+      html += '        <td style="padding:0.4rem; text-align:left; padding-left:0.5rem; color:var(--text3); font-size:0.75rem;">' + (item.row.note || '—') + '</td>';
+      html += '      </tr>';
+    });
+    
+    html += '      </tbody>';
+    html += '    </table>';
+    html += '    <div class="stat-btn-row">';
+    html += '      <button class="btn btn-sage btn-sm" onclick="submitStatBatchSettle('+ui+')">✓ 結清已選工單</button>';
+    html += '      <div style="flex:1"></div>';
+    html += '      <span style="font-size:0.8125rem; color:var(--text2)">分批或部分回款：$</span>';
+    html += '      <input type="number" id="stat-part-amt-'+ui+'" style="width:5.5rem; height:28px; padding:0 0.3rem; font-size:0.8125rem;" placeholder="輸入金額">';
+    html += '      <button class="btn btn-rose-outline btn-sm" onclick="submitStatPartPayment('+ui+', \''+auntieName+'\')">扣除並註記</button>';
+    html += '    </div>';
+    html += '  </div>';
+    html += '</div>';
+  });
+
+  listEl.innerHTML = html;
+}
+
+function toggleStatPanel(ui) {
+  var el = document.getElementById('stat-content-' + ui);
+  var arrow = document.getElementById('stat-arrow-' + ui);
+  if (el.style.display === 'none') { el.style.display = 'block'; arrow.textContent = '▲'; } 
+  else { el.style.display = 'none'; arrow.textContent = '▼'; }
+}
+
+function toggleStatAllCb(ui, checked) {
+  var cbs = document.querySelectorAll('.stat-sub-cb-' + ui);
+  cbs.forEach(function(cb) { cb.checked = checked; });
+}
+
+function checkStatMainCb(ui) {
+  var main = document.getElementById('stat-main-cb-' + ui);
+  var cbs = document.querySelectorAll('.stat-sub-cb-' + ui);
+  var allChecked = true;
+  cbs.forEach(function(cb) { if(!cb.checked) allChecked = false; });
+  if(main) main.checked = allChecked;
+}
+
+function submitStatBatchSettle(ui) {
+  var cbs = document.querySelectorAll('.stat-sub-cb-' + ui + ':checked');
+  if (cbs.length === 0) { alert('請先勾選要沖銷結清的工單項目'); return; }
+  
+  var now = new Date();
+  var dateStr = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate();
+  
+  cbs.forEach(function(cb) {
+    var dk = cb.getAttribute('data-dk');
+    var ri = parseInt(cb.getAttribute('data-ri'), 10);
+    if (notes[dk] && notes[dk][ri]) {
+      var row = notes[dk][ri];
+      row.settled = true;
+      row.settledDate = dateStr;
+      row.settledAmount = row.ee;
+    }
+  });
+  
+  save();
+  toast('✓ 已成功結清所選工單項目');
+  renderUnpaidDashboard();
+  if (selDate) { RR(); RW(); renderAllOrders(); }
+}
+
+function submitStatPartPayment(ui, auntieName) {
+  var amtInput = document.getElementById('stat-part-amt-' + ui);
+  var amount = parseFloat(amtInput.value);
+  if (isNaN(amount) || amount <= 0) { alert('請輸入有效的部分回款扣除金額'); return; }
+
+  var items = [];
+  Object.keys(notes).forEach(function(dk) {
+    var rows = notes[dk] || [];
+    rows.forEach(function(row, ri) {
+      if (row.settled !== true && (row.auntie || '').trim() === auntieName) {
+        var eeVal = parseFloat(row.ee);
+        if (!isNaN(eeVal) && eeVal > 0) items.push({ dk: dk, ri: ri, row: row, ee: eeVal });
+      }
+    });
+  });
+
+  items.sort(function(a, b) { return a.dk < b.dk ? -1 : a.dk > b.dk ? 1 : 0; });
+
+  var remainingPayment = amount;
+  var now = new Date();
+  var todayMd = (now.getMonth() + 1) + '/' + now.getDate();
+
+  for (var i = 0; i < items.length; i++) {
+    if (remainingPayment <= 0) break;
+    var item = items[i];
+    var currentEe = item.ee;
+
+    if (remainingPayment >= currentEe) {
+      remainingPayment -= currentEe;
+      item.row.settled = true;
+      item.row.settledDate = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate();
+      item.row.settledAmount = String(currentEe);
+      var prefix = item.row.note ? item.row.note + ' ｜ ' : '';
+      item.row.note = prefix + todayMd + ' 已回滿 $' + currentEe;
+    } else {
+      var nextOwed = Math.round(currentEe - remainingPayment);
+      var prefix = item.row.note ? item.row.note + ' ｜ ' : '';
+      item.row.note = prefix + todayMd + ' 已部分回 $' + Math.round(remainingPayment) + '，尚欠 $' + nextOwed;
+      if (item.row.shi) {
+        var currentShi = parseFloat(item.row.shi) || 0;
+        item.row.shi = String(Math.round(currentShi + remainingPayment));
+      } else {
+        var basePai = (parseFloat(item.row.pai) || 0) * 6;
+        item.row.shi = String(Math.round(basePai + (currentEe - remainingPayment)));
+      }
+      item.row.ee = calculateEE(item.row.pai, item.row.shi, item.row.rebate);
+      remainingPayment = 0;
+    }
+  }
+
+  save();
+  var uncalcMsg = remainingPayment > 0 ? '（溢收 $' + Math.round(remainingPayment) + ' 已無未結工單可沖）' : '';
+  toast('✓ 部分回款成功扣除 ' + uncalcMsg);
+  
+  amtInput.value = '';
+  renderUnpaidDashboard();
+  if (selDate) { RR(); RW(); renderAllOrders(); }
+}
+
+function ST(id){
+  ['wo','bb','sched','stat'].forEach(function(t,i){
+    var elPanel = document.getElementById('tab-'+t);
+    if(elPanel) elPanel.classList.toggle('active',t===id);
+    var elTNav = document.querySelectorAll('.tnav-item')[i];
+    if(elTNav) elTNav.classList.toggle('active',t===id);
+    var elBNav = document.querySelectorAll('.bnav-item')[i];
+    if(elBNav) elBNav.classList.toggle('active',t===id);
+  });
+  if(id==='wo') updImpDates();
+  if(id==='stat') renderUnpaidDashboard();
+}
+
+function SST(id){
+  ['note','cal','all'].forEach(function(t,i){
+    var el = document.getElementById('sub-'+t);
+    if(el) el.classList.toggle('active',t===id);
+    var tab = document.querySelectorAll('.sub-tab')[i];
+    if(tab) tab.classList.toggle('active',t===id);
+  });
+  if(id==='note') RSG();
+  if(id==='all') renderAllOrders();
+}
+
+// 「所有工單」頁籤排序狀態
+var allOrdersSortBy = 'date';
+var allOrdersSortDir = -1;
+
+function sortAllOrders(sortBy) {
+  if (allOrdersSortBy === sortBy) {
+    allOrdersSortDir = allOrdersSortDir === -1 ? 1 : -1;
+  } else {
+    allOrdersSortBy = sortBy;
+    allOrdersSortDir = -1;
+  }
+  renderAllOrders();
+}
+
+function updateAllOrdersHeaders() {
+  var tbody = document.getElementById('all-orders-body');
+  if (!tbody) return;
+
+  var table = tbody.closest('table');
+  if (!table) return;
+
+  var ths = table.querySelectorAll('thead th');
+
+  ths.forEach(function(th, idx) {
+    var oldArrow = th.querySelector('.sort-arrow');
+    if (oldArrow) oldArrow.remove();
+
+    var shouldShow = false;
+    if (idx === 1 && allOrdersSortBy === 'date') shouldShow = true;
+    if (idx === 3 && allOrdersSortBy === 'name') shouldShow = true;
+    if (idx === 4 && allOrdersSortBy === 'place') shouldShow = true;
+
+    if (shouldShow) {
+      var arrowText = allOrdersSortDir === -1 ? ' ↓' : ' ↑';
+      var arrow = document.createElement('span');
+      arrow.className = 'sort-arrow';
+      arrow.textContent = arrowText;
+      th.appendChild(arrow);
+    }
+  });
+}
+
+function renderAllOrders() {
+  var tbody = document.getElementById('all-orders-body');
+  if(!tbody) return;
+  var q = (document.getElementById('search-all-input').value || '').trim().toLowerCase();
+  
+  var allRows = [];
+  Object.keys(notes).forEach(function(dateKey) {
+    var rows = notes[dateKey] || [];
+    rows.forEach(function(r, rowIdx) {
+      var textToSearch = [dateKey, r.name, r.place, r.auntie, r.note, r.pai].join(' ').toLowerCase();
+      if (!q || textToSearch.indexOf(q) !== -1) {
+        allRows.push({ date: dateKey, data: r, rowIndex: rowIdx });
+      }
+    });
+  });
+  
+  allRows.sort(function(a, b) {
+    var aData = a.data, bData = b.data;
+    var cmp = 0;
+
+    if (allOrdersSortBy === 'date') {
+      cmp = a.date > b.date ? 1 : (a.date < b.date ? -1 : 0);
+    } else if (allOrdersSortBy === 'name') {
+      var aName = (aData.name || '').toLowerCase();
+      var bName = (bData.name || '').toLowerCase();
+      cmp = aName < bName ? -1 : (aName > bName ? 1 : 0);
+    } else if (allOrdersSortBy === 'place') {
+      var aPlace = (aData.place || '').toLowerCase();
+      var bPlace = (bData.place || '').toLowerCase();
+      cmp = aPlace < bPlace ? -1 : (aPlace > bPlace ? 1 : 0);
+    }
+
+    return cmp * allOrdersSortDir;
+  });
+  
+  if(allRows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11" class="empty">找不到符合的歷史工單</td></tr>';
+    return;
+  }
+  
+  var html = '';
+  allRows.forEach(function(item) {
+    var r = item.data;
+    var eeN = parseFloat(r.ee)||0, eeC = r.ee ? (eeN>=0 ? ' redc' : ' green') : '';
+    var isSettled = r.settled === true;
+    var settleMark = isSettled ? '<span style="color:var(--sage);font-weight:700;font-size:0.8125rem">✓ 已結</span>' : '';
+    var displayDate = item.date.length > 5 ? item.date.substring(5) : item.date;
+    
+    var rowClass = isSettled ? 'settled-row' : '';
+    
+    html += '<tr class="'+rowClass+'">';
+    html += '<td style="text-align:center"><button class="btn btn-rose-outline btn-sm" style="min-height:26px;padding:0 0.4rem;font-size:0.8125rem;" onclick="deleteWorkorderFromAll(\''+item.date+'\','+item.rowIndex+')">✕</button></td>';
+    html += '<td><div class="wc" style="font-weight:600; color:var(--text2);">'+displayDate+'</div></td>';
+    html += '<td><div class="wc mono">'+(r.pai||'')+'</div></td>';
+    html += '<td><div class="wc bold">'+(r.name||'')+'</div></td>';
+    html += '<td><div class="wc">'+(r.place||'')+'</div></td>';
+    html += '<td><div class="wc">'+(r.auntie||'')+'</div></td>';
+    html += '<td><div class="wc mono">'+(r.shi||'')+'</div></td>';
+    html += '<td><div class="wc'+eeC+'">'+(r.ee||'')+'</div></td>';
+    html += '<td><div class="wc mono">'+(r.rebate||'')+'</div></td>';
+    html += '<td><div class="wc">'+(r.note||'')+'</div></td>';
+    html += '<td style="text-align:center">'+settleMark+'</td>';
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+  updateAllOrdersHeaders();
+}
+
+function setWoView(view) {
+  var dWrap = document.getElementById('daily-wo-wrap');
+  var wWrap = document.getElementById('week-wo-card');
+  var bWeek = document.getElementById('btn-view-week');
+  var bDay = document.getElementById('btn-view-day');
+  if(view === 'week') {
+    if(dWrap) dWrap.style.display = 'none';
+    if(wWrap) wWrap.style.display = 'block';
+    if(bWeek) bWeek.style.display = 'none';
+    if(bDay) bDay.style.display = 'inline-flex';
+    RW();
+  } else {
+    if(dWrap) dWrap.style.display = 'block';
+    if(wWrap) wWrap.style.display = 'none';
+    if(bWeek) bWeek.style.display = 'inline-flex';
+    if(bDay) bDay.style.display = 'none';
+    RR();
+  }
+}
+
+function toggleCalMode(){ calMode = calMode === 'month' ? 'week' : 'month'; RC(); }
+function filterNotes(type) { noteFilter = type; RSG(); }
+function DK(y,m,d){return y+'/'+(m+1<10?'0':'')+(m+1)+'/'+(d<10?'0':'')+d;}
+function normDate(s){s=s.trim();var m=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);if(!m)return s;return m[1]+'/'+(m[2].length<2?'0':'')+m[2]+'/'+(m[3].length<2?'0':'')+m[3];}
+function selKey(){return selDate?DK(selDate.y,selDate.m,selDate.d):null;}
+function MM(dir){vm+=dir;if(vm>11){vm=0;vy++;}if(vm<0){vm=11;vy--;}RC();}
+
+function RC(){
+  document.getElementById('mtitle').textContent=vy+'年'+(vm+1)+'月';
+  var first=(new Date(vy,vm,1).getDay()+6)%7;
+  var dim=new Date(vy,vm+1,0).getDate();
+  var prev=new Date(vy,vm,0).getDate();
+  var total=Math.ceil((first+dim)/7)*7;
+  var targetDate = selDate ? new Date(selDate.y, selDate.m, selDate.d) : today;
+  var targetTime = targetDate.getTime();
+  var html='';
+  for(var i=0;i<total;i++){
+    var isOth=i<first||(i>=first+dim);
+    var day=isOth?(i<first?prev-first+i+1:i-first-dim+1):(i-first+1);
+    var dy=isOth?(i<first?(vm===0?vy-1:vy):(vm===11?vy+1:vy)):vy;
+    var dm=isOth?(i<first?(vm===0?11:vm-1):(vm===11?0:vm+1)):vm;
+    var curD = new Date(dy, dm, day);
+    var diffDays = Math.round((curD.getTime() - targetTime) / 86400000);
+    var targetDow = (targetDate.getDay() + 6) % 7; 
+    var inWeek = diffDays >= -targetDow && diffDays <= (6 - targetDow);
+    if (calMode === 'week' && !inWeek) continue;
+    var isTod=dy===today.getFullYear()&&dm===today.getMonth()&&day===today.getDate();
+    var isSel=selDate&&dy===selDate.y&&dm===selDate.m&&day===selDate.d;
+    var k=DK(dy,dm,day);
+    var hasDot=notes[k]&&notes[k].length>0;
+    var cls='cal-day'+(isOth?' other':'')+(isTod?' today':'')+(isSel?' selected':'');
+    html+='<div class="'+cls+'" onclick="SD('+dy+','+dm+','+day+')"><div class="dn">'+day+'</div><div class="ddots">'+(hasDot?'<div class="dot"></div>':'')+'</div></div>';
+  }
+  document.getElementById('calgrid').innerHTML=html;
+}
+
+function SD(y,m,d){
+  selDate={y:y,m:m,d:d};
+  setWoView('day');
+  var k=selKey();if(!notes[k])notes[k]=[];
+  save();RC();RR();RW();
+  if(window.innerWidth<1024){
+    var el=document.getElementById('etbl');
+    if(el) setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'start'});},100);
+  }
+}
+
+function addRow(){
+  if(!selDate)return;
+  var k=selKey();
+  notes[k].push({id:'r'+Date.now(),pai:'',name:'',place:'',auntie:'',shi:'',rebate:'',ee:'',note:'',settled:false,settledDate:'',settledAmount:''});
+  save();RR();RC();RW();
+  var ri=notes[k].length-1;
+  setTimeout(function(){OE(ri,0);},30);
+}
+
+function delRow(ri){var k=selKey();if(!k)return;notes[k].splice(ri,1);selR=-1;selC=-1;save();RR();RC();RW();renderUnpaidDashboard();renderAllOrders();}
+
+function deleteWorkorderFromAll(dateKey, rowIndex) {
+  if(!confirm('確定要刪除這筆工單嗎？此操作無法復原。')) return;
+  if(notes[dateKey] && notes[dateKey][rowIndex]) {
+    notes[dateKey].splice(rowIndex, 1);
+    save();
+    renderAllOrders();
+    if(selDate) RR();
+    toast('工單已刪除');
+  }
+}
+
+function SR(by){
+  var k = selKey();
+  if(!k || !notes[k]) return;
+  sortDir[by] = sortDir[by] === 1 ? -1 : 1; 
+  if (by === 'time') {
+    notes[k].sort(function(a, b){ return (extractStartTime(a.place) - extractStartTime(b.place)) * sortDir[by]; });
+  } 
+  else if (by === 'name') {
+    notes[k].sort(function(a, b){
+      var av = (a.name || '').toLowerCase();
+      var bv = (b.name || '').toLowerCase();
+      return av < bv ? -sortDir[by] : av > bv ? sortDir[by] : 0;
+    });
+  }
+  save(); RR();
+}
+
+function RR(){
+  var hasD=!!selDate,k=selKey();
+  var rows=k&&notes[k]?notes[k]:[];
+  var dateStr=selDate?(selDate.y+'/'+(selDate.m+1)+'/'+selDate.d):'';
+  
+  var qaWrap = document.getElementById('quick-add-wrap');
+  if(qaWrap) qaWrap.style.display = hasD ? 'block' : 'none';
+
+  ['btn-add','btn-st','btn-sn','btn-ex'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.style.display = hasD ? 'inline-flex' : 'none';
+  });
+  
+  // 應用篩選
+  var filteredRows = rows.filter(function(row, ri) {
+    var nameMatch = !workorderFilters.name || (row.name || '').toLowerCase().includes(workorderFilters.name);
+    var auntieMatch = !workorderFilters.auntie || (row.auntie || '').toLowerCase().includes(workorderFilters.auntie);
+    var timeMatch = !workorderFilters.time || (row.place || '').toLowerCase().includes(workorderFilters.time);
+    var statusMatch = !workorderFilters.status || (workorderFilters.status === 'settled' ? row.settled === true : row.settled !== true);
+    return nameMatch && auntieMatch && timeMatch && statusMatch;
+  });
+  
+  var tbl = document.getElementById('etbl');
+  if(tbl) tbl.style.display = (hasD && filteredRows.length) ? 'table' : 'none';
+  
+  var tblAdd = document.getElementById('tbl-add');
+  if(tblAdd) tblAdd.style.display = hasD ? 'block' : 'none';
+  
+  var emptyEl = document.getElementById('wo-empty');
+  if(emptyEl) {
+    emptyEl.style.display = (hasD && filteredRows.length) ? 'none' : 'block';
+    if(workorderFilters.name || workorderFilters.auntie || workorderFilters.time || workorderFilters.status) {
+      emptyEl.textContent = '沒有符合篩選條件的工單';
+    } else {
+      emptyEl.textContent = hasD ? '尚無工單，可在上方快速新增' : '點選左側日期查看工單';
+    }
+  }
+  
+  var htitle = document.getElementById('wo-htitle');
+  if(htitle) htitle.textContent = hasD ? dateStr + ' 工單 (' + filteredRows.length + '/' + rows.length + ')' : '點選日期';
+  
+  var cb = document.getElementById('wo-cnt');
+  if(cb) { cb.textContent = filteredRows.length + ' 筆 / 共 ' + rows.length; cb.style.display = rows.length ? 'inline-block' : 'none'; }
+  
+  if(!hasD || !rows.length){ updateDailyStats(); return; }
+  
+  var html='';
+  var displayIndex = 0;
+  rows.forEach(function(row,ri){
+    // 檢查此行是否符合篩選條件
+    var nameMatch = !workorderFilters.name || (row.name || '').toLowerCase().includes(workorderFilters.name);
+    var auntieMatch = !workorderFilters.auntie || (row.auntie || '').toLowerCase().includes(workorderFilters.auntie);
+    var timeMatch = !workorderFilters.time || (row.place || '').toLowerCase().includes(workorderFilters.time);
+    var statusMatch = !workorderFilters.status || (workorderFilters.status === 'settled' ? row.settled === true : row.settled !== true);
+    
+    if(!(nameMatch && auntieMatch && timeMatch && statusMatch)) return;
+    
+    displayIndex++;
+    var isSettled = row.settled === true;
+    var rowStyle = isSettled ? 'opacity:0.55; background:#f5f5f5;' : '';
+    html+='<tr style="'+rowStyle+'">';
+    
+    // 刪除按鈕
+    html+='<td style="padding:4px;text-align:center;border-right:none"><button class="btn btn-rose-outline btn-sm" style="min-height:26px;padding:0 0.4rem;font-size:0.8125rem;" onclick="deleteWorkorder('+ri+')">✕ 刪</button></td>';
+    
+    COLS.forEach(function(col,ci){
+      var val=row[col]||'';
+      var isSel=(ri===selR&&ci===selC);
+      if(isSel){
+        var isMono=(col==='pai'||col==='shi'||col==='rebate'||col==='ee');
+        html+='<td class="sel"><input class="cinp'+(isMono?' mono':'')+'" id="ci_'+ri+'_'+ci+'" value="'+val.replace(/"/g,'&quot;')+'" onblur="OB('+ri+','+ci+',this.value)" onkeydown="KN(event,'+ri+','+ci+')" /></td>';
+      } else {
+        var vc='cv';
+        if(col==='pai'||col==='shi'||col==='rebate')vc+=' mono';
+        if(col==='name')vc+=' bold';
+        if(col==='ee'&&val){var n=parseFloat(val);if(!isNaN(n))vc+=n>=0?' redc':' green';}
+        html+='<td onclick="OE('+ri+','+ci+')"><div class="'+vc+'" id="disp_'+ri+'_'+ci+'">'+val+'</div></td>';
+      }
+    });
+    html+='<td style="display:flex;align-items:center;justify-content:center;gap:4px;padding:4px;border-right:none">';
+    html+='<label style="display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer;color:var(--text2);font-weight:600;flex:1;"><input type="checkbox" '+(isSettled?'checked':'')+' onchange="toggleSettled('+ri+', this.checked)" style="width:1.1rem;height:1.1rem;margin-right:4px;">'+(isSettled?'已結':'')+'</label></td></tr>';
+  });
+  
+  var etbody = document.getElementById('etbody');
+  if(etbody) etbody.innerHTML = html;
+  
+  if(selR>=0 && selC>=0){
+    var inp = document.getElementById('ci_'+selR+'_'+selC);
+    if(inp){inp.focus(); inp.select();}
+  }
+  updateDailyStats();
+}
+
+function OE(r,c){selR=r;selC=c;RR();}
+function OB(r,c,val){if(pDel>=0)return;CC(r,c,val);}
+
+function CC(r,c,val){
+  var k=selKey();if(!k||!notes[k]||!notes[k][r])return;
+  var col=COLS[c];notes[k][r][col]=val;var row=notes[k][r];
+  if(col==='pai'||col==='shi'||col==='rebate'){ row.ee = calculateEE(row.pai, row.shi, row.rebate); }
+  save();
+  var k2=selKey();
+  if(k2&&notes[k2]&&notes[k2][r]){
+    var row2=notes[k2][r];
+    COLS.forEach(function(col2,ci){
+      if(r===selR&&ci===selC)return;
+      var d=document.getElementById('disp_'+r+'_'+ci);
+      if(d){
+        if(col2==='ee') {
+          var eeN=parseFloat(row2.ee);
+          d.className='cv'+(!isNaN(eeN)?(eeN>=0?' redc':' green'):'');
+        }
+        d.textContent=row2[col2]||'';
+      }
+    });
+  }
+  RC(); updateDailyStats(); renderAllOrders();
+}
+
+function quickSave(r,c,val){
+  var k=selKey();if(!k||!notes[k]||!notes[k][r])return;
+  var col=COLS[c];notes[k][r][col]=val;var row=notes[k][r];
+  if(col==='pai'||col==='shi'||col==='rebate'){ row.ee = calculateEE(row.pai, row.shi, row.rebate); }
+  save(); updateDailyStats(); renderAllOrders();
+}
+
+function KN(e,r,c){
+  var k=selKey();var maxR=(notes[k]||[]).length-1;
+  if(e.key==='Enter'){e.preventDefault();quickSave(r,c,e.target.value);if(r<maxR)OE(r+1,c);else addRow();}
+  else if(e.key==='Tab'){e.preventDefault();quickSave(r,c,e.target.value);var nc=e.shiftKey?c-1:c+1,nr=r;if(nc>COLS.length-1){nc=0;nr++;}if(nc<0){nc=COLS.length-1;nr--;}if(nr>maxR){addRow();return;}if(nr<0)nr=0;OE(nr,nc);}
+  else if(e.key==='Escape'){quickSave(r,c,e.target.value);selR=-1;selC=-1;RR();}
+  else if(e.key==='ArrowUp'&&r>0){e.preventDefault();quickSave(r,c,e.target.value);OE(r-1,c);}
+  else if(e.key==='ArrowDown'&&r<maxR){e.preventDefault();quickSave(r,c,e.target.value);OE(r+1,c);}
+}
+
+function RW(){
+  if(!selDate)return;
+  var sd=new Date(selDate.y,selDate.m,selDate.d);var dow=(sd.getDay()+6)%7;var mon=new Date(sd);mon.setDate(sd.getDate()-dow);
+  var days=[];for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d);}
+  var s=days[0],e=days[6];document.getElementById('week-range').textContent=(s.getMonth()+1)+'/'+s.getDate()+' ～ '+(e.getMonth()+1)+'/'+e.getDate();
+  var html='';
+  days.forEach(function(d,di){
+    var y=d.getFullYear(),m=d.getMonth(),day=d.getDate(),k=DK(y,m,day),rows=notes[k]||[];
+    var isTod=y===today.getFullYear()&&m===today.getMonth()&&day===today.getDate();
+    var isSel=selDate&&y===selDate.y&&m===selDate.m&&day===selDate.d;
+    var dl=(m+1)+'/'+day+' 週'+WDS[di];
+    if(rows.length===0){
+      html+='<tr style="opacity:.4"><td><div class="cv" style="font-size:.75rem;color:var(--text3)">'+dl+'</div></td><td colspan="9"><div class="cv" style="font-size:.75rem;color:var(--text3)">—</div></td></tr>';
+    } else {
+      rows.forEach(function(row,ri){
+        var eeN=parseFloat(row.ee)||0,eeC=row.ee?(eeN>=0?' r':' g'):'';
+        var isSettled = row.settled === true;
+        var settleMark = isSettled ? '<span style="color:var(--sage);font-weight:700;font-size:0.8125rem">✓ 已結</span>' : '';
+        var bg = isSel ? 'var(--gold-light)' : (isTod ? 'var(--rose-light)' : '');
+        var trStyle = isSettled ? 'opacity:0.55; background:#f5f5f5;' : (bg ? 'background:'+bg+';' : '');
+
+        html+='<tr style="'+trStyle+'">';
+        if(ri===0)html+='<td rowspan="'+rows.length+'"><div class="wc" style="font-size:.75rem;font-weight:'+(isSel||isTod?600:400)+';color:'+(isSel?'var(--gold)':isTod?'var(--rose)':'var(--text3)')+'">'+dl+'</div></td>';
+        html+='<td><div class="wc mono">'+(row.pai||'')+'</div></td><td><div class="wc bold">'+(row.name||'')+'</div></td><td><div class="wc">'+(row.place||'')+'</div></td><td><div class="wc">'+(row.auntie||'')+'</div></td><td><div class="wc mono">'+(row.shi||'')+'</div></td><td><div class="wc mono'+eeC+'">'+(row.ee||'')+'</div></td><td><div class="wc mono">'+(row.rebate||'')+'</div></td><td><div class="wc">'+(row.note||'')+'</div></td><td style="text-align:center">'+settleMark+'</td></tr>';
+      });
+    }
+  });
+  var weekBody = document.getElementById('week-body');
+  if(weekBody) weekBody.innerHTML=html;
+  updateWeekStats(days);
+  updateWeeklyAuntieSummary(days);
+}
+
+function newSticky(){
+  var now = new Date();
+  var ts = (now.getMonth()+1)+'/'+now.getDate()+' '+(now.getHours()<10?'0':'')+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
+  var newId = 's'+Date.now();
+  stickies.unshift({ id: newId, text: '', time: ts, color: 'sc-yellow', pinned: false, tags: [] });
+  saveS(); RSG(); selectSticky(newId);
+}
+
+function selectSticky(id){
+  currentStickyId = id;
+  RSG(); 
+  var s = stickies.find(function(x){return x.id===id;});
+  var wrap = document.getElementById('sticky-editor-wrap');
+  if(!s) { wrap.style.display = 'none'; return; }
+  
+  wrap.style.display = 'flex';
+  document.getElementById('editor-time').textContent = s.time;
+  document.getElementById('editor-pin').textContent = s.pinned ? '⭐' : '☆';
+  
+  var cHtml = ['sc-yellow','sc-green','sc-blue','sc-pink','sc-peach'].map(function(c){
+    var isActive = (s.color === c) ? ' border:2px solid var(--text); ' : ' border:1px solid transparent; ';
+    return '<div style="width:20px;height:20px;border-radius:50%;cursor:pointer;'+isActive+'background:var(--'+c.substring(3)+');" onclick="updateStickyColor(\''+id+'\',\''+c+'\'); selectSticky(\''+id+'\');"></div>';
+  }).join('');
+  document.getElementById('editor-colors').innerHTML = cHtml;
+  
+  document.getElementById('editor-tags').value = s.tags ? s.tags.join(' ') : '';
+  var txtEl = document.getElementById('editor-text');
+  txtEl.value = s.text;
+  setTimeout(function(){ txtEl.focus(); }, 50);
+}
+
+function saveCurrentSticky(){
+  if(!currentStickyId) return;
+  var s = stickies.find(function(x){return x.id===currentStickyId;});
+  if(!s) return;
+  s.text = document.getElementById('editor-text').value;
+  var tagsStr = document.getElementById('editor-tags').value.trim();
+  s.tags = tagsStr ? tagsStr.split(/\s+/) : [];
+  if (!s.text && (!s.tags || s.tags.length === 0)) {
+    delSticky(currentStickyId);
+    currentStickyId = null;
+    document.getElementById('sticky-editor-wrap').style.display = 'none';
+  } else {
+    saveS(); RSG();
+  }
+}
+
+function delCurrentSticky(){
+  if(!currentStickyId) return;
+  delSticky(currentStickyId);
+  currentStickyId = null;
+  document.getElementById('sticky-editor-wrap').style.display = 'none';
+}
+
+function toggleEditorPin() {
+  if(!currentStickyId) return;
+  var s = stickies.find(function(x){return x.id===currentStickyId;});
+  if(s) { 
+    s.pinned = !s.pinned; 
+    saveS(); 
+    document.getElementById('editor-pin').textContent = s.pinned ? '⭐' : '☆';
+    RSG(); 
+  }
+}
+
+function updateStickyColor(id, newColor) {
+  var s = stickies.find(function(x){return x.id===id;});
+  if(s) { s.color = newColor; saveS(); RSG(); }
+}
+
+function delSticky(id){stickies=stickies.filter(function(s){return s.id!==id;});saveS();RSG();}
+
+function RSG(){
+  var el=document.getElementById('sticky-list');
+  if(!el) return;
+  var list=stickies.slice();
+  var qEl = document.getElementById('note-search');
+  var q = qEl ? qEl.value.trim().toLowerCase() : '';
+  var now = new Date();
+  var todayStr = (now.getMonth()+1)+'/'+now.getDate();
+  
+  list = list.filter(function(s) {
+      if (noteFilter === 'pinned' && !s.pinned) return false;
+      if (noteFilter === 'today' && (!s.time || s.time.indexOf(todayStr) !== 0)) return false;
+      if (q) {
+          var tagMatch = s.tags ? s.tags.join(' ').toLowerCase().indexOf(q) >= 0 : false;
+          var textMatch = (s.text||'').toLowerCase().indexOf(q) >= 0;
+          if (!tagMatch && !textMatch) return false;
+      }
+      return true;
+  });
+
+  list.sort(function(a, b) {
+    if (a.pinned !== b.pinned) return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+    return 0; 
+  });
+
+  if(!list.length){el.innerHTML='<div class="empty" style="font-size:0.8125rem;">無便簽</div>';return;}
+  
+  el.innerHTML = list.map(function(s){
+    var isActive = (s.id === currentStickyId);
+    var bg = isActive ? 'var(--card2)' : 'transparent';
+    var border = isActive ? '3px solid var(--accent)' : '3px solid transparent';
+    var dotColor = 'var(--' + (s.color||'sc-yellow').substring(3) + ')';
+    var textPreview = s.text.substring(0, 30).replace(/</g,'&lt;') || '(空白便簽)';
+    
+    return `<div style="padding:0.4rem; cursor:pointer; background:${bg}; border-left:${border}; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:4px;" onclick="selectSticky('${s.id}')">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${dotColor};"></span>
+          <span style="font-size:0.6875rem; font-weight:600; color:var(--text2);">${s.time}</span>
+        </div>
+        ${s.pinned ? '<span style="font-size:0.75rem;">⭐</span>' : ''}
+      </div>
+      <div style="font-size:0.8125rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${textPreview}</div>
+    </div>`;
+  }).join('');
+}
+
+function exportDay(){
+  if(!selDate)return;
+  var k=selKey(),rows=notes[k]||[],ds=selDate.y+'/'+(selDate.m+1)+'/'+selDate.d;
+  var tb=rows.map(function(r){var ec=parseFloat(r.ee)||0;return '<tr><td>'+r.pai+'</td><td>'+r.name+'</td><td>'+r.place+'</td><td>'+r.auntie+'</td><td>'+r.shi+'</td><td style="color:'+(ec>=0?'#e8637a':'#5a9068')+';font-weight:600">'+r.ee+'</td><td>'+(r.rebate||'')+'</td><td>'+r.note+'</td></tr>';}).join('');
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>工單 '+ds+'</title><style>body{font-family:sans-serif;padding:24px;background:#f7f3ef;color:#2d2118}table{border-collapse:collapse;width:100%}th{background:#fdf9f6;padding:8px 12px;text-align:left;border-bottom:2px solid #ede5dc;font-size:12px}td{padding:8px 12px;border-bottom:1px solid #ede5dc;font-size:13px}h2{margin-bottom:16px;color:#7a6254}</style></head><body><h2>工單 '+ds+'（共'+rows.length+'筆）</h2><table><thead><tr><th>牌價</th><th>人名</th><th>時間地點</th><th>阿姨</th><th>實收</th><th>EE</th><th>退</th><th>備記</th></tr></thead><tbody>'+tb+'</tbody></table></body></html>';
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));a.download='工單_'+ds.replace(/\//g,'_')+'.html';a.click();
+}
+
+function updImpDates(){
+  var sel=document.getElementById('imp-date-sel'),dates=Object.keys(notes).sort().reverse();
+  if(sel) sel.innerHTML='<option value="">選擇已有日期...</option>'+dates.map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');
+}
+function parseImpLine(line){
+  line=line.trim();if(!line)return null;
+  var m=line.match(/^(\d+)([^\d]+?)\s+(\d{4})\s*(.*)$/);if(!m)return null;
+  var pai=m[1],name=m[2].trim(),time=m[3],rest=m[4].trim(),parts=rest.split(/\s+/),numIdx=-1;
+  for(var i=0;i<parts.length;i++){if(/^\d+$/.test(parts[i])){numIdx=i;break;}}
+  var place='',auntie='',shi='';
+  if(numIdx<0){if(parts.length>1){auntie=parts[parts.length-1];place=parts.slice(0,parts.length-1).join(' ');}else{place=parts.join(' ');}}
+  else if(numIdx===0){shi=parts[0];}
+  else{auntie=parts[numIdx-1];place=parts.slice(0,numIdx-1).join(' ');shi=parts[numIdx];}
+  var p=parseFloat(pai),s=parseFloat(shi),ee='';
+  if(!isNaN(p)&&p>0){var base=Math.round(p*6);ee=(!isNaN(s)&&s>0)?String(Math.round(s-base)):String(-base);}
+  return {id:'r'+Date.now()+Math.random(),pai:pai,name:name,place:time+(place?' '+place:''),auntie:auntie,shi:shi,rebate:'',ee:ee,note:'',settled:false,settledDate:'',settledAmount:''};
+}
+function doImport(){
+  var raw=document.getElementById('imp-raw').value.trim(),msg=document.getElementById('imp-msg');
+  if(!raw){msg.textContent='請先輸入工單內容';return;}
+  var dateVal=normDate(document.getElementById('imp-date-inp').value.trim()||document.getElementById('imp-date-sel').value);
+  if(!dateVal){msg.textContent='請選擇或輸入匯入日期';return;}
+  var lines=raw.split('\n'),parsed=[];
+  lines.forEach(function(l){var r=parseImpLine(l);if(r)parsed.push(r);});
+  if(!parsed.length){msg.textContent='解析失敗，請確認格式';return;}
+  if(!notes[dateVal])notes[dateVal]=[];
+  parsed.forEach(function(r){notes[dateVal].push(r);});
+  save();updImpDates();RC();if(selDate){RR();RW();renderAllOrders();}
+  msg.textContent='✓ 成功匯入 '+parsed.length+' 筆到 '+dateVal;document.getElementById('imp-raw').value='';
+  renderUnpaidDashboard();
+}
+
+function TC(el){el.classList.toggle('on');RBB();}
+function resetBB(){document.querySelectorAll('.chip.on').forEach(function(c){c.classList.remove('on');});document.getElementById('bbq').value='';RBB();}
+function togglePaste(){var el=document.getElementById('bb-paste');var o=el.classList.toggle('open');document.getElementById('paste-btn').textContent=o?'▼ 收起':'▲ 貼入班表';}
+function parseBB(){var raw=document.getElementById('bb-raw').value.trim();if(!raw)return;bbData=parseSched(raw);document.getElementById('bb-msg').textContent='✓ 解析 '+bbData.length+' 位';RBB();}
+function clearBB(){bbData=[];document.getElementById('bb-raw').value='';document.getElementById('bb-msg').textContent='';RBB();}
+
+function parseSched(raw){
+  var lines=raw.split('\n').map(function(l){return l.trim();}),girls=[],cur=null,sec='jp';
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i];
+    if(line.indexOf('台妹')>=0||line.indexOf('台  妹')>=0)sec='tw';
+    if(line.indexOf('日韓')>=0||line.indexOf('日  韓')>=0)sec='jp';
+    var m=line.match(/🤍\s*(\d+)[『「]([^』」\n]+)[』」]\s*([A-Za-z0-9.]*)/);
+    if(m){if(cur)girls.push(cur);cur={price:parseInt(m[1]),name:m[2].trim(),specs:m[3]||'',section:sec,timeRaw:'',tags:[],ok:[],ng:[],services:[],free:[]};continue;}
+    if(!cur)continue;
+    if(line.indexOf('🕒')===0){cur.timeRaw=line.replace('🕒','').trim();continue;}
+    if(line.indexOf('◻️')===0||line.charAt(0)==='◻'){
+      var c2=line.replace(/◻️?/g,'').trim(),fkw=/舌吻|共浴|胸推|舔蛋|按摩|除毛|白人|69|品苞|輕功|奶泡|車震|親胸|滑壓/;
+      if(c2.indexOf('/')>=0||fkw.test(c2))c2.split('/').forEach(function(s){if(s.trim())cur.free.push(s.trim());});
+      else c2.split(/[\s\u3000]+/).forEach(function(s){if(s.trim())cur.tags.push(s.trim());});continue;
+    }
+    if(line.indexOf('🆗')===0){line.replace('🆗','').trim().split(/[\s\u3000]+/).forEach(function(s){if(s.trim())cur.ok.push(s.trim());});continue;}
+    if(line.indexOf('🆖')===0){line.replace('🆖','').trim().split(/[\s\u3000]+/).forEach(function(s){if(s.trim())cur.ng.push(s.trim());});continue;}
+    if(line.indexOf('◼️')===0||line.charAt(0)==='◼'){cur.services.push(line.replace(/◼️?/g,'').trim());continue;}
+  }
+  if(cur)girls.push(cur);return girls;
+}
+
+function getFs(){return Array.from(document.querySelectorAll('.chip.on')).map(function(c){return c.dataset.f;});}
+function gmatch(g,f){if(f==='日韓')return g.section==='jp';if(f==='台妹')return g.section==='tw';return g.tags.concat(g.ok).concat(g.services).concat(g.free).join(' ').indexOf(f)>=0;}
+
+function RBB(){
+  var fs=getFs(),q=document.getElementById('bbq').value.toLowerCase(),andM=document.querySelector('input[name=bm]:checked').value==='and';
+  // 移除日韓和台妹標籤（在篩選時）
+  fs = fs.filter(function(f) { return f !== '日韓' && f !== '台妹'; });
+  var svcFs=fs;
+  var rows=bbData.filter(function(g){
+    var all=[g.name,g.price+'',g.timeRaw,g.section==='jp'?'日韓':'台妹'].concat(g.tags).concat(g.ok).concat(g.services).concat(g.free).join(' ').toLowerCase();
+    if(q&&all.indexOf(q)<0)return false;
+    if(!fs.length)return true;
+    return andM?fs.every(function(f){return gmatch(g,f);}):fs.some(function(f){return gmatch(g,f);});
+  });
+  rows.sort(function(a,b){return a.price-b.price;});
+  var statEl=document.getElementById('bb-stats');
+  if(statEl) statEl.textContent='共 '+bbData.length+' 位｜顯示 '+rows.length+' 位'+(fs.length?' ｜ '+fs.join(' + '):'');
+  var el=document.getElementById('bb-list');
+  if(!el) return;
+  if(!rows.length){el.innerHTML='<div class="empty">'+(bbData.length?'沒有符合條件':'請先貼入班表並解析')+'</div>';return;}
+  
+  var hasF = svcFs.length > 0;
+  el.innerHTML='<div>'+rows.map(function(g){
+    var isJP = g.section === 'jp', specs = g.specs;
+    var tagShow = hasF ? g.tags.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.tags;
+    var tagH = tagShow.map(function(t){return '<span class="ptag '+(hasF?'tmatch':'tsage')+'">'+t+'</span>';}).join('');
+    var okShow = hasF ? g.ok.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.ok;
+    var okH = okShow.map(function(t){return '<span class="ptag '+(hasF?'tmatch':'tsky')+'">✓'+t+'</span>';}).join('');
+    var ngShow = hasF ? g.ng.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.ng;
+    var ngH = ngShow.map(function(t){return '<span class="ptag '+(hasF?'tmatch':'trose')+'">✗'+t+'</span>';}).join('');
+    var svcShow = hasF ? g.services.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.services;
+    var svcH = svcShow.map(function(s){return '<span class="ptag '+(hasF?'tmatch':'tpeach')+'">'+s+'</span>';}).join('');
+    var freeShow = hasF ? g.free.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.free;
+    var freeH = freeShow.map(function(s){return '<span class="ptag '+(hasF?'tmatch':'tlatte')+'">'+s+'</span>';}).join('');
+    
+    var row1 = (tagH || okH || ngH) ? '<div class="prow">' + tagH + okH + ngH + '</div>' : '';
+    var row2 = svcH ? '<div class="prow"><span class="tmuted">◼</span>' + svcH + '</div>' : '';
+    var row3 = freeH ? '<div class="prow"><span class="tmuted">◻</span>' + freeH + '</div>' : '';
+    return '<div class="bbp '+(isJP?'jp':'tw')+'"><div class="prow"><span class="pprice">'+g.price+'</span> <span class="pname">『'+g.name+'』</span>'+(specs?'<span class="pspec">'+specs+'</span>':'')+(g.timeRaw?'<span class="ptime">'+g.timeRaw+'</span>':'')+'<span class="ptag '+(isJP?'tsky':'tsage')+'" style="font-size:.6875rem;margin-left:4px">'+(isJP?'日韓':'台妹')+'</span></div>'+row1+row2+row3+'</div>';
+  }).join('')+'</div>';
+}
+
+function normCircle(s){ for(const [k,v] of Object.entries(CIRCLE_MAP)) s=s.split(k).join('('+v+')'); return s; }
+function toast(msg){
+  const el=document.getElementById('toast');
+  if(!el) return;
+  el.textContent=msg; el.className='show';
+  setTimeout(function(){el.className='';},2400);
+}
+
+function parseToMap(raw){
+  const map=new Map();
+  if(!raw) return map;
+  raw.split(/\n\s*\n/).forEach(function(block){
+    const b=block.trim(); if(!b) return;
+    const nm=b.match(/『([^』]+)』/);
+    const pm=b.match(/🤍(\d+)/);
+    if(nm&&pm) map.set(nm[1].trim(),{price:parseInt(pm[1],10),content:b});
+  });
+  return map;
+}
+
+function sortDB(){
+  const raw=document.getElementById('db').value.trim();
+  if(!raw){alert('資料庫是空的');return;}
+  const arr=Array.from(parseToMap(raw).values()).sort(function(a,b){return b.price-a.price;});
+  document.getElementById('db').value=arr.map(function(x){return x.content;}).join('\n\n');
+  saveLS('sch-db',document.getElementById('db').value);
+  document.getElementById('dbStatus').textContent='✓ 去重 + 降序完成（共 '+arr.length+' 筆）';
+}
+
+function openPatchModal(){
+  document.getElementById('dbPatch').value='';
+  document.getElementById('patchResult').textContent='';
+  document.getElementById('patchModal').classList.add('open');
+  setTimeout(function(){document.getElementById('dbPatch').focus();},80);
+}
+function closePatchModal(){ document.getElementById('patchModal').classList.remove('open'); }
+function modalOverlayClick(e){ if(e.target===document.getElementById('patchModal')) closePatchModal(); }
+
+function patchDB(){
+  const patchRaw=document.getElementById('dbPatch').value.trim();
+  if(!patchRaw){document.getElementById('patchResult').textContent='⚠️ 請先貼入資料';return;}
+  const existMap=parseToMap(document.getElementById('db').value.trim());
+  const patchMap=parseToMap(patchRaw);
+  if(patchMap.size===0){ document.getElementById('patchResult').textContent='⚠️ 找不到有效格式'; return; }
+  let ow=0,add=0;
+  patchMap.forEach(function(val,name){ if(existMap.has(name)) ow++; else add++; existMap.set(name,val); });
+  const arr=Array.from(existMap.values()).sort(function(a,b){return b.price-a.price;});
+  document.getElementById('db').value=arr.map(function(x){return x.content;}).join('\n\n');
+  saveLS('sch-db',document.getElementById('db').value);
+  closePatchModal();
+  document.getElementById('dbStatus').textContent='✓ 覆蓋 '+ow+' 筆、新增 '+add+' 筆，共 '+existMap.size+' 筆';
+  toast('✓ 覆蓋完成！');
+}
+
+function sortDayInput(){
+  const ta=document.getElementById('inputA');
+  const lines=ta.value.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+  const seen=new Map();
+  lines.forEach(function(line){
+    const m=line.match(/^(\d+)\s*([^\s\d→➜\-]+)/);
+    if(m) seen.set(m[2].trim(),{price:parseInt(m[1],10),line:line});
+    else seen.set('__r__'+line,{price:-1,line:line});
+  });
+  ta.value=Array.from(seen.values()).sort(function(a,b){return b.price-a.price;}).map(function(x){return x.line;}).join('\n');
+  saveLS('sch-input-day',ta.value);
+  toast('✓ 已依牌價排序並去除重複');
+}
+
+function convertDay(){
+  const dbMap=parseToMap(document.getElementById('db').value.trim());
+  const lines=document.getElementById('inputA').value.trim().split('\n').filter(Boolean);
+  const resultMap=new Map();
+  const missing=[];
+  lines.forEach(function(line){
+    const m=line.match(/^(\d+)\s*([^\s\d→➜\-]+)\s*(\d{3,4}[^\d]+\d{3,4})/);
+    if(!m) return;
+    const price=parseInt(m[1],10),name=m[2].trim(),time=m[3].replace(/\s+/g,'');
+    const entry=dbMap.get(name);
+    if(entry){
+      let text=entry.content;
+      if(text.indexOf('🕒')!==-1) text=text.replace(/🕒[^\n]*/,'🕒'+time);
+      else{
+        const parts=text.split('\n');
+        const idx=parts.findIndex(function(p){return p.indexOf('『'+name+'』')!==-1;});
+        if(idx!==-1) parts.splice(idx+1,0,'🕒'+time); else parts.push('🕒'+time);
+        text=parts.join('\n');
+      }
+      resultMap.set(name,{price:price,text:text});
+    } else {
+      if(missing.indexOf(name)===-1) missing.push(name);
+    }
+  });
+  const sorted=Array.from(resultMap.values()).sort(function(a,b){return b.price-a.price;});
+  document.getElementById('outputDiv').textContent=sorted.map(function(x){return x.text;}).join('\n\n')||'（格式不符或無資料）';
+  document.getElementById('outputDiv').scrollTop=0;
+  document.getElementById('missing').textContent=missing.length?'⚠️ 找不到母檔：'+missing.join('、'):'';
+}
+
+function clearDayInput(){
+  if(!confirm('確定清除？')) return;
+  document.getElementById('inputA').value='';
+  localStorage.removeItem('sch-input-day');
+  document.getElementById('outputDiv').textContent='';
+  document.getElementById('missing').textContent='';
+}
+
+function copyOutput(){
+  const text=document.getElementById('outputDiv').textContent;
+  if(!text||text.startsWith('（')) return;
+  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製轉換結果');});
+}
+
+function convertWeek(){
+  const rawInput=document.getElementById('weekInput').value.trim();
+  if(!rawInput){alert('請先輸入週報內容');return;}
+  const raw=normCircle(rawInput);
+  weekData={1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
+  const pureList=[];
+  const lines=raw.split('\n').map(function(l){return l.trim();}).filter(function(l){
+    if(!l) return false;
+    if(/^[⏔➜→✦꒰꒱\s\-=*]+$/.test(l)) return false;
+    return /^\d/.test(l);
+  });
+  lines.forEach(function(line){
+    const mm=line.match(/^(\d+)\s*([^\s\d→➜\(\)]+)\s*[→➜]?\s*/);
+    if(!mm) return;
+    const price=parseInt(mm[1],10),name=mm[2].trim();
+    const sched=line.substring(mm[0].length).trim();
+    const active=new Set();
+    if(sched){
+      const re=/((?:\([一二三四五六七日]\))+)([^(]*)/g;
+      let m;
+      while((m=re.exec(sched))!==null){
+        const chars=m[1].match(/[一二三四五六七日]/g)||[];
+        const t=m[2].trim().replace(/\s+/g,'')||'未定';
+        chars.forEach(function(ch){
+          const dn=DAY_MAP[ch];
+          if(dn){weekData[dn].push({price:price,name:name,time:t});active.add(dn);}
+        });
+      }
+      if(active.size===0){
+        (sched.match(/\([一二三四五六七日]\)/g)||[]).forEach(function(d){
+          const ch=d.replace(/[()]/g,''),dn=DAY_MAP[ch];
+          if(dn){weekData[dn].push({price:price,name:name,time:'未定'});active.add(dn);}
+        });
+      }
+    }
+    const days=Array.from(active).sort(function(a,b){return a-b;});
+    const circ=days.map(function(n){return TO_CIRCLE[n];}).join('');
+    pureList.push({price:price,text:price+name+(circ?'➜'+circ:'（待定）')});
+  });
+  pureList.sort(function(a,b){return b.price-a.price;});
+  document.getElementById('pureOutput').textContent=pureList.map(function(x){return x.text;}).join('\n')||'（無有效資料）';
+  document.getElementById('pureOutput').scrollTop=0;
+  for(let i=1;i<=7;i++) weekData[i].sort(function(a,b){return b.price-a.price;});
+  renderWeekGrid();
+  toast('✓ 週報彙整完成，看板已更新');
+}
+
+function clearWeekInput(){
+  if(!confirm('確定清除？')) return;
+  document.getElementById('weekInput').value='';
+  localStorage.removeItem('sch-input-week');
+  document.getElementById('pureOutput').textContent='';
+}
+
+function copyPure(){
+  const text=document.getElementById('pureOutput').textContent;
+  if(!text||text.startsWith('（')) return;
+  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製乾淨名單');});
+}
+
+function renderWeekGrid(){
+  const c=document.getElementById('weekGrid');
+  let html='';
+  for(let i=1;i<=7;i++){
+    const list=weekData[i];
+    const items=list.length>0
+      ?list.map(function(x){
+          return '<div class="day-item"><span class="day-item-name">'+x.price+' '+x.name+'</span><span class="day-item-time">'+x.time+'</span></div>';
+       }).join('')
+      :'<div style="color:#ccc;font-size:11px;text-align:center;padding-top:14px;">暫無排班</div>';
+    html+='<div class="day-box"><div class="day-hdr"><span class="day-name">'+DAY_NAMES[i]+'</span><span class="day-count">'+list.length+' 筆</span></div><div class="day-list">'+items+'</div><button class="day-copy" onclick="copySingleDay('+i+')">📋 複製</button></div>';
+  }
+  c.innerHTML=html;
+}
+
+function copySingleDay(d){
+  const list=weekData[d];
+  if(!list||!list.length){alert('當天沒有資料');return;}
+  list.sort(function(a,b){return b.price-a.price;});
+  const text=list.map(function(x){return x.price+x.name+(x.time&&x.time!=='未定'?' '+x.time:'');}).join('\n');
+  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製 '+DAY_NAMES[d]+' 班表');});
+}
+
+function copyNotepad(){
+  const text=document.getElementById('notepad').value;
+  if(!text) return;
+  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製筆記欄內容');});
+}
+function clearNotepad(){
+  if(!confirm('確定清除筆記欄？')) return;
+  document.getElementById('notepad').value='';
+  localStorage.removeItem('sch-notepad');
+}
+
+function exportNewVersion(){
+  const dbContent=document.getElementById('db').value.trim();
+  if(!dbContent){alert('母檔是空的');return;}
+  const date=new Date().toLocaleDateString('zh-TW');
+  const escaped=dbContent.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
+  let html=document.documentElement.outerHTML;
+  html=html.replace(/const EMBEDDED_DB\s*=\s*`[\s\S]*?`;/,'const EMBEDDED_DB = `'+escaped+'`;');
+  html=html.replace(/const EMBEDDED_DATE\s*=\s*`[\s\S]*?`;/,'const EMBEDDED_DATE = `'+date+'`;');
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='工作台_'+new Date().toISOString().slice(0,10)+'.html';
+  a.click();
+}
+
+function loadLS(k){ try{return localStorage.getItem(k)||'';}catch(e){return '';} }
+function saveLS(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+
+function jumpDate(){
+  var val = document.getElementById('jump-date').value.trim();
+  if(!val) return;
+  var pts = val.split(/[\/\-]/);
+  var m, d, y = vy;
+  if(pts.length === 2) { m = parseInt(pts[0],10)-1; d = parseInt(pts[1],10); }
+  else if(pts.length === 3) { y = parseInt(pts[0],10); m = parseInt(pts[1],10)-1; d = parseInt(pts[2],10); }
+  else return;
+  if(!isNaN(m) && !isNaN(d)) { SD(y,m,d); document.getElementById('jump-date').value=''; }
+}
+
+function previewQaEE() {
+  var pai = document.getElementById('qa-pai').value.trim();
+  var shi = document.getElementById('qa-shi').value.trim();
+  var rebate = document.getElementById('qa-rebate').value.trim();
+  var ee = calculateEE(pai, shi, rebate);
+  var preEl = document.getElementById('qa-ee-preview');
+  if(preEl) {
+    preEl.textContent = ee === '' ? '0' : ee;
+    var num = parseFloat(ee);
+    preEl.style.color = isNaN(num) ? 'var(--text)' : (num >= 0 ? 'var(--rose)' : 'var(--sage)');
+  }
+}
+
+function submitQa(cont){
+  if(!selDate) return;
+  var pai = document.getElementById('qa-pai').value.trim();
+  var name = document.getElementById('qa-name').value.trim();
+  var place = document.getElementById('qa-place').value.trim();
+  var auntie = document.getElementById('qa-auntie').value.trim();
+  var shi = document.getElementById('qa-shi').value.trim();
+  var rebate = document.getElementById('qa-rebate').value.trim();
+  var note = document.getElementById('qa-note').value.trim();
+  
+  if(!pai && !name) { toast('請至少輸入牌價或人名'); return; }
+  
+  var k = selKey();
+  if(!notes[k]) notes[k] = [];
+  var ee = calculateEE(pai, shi, rebate);
+  
+  notes[k].push({id:'r'+Date.now(), pai:pai, name:name, place:place, auntie:auntie, shi:shi, rebate:rebate, ee:ee, note:note, settled:false, settledDate:'', settledAmount:''});
+  save(); RR(); RC(); RW(); renderUnpaidDashboard(); renderAllOrders();
+  
+  if(cont){
+    document.getElementById('qa-name').value = '';
+    document.getElementById('qa-place').value = '';
+    document.getElementById('qa-shi').value = '';
+    document.getElementById('qa-rebate').value = '';
+    document.getElementById('qa-note').value = '';
+    document.getElementById('qa-name').focus();
+  } else {
+    ['pai','name','place','auntie','shi','rebate','note'].forEach(function(id){
+      document.getElementById('qa-'+id).value = '';
+    });
+  }
+  previewQaEE();
+}
+
+function copyLastQa(){
+  var k = selKey();
+  if(!k || !notes[k] || !notes[k].length) { toast('當日無工單可複製'); return; }
+  var last = notes[k][notes[k].length-1];
+  document.getElementById('qa-pai').value = last.pai || '';
+  document.getElementById('qa-name').value = last.name || '';
+  document.getElementById('qa-place').value = last.place || '';
+  document.getElementById('qa-auntie').value = last.auntie || '';
+  previewQaEE();
+}
+
+window.onload=function(){
+  load();
+  var impBtn = document.getElementById('imp-btn');
+  if(impBtn) impBtn.onclick=doImport;
+  
+  RC(); 
+  
+  selDate = { y: today.getFullYear(), m: today.getMonth(), d: today.getDate() };
+  RR(); 
+  RW(); 
+  RBB(); 
+  RSG();
+  renderUnpaidDashboard();
+  renderAllOrders();
+  
+  // 初始化多便簽
+  renderMultiNoteList();
+
+  // 嘗試從雲端載入最新便簽
+  loadAllDataFromCloud();
+
+  const sDB=loadLS('sch-db');
+  var dbEl = document.getElementById('db');
+  if(dbEl) {
+    if(sDB) dbEl.value=sDB;
+    else if(EMBEDDED_DB&&EMBEDDED_DB!=='__DB_CONTENT__') dbEl.value=EMBEDDED_DB;
+  }
+  
+  var vlEl = document.getElementById('versionLabel');
+  if(vlEl && EMBEDDED_DATE && EMBEDDED_DATE!=='__EMBED_DATE__') {
+    vlEl.textContent='版本更新：'+EMBEDDED_DATE;
+  }
+
+  var iaEl = document.getElementById('inputA');
+  if(iaEl) iaEl.value = loadLS('sch-input-day');
+  
+  var wiEl = document.getElementById('weekInput');
+  if(wiEl) wiEl.value = loadLS('sch-input-week');
+  
+  var npEl = document.getElementById('notepad');
+  if(npEl) npEl.value = loadLS('sch-notepad');
+
+  renderWeekGrid();
+
+  const dbDetails = document.getElementById('dbCollapsible');
+  if (dbDetails) {
+    const saved = loadLS('sch-db-open');
+    if (saved === 'true') dbDetails.setAttribute('open', '');
+    else dbDetails.removeAttribute('open');
+    dbDetails.addEventListener('toggle', function () {
+      saveLS('sch-db-open', dbDetails.hasAttribute('open') ? 'true' : 'false');
+    });
+  }
+
+  // 初始化自動同步功能
+  initAutoSync();
+};
+</script>
+</body></html>
