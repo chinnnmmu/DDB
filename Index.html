@@ -205,6 +205,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 #patchResult { font-size: 11px; color: var(--green); min-height: 14px; }
 #toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: rgba(40,28,18,.92); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 12px; z-index: 2000; opacity: 0; transition: opacity .25s; pointer-events: none; white-space: nowrap; }
 #toast.show { opacity: 1; }
+#cloud-loading-overlay { position:fixed; inset:0; background:rgba(247,243,239,.92); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; transition:opacity .4s; }
+#cloud-loading-overlay.hidden { opacity:0; pointer-events:none; }
+.cloud-spinner { width:40px; height:40px; border:3px solid var(--border2); border-top-color:var(--rose); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.cloud-loading-text { font-size:13px; color:var(--text2); font-weight:500; }
+.cloud-sync-badge { position:fixed; top:6px; right:8px; font-size:10px; color:var(--text3); z-index:500; display:flex; align-items:center; gap:4px; }
+.sync-dot { width:6px; height:6px; border-radius:50%; background:var(--text3); }
+.sync-dot.syncing { background:var(--gold); animation:pulse .8s ease infinite; }
+.sync-dot.ok { background:var(--sage); }
+.sync-dot.err { background:var(--danger); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 .stat-collapsible { border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--card); margin-bottom: 0.4rem; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
 .stat-summary { cursor: pointer; padding: 0.6rem 0.8rem; background: var(--card2); user-select: none; display: flex; align-items: center; justify-content: space-between; font-size: 0.9375rem; }
 .stat-summary-left { display: flex; align-items: center; gap: 0.6rem; font-weight: 600; }
@@ -268,6 +279,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
   <button class="tnav-item" onclick="ST('format')">✨ 轉檔</button>
 </nav>
 
+<div id="cloud-loading-overlay">
+  <div class="cloud-spinner"></div>
+  <div class="cloud-loading-text" id="cloud-loading-text">☁ 正在從雲端載入最新資料…</div>
+</div>
+<div class="cloud-sync-badge" id="syncBadge">
+  <span class="sync-dot" id="syncDot"></span>
+  <span id="syncLabel"></span>
+</div>
+
 <div class="app">
 
 <div id="tab-wo" class="panel active">
@@ -283,8 +303,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
         <div style="font-size:1rem; font-weight:600; color:var(--accent);">📝 多行程便簽（5區）</div>
         <div style="flex:1"></div>
 <button class="btn btn-sage btn-sm" onclick="addMultiNote()" style="height:32px;">＋ 新增</button>
-<button onclick="saveAllDataToCloud()" style="margin-left:6px; padding:6px 10px; font-size:12px; background:var(--sky-light); border:1px solid var(--sky); color:var(--sky); border-radius:4px; cursor:pointer; font-weight:500;">上傳到試算表</button>
-<button onclick="loadAllDataFromCloud()" style="margin-left:6px; padding:6px 10px; font-size:12px; background:var(--peach-light); border:1px solid var(--peach); color:var(--peach); border-radius:4px; cursor:pointer; font-weight:500;">從試算表載入</button>
+<button onclick="manualSaveToCloud()" style="margin-left:6px; padding:6px 10px; font-size:12px; background:var(--sky-light); border:1px solid var(--sky); color:var(--sky); border-radius:4px; cursor:pointer; font-weight:500;">☁ 立即同步</button>
+<button onclick="loadAllDataFromCloud()" style="margin-left:6px; padding:6px 10px; font-size:12px; background:var(--peach-light); border:1px solid var(--peach); color:var(--peach); border-radius:4px; cursor:pointer; font-weight:500;">↓ 重新載入</button>
       </div>
 
       <div style="display:flex; gap:10px; height: calc(100vh - 170px);">
@@ -852,13 +872,25 @@ function save(){
   try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
   clearTimeout(_cloudSaveTimer);
   _cloudSaveTimer = setTimeout(function(){
-    if(typeof google!='undefined'&&google.script&&google.script.run) saveAllDataToCloud();
-  }, 2000);
+    saveAllDataToCloud();
+  }, 800);
 }
 function saveS(){try{localStorage.setItem(SNK,JSON.stringify(stickies));}catch(e){}}
-function saveMultiNotes(){try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}}
+var _notesSyncTimer = null;
+function saveMultiNotes(){
+  try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}
+  clearTimeout(_notesSyncTimer);
+  _notesSyncTimer = setTimeout(function(){ saveAllDataToCloud(); }, 800);
+}
+
+function manualSaveToCloud() {
+  toast('☁ 正在同步到雲端…');
+  saveAllDataToCloud();
+}
 
 function saveAllDataToCloud() {
+  if(typeof google==='undefined'||!google.script||!google.script.run) return;
+  setSyncStatus('syncing','儲存中…');
   var schDB = document.getElementById('db') ? document.getElementById('db').value : (loadLS('sch-db')||'');
   var payload = {
     action: 'saveAllData',
@@ -867,53 +899,80 @@ function saveAllDataToCloud() {
     formatPresets: fmtPresets,
     schDB: schDB
   };
-
   google.script.run
     .withSuccessHandler(function(result) {
       if (result.success) {
-        toast('✓ 已成功同步到雲端');
+        setSyncStatus('ok','已儲存');
+        setTimeout(function(){ setSyncStatus('',''); }, 2500);
       } else {
+        setSyncStatus('err','失敗');
         toast('同步失敗：' + result.message);
       }
     })
     .withFailureHandler(function(error) {
       console.error(error);
+      setSyncStatus('err','失敗');
       toast('同步發生錯誤');
     })
     .saveAllData(payload);
 }
 
-function loadAllDataFromCloud() {
+function setSyncStatus(state, label) {
+  var dot = document.getElementById('syncDot');
+  var lbl = document.getElementById('syncLabel');
+  if(dot) { dot.className='sync-dot '+state; }
+  if(lbl) lbl.textContent = label || '';
+}
+
+function hideLoadingOverlay() {
+  var el = document.getElementById('cloud-loading-overlay');
+  if(el) el.classList.add('hidden');
+  setTimeout(function(){ if(el) el.style.display='none'; }, 500);
+}
+
+function loadAllDataFromCloud(silent) {
+  if(!silent) {
+    var el = document.getElementById('cloud-loading-overlay');
+    if(el) { el.style.display=''; el.classList.remove('hidden'); }
+    setSyncStatus('syncing','載入中…');
+  }
+  if(typeof google==='undefined'||!google.script||!google.script.run){
+    hideLoadingOverlay();
+    setSyncStatus('','');
+    return;
+  }
   google.script.run
     .withSuccessHandler(function(data) {
-      var changed = false;
-      if (data.multiNotes && Array.isArray(data.multiNotes) && data.multiNotes.length > 0) {
+      // 雲端為主：不管本機有沒有資料，都套用雲端資料
+      if (data.multiNotes && Array.isArray(data.multiNotes)) {
         multiNotes = data.multiNotes;
-        saveMultiNotes();
+        try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}
         renderMultiNoteList();
-        changed = true;
       }
-      if (data.workOrders && Object.keys(data.workOrders).length > 0) {
+      if (data.workOrders && typeof data.workOrders === 'object') {
         notes = data.workOrders;
-        save();
+        try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
         RC(); RR(); RW(); renderUnpaidDashboard(); renderAllOrders();
-        changed = true;
       }
       if (data.formatPresets && Array.isArray(data.formatPresets) && data.formatPresets.length === 4) {
         fmtPresets = data.formatPresets;
-        fmtSyncTabNames(); fmtRenderPresetSettings(); changed = true;
+        fmtSyncTabNames(); fmtRenderPresetSettings();
       }
-      if (data.schDB && data.schDB.trim()) {
+      if (data.schDB && typeof data.schDB === 'string' && data.schDB.trim()) {
         saveLS('sch-db', data.schDB);
         var dbEl = document.getElementById('db');
         if (dbEl) dbEl.value = data.schDB;
-        changed = true;
       }
-      if (changed) toast('✓ 已從試算表載入資料');
+      hideLoadingOverlay();
+      setSyncStatus('ok','已同步');
+      setTimeout(function(){ setSyncStatus('',''); }, 3000);
+      if(!silent) toast('✓ 已從雲端載入最新資料');
     })
     .withFailureHandler(function(error) {
       console.error(error);
-      toast('載入發生錯誤');
+      hideLoadingOverlay();
+      setSyncStatus('err','同步失敗');
+      toast('⚠ 雲端載入失敗，顯示本機快取');
     })
     .loadAllData();
 }
@@ -924,10 +983,8 @@ var autoSyncTimer = null;
 function autoSyncToSheet() {
   clearTimeout(autoSyncTimer);
   autoSyncTimer = setTimeout(function() {
-    if(typeof google!='undefined'&&google.script&&google.script.run){
-      saveAllDataToCloud();
-    }
-  }, 1500);
+    saveAllDataToCloud();
+  }, 800);
 }
 
 // 給 4 個編輯區加上自動同步監聽
@@ -2536,48 +2593,43 @@ function copyLastQa(){
 }
 
 window.onload=function(){
-  load();
   var impBtn = document.getElementById('imp-btn');
   if(impBtn) impBtn.onclick=doImport;
 
+  // 先用 localStorage 快取填畫面（讓畫面不空白），雲端回來後會覆蓋
+  load();
   RC();
   SD(today.getFullYear(), today.getMonth(), today.getDate());
   RBB();
   RSG();
   renderUnpaidDashboard();
   renderAllOrders();
-
-  // 初始化多便簽
   renderMultiNoteList();
 
-  // 從雲端載入最新資料（覆蓋 localStorage）
-  loadAllDataFromCloud();
-
-  // 班表原始暫存恢復
+  // 班表暫存（本機 UI 狀態，不影響共用資料）
   var bbRawCache = loadLS('bb-raw-cache');
   var bbRawEl = document.getElementById('bb-raw');
   if(bbRawEl && bbRawCache){ bbRawEl.value = bbRawCache; parseBB(); }
 
-  const sDB=loadLS('sch-db');
+  var iaEl = document.getElementById('inputA');
+  if(iaEl) iaEl.value = loadLS('sch-input-day');
+  var wiEl = document.getElementById('weekInput');
+  if(wiEl) wiEl.value = loadLS('sch-input-week');
+  var npEl = document.getElementById('notepad');
+  if(npEl) npEl.value = loadLS('sch-notepad');
+
+  // db：先用本機快取，雲端回來後覆蓋
+  var sDB = loadLS('sch-db');
   var dbEl = document.getElementById('db');
   if(dbEl) {
     if(sDB) dbEl.value=sDB;
     else if(EMBEDDED_DB&&EMBEDDED_DB!=='__DB_CONTENT__') dbEl.value=EMBEDDED_DB;
   }
-  
+
   var vlEl = document.getElementById('versionLabel');
   if(vlEl && EMBEDDED_DATE && EMBEDDED_DATE!=='__EMBED_DATE__') {
     vlEl.textContent='版本更新：'+EMBEDDED_DATE;
   }
-
-  var iaEl = document.getElementById('inputA');
-  if(iaEl) iaEl.value = loadLS('sch-input-day');
-  
-  var wiEl = document.getElementById('weekInput');
-  if(wiEl) wiEl.value = loadLS('sch-input-week');
-  
-  var npEl = document.getElementById('notepad');
-  if(npEl) npEl.value = loadLS('sch-notepad');
 
   renderWeekGrid();
 
@@ -2591,11 +2643,14 @@ window.onload=function(){
     });
   }
 
-  // 初始化自動同步功能
   initAutoSync();
-
-  // 初始化轉檔器
   fmtInit();
+
+  // ★ 主要：雲端為主，強制載入最新資料（覆蓋本機快取）
+  loadAllDataFromCloud();
+
+  // ★ 每 30 秒自動重新抓雲端資料，讓多人同時使用時畫面保持最新
+  setInterval(function(){ loadAllDataFromCloud(true); }, 30000);
 };
 
 // ==================== 老闆娘轉檔器 (fmt*) ====================
