@@ -762,8 +762,15 @@ function loadAllDataFromCloud(silent) {
     setSyncStatus('','');
     return;
   }
+  // 10 秒超時保護，避免一直轉
+  var cloudTimeout = setTimeout(function(){
+    hideLoadingOverlay();
+    setSyncStatus('err','雲端逾時');
+    toast('⚠ 雲端連線逾時，顯示本機快取');
+  }, 10000);
   google.script.run
     .withSuccessHandler(function(data) {
+      clearTimeout(cloudTimeout);
       // 雲端為主：不管本機有沒有資料，都套用雲端資料
       if (data.multiNotes && Array.isArray(data.multiNotes)) {
         multiNotes = data.multiNotes;
@@ -782,6 +789,7 @@ function loadAllDataFromCloud(silent) {
       if(!silent) toast('✓ 已從雲端載入最新資料');
     })
     .withFailureHandler(function(error) {
+      clearTimeout(cloudTimeout);
       console.error(error);
       hideLoadingOverlay();
       setSyncStatus('err','同步失敗');
