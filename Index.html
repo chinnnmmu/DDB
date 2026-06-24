@@ -293,6 +293,114 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 .theme-toggle-btn button:hover { background: var(--border); }
 .theme-toggle-btn button.active { background: var(--rose); color: #fff; border-color: var(--rose) }
 </style>
+
+<style id="admin-walk-styles">
+/* ── Admin Panel ── */
+#tab-admin{overflow-x:hidden;}
+#tab-admin .sch-wrap{padding:16px;max-width:1400px;margin:0 auto;}
+#tab-admin .card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;box-shadow:0 1px 6px rgba(0,0,0,.04);margin-bottom:12px;overflow:visible;}
+#tab-admin .lbl{font-size:12px;font-weight:600;color:var(--accent2);letter-spacing:.05em;margin-bottom:5px;}
+#tab-admin .hint{font-size:11px;color:var(--text3);margin-bottom:6px;}
+#tab-admin textarea{font-family:var(--font);width:100%;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:7px;font-size:13px;background:var(--card2);color:var(--text);outline:none;resize:none;overflow-y:auto;line-height:1.5;}
+#tab-admin textarea:focus{border-color:var(--rose);box-shadow:0 0 0 2px rgba(232,99,122,.1);}
+#tab-admin .ro-box{font-family:var(--font);white-space:pre-wrap;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 11px;font-size:13px;background:var(--card2);color:var(--text);line-height:1.5;overflow-y:auto;}
+#tab-admin .btn-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;}
+#tab-admin .db-top-buttons{margin:8px 0 4px;}
+#tab-admin button.primary{background:var(--rose);color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);}
+#tab-admin button.subtle{background:var(--card2);border:1.5px solid var(--border2);color:var(--text2);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--font);}
+#tab-admin button:not(.primary):not(.subtle):not([class*="copy"]):not(#toggleDbBtn){background:var(--card2);border:1.5px solid var(--border2);color:var(--text2);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:var(--font);}
+#tab-admin #toggleDbBtn{display:block;width:100%;margin-top:8px;padding:4px;border-radius:4px;background:var(--card2);border:1px solid var(--border);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);text-align:center;}
+#tab-admin .copy-wide-a{display:block;width:100%;margin-top:8px;padding:5px;border-radius:5px;border:none;background:var(--rose);color:#fff;font-weight:600;font-size:12px;font-family:var(--font);cursor:pointer;text-align:center;}
+#tab-admin .copy-wide-b{display:block;width:100%;margin-top:8px;padding:5px;border-radius:5px;border:none;background:var(--gold);color:#fff;font-weight:600;font-size:12px;font-family:var(--font);cursor:pointer;text-align:center;}
+#tab-admin .top-zone{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:stretch;margin-bottom:12px;min-height:clamp(380px,50vh,800px);}
+#tab-admin .top-left,#tab-admin .top-middle,#tab-admin .top-right{display:flex;flex-direction:column;}
+#tab-admin .top-left .card,#tab-admin .top-middle .card,#tab-admin .top-right .card{flex:1;display:flex;flex-direction:column;}
+#tab-admin .top-left textarea,#tab-admin .top-left .ro-box,#tab-admin .top-middle .ro-box,#tab-admin .top-right #admin-notepad{flex:1;min-height:0;}
+#tab-admin .week-zone{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+#tab-admin .day-panel.card{padding:14px;}
+#tab-admin .admin-day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:10px;}
+#tab-admin .admin-day-box{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:8px;display:flex;flex-direction:column;min-height:180px;}
+#tab-admin .admin-day-hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;}
+#tab-admin .admin-day-name{font-size:12px;font-weight:700;color:var(--accent);}
+#tab-admin .admin-day-count{font-size:10px;color:var(--text3);}
+#tab-admin .admin-day-list{flex:1;font-size:11px;line-height:1.5;}
+#tab-admin .admin-day-item{margin-bottom:2px;padding-bottom:2px;border-bottom:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center;}
+#tab-admin .admin-day-item-name{font-weight:600;color:var(--text);}
+#tab-admin .admin-day-item-time{font-size:10px;color:var(--accent2);margin-left:4px;}
+#tab-admin .admin-day-copy{width:100%;margin-top:4px;padding:3px 0;font-size:11px;font-weight:600;background:var(--sage-light);border:1px solid var(--sage-border);color:var(--sage);border-radius:4px;cursor:pointer;font-family:var(--font);}
+#tab-admin .db-zone{margin-bottom:12px;}
+#tab-admin #admin-dbStatus{font-size:11px;color:var(--sage);min-height:14px;margin-top:4px;}
+#tab-admin #admin-missing{font-size:12px;color:var(--danger);font-weight:600;min-height:14px;margin-top:4px;}
+#tab-admin #admin-globalStatus{font-size:12px;color:var(--text2);min-height:16px;}
+/* Walk Panel */
+#tab-walk{overflow-x:hidden;}
+#tab-walk .walk-wrap{padding:16px;max-width:1400px;margin:0 auto;}
+#tab-walk .walk-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+#tab-walk .walk-hdr-title{font-family:"Noto Serif TC",serif;font-size:20px;font-weight:700;color:var(--accent);font-style:italic;}
+#tab-walk .walk-hdr-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+#tab-walk .walk-save-btn{background:var(--sage);color:#fff;border:none;border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);}
+#tab-walk #walk-status{font-size:12px;color:var(--sage);margin-bottom:4px;min-height:16px;}
+#tab-walk .walk-grid{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start;}
+#tab-walk .walk-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+#tab-walk .walk-card-title{font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+#tab-walk .wdot{width:6px;height:6px;border-radius:50%;background:var(--rose);flex-shrink:0;display:inline-block;}
+#tab-walk .date-row{display:flex;align-items:center;gap:10px;}
+#tab-walk #walk-datePicker{flex:1;}
+#tab-walk .date-weekday{font-size:16px;font-weight:600;color:var(--accent);}
+#tab-walk .quick-label{font-size:11px;color:var(--text3);margin-bottom:4px;}
+#tab-walk .quick-gap{margin-bottom:10px;}
+#tab-walk textarea{width:100%;font-family:var(--font);font-size:13px;border:1.5px solid var(--border);border-radius:6px;padding:7px;background:var(--card2);color:var(--text);resize:none;line-height:1.6;outline:none;}
+#tab-walk textarea:focus{border-color:var(--rose);}
+#tab-walk .raw-input{min-height:200px;resize:vertical;line-height:1.7;margin-bottom:12px;}
+#tab-walk .btn-convert{display:block;width:100%;padding:10px;border-radius:8px;border:none;background:var(--rose);color:#fff;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.05em;font-family:var(--font);}
+#tab-walk .adv-toggle{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:12px;color:var(--text2);padding:4px 0;}
+#tab-walk .adv-arrow{font-size:10px;transition:transform .2s;}
+#tab-walk .adv-arrow.open{transform:rotate(180deg);}
+#tab-walk .adv-body{max-height:0;overflow:hidden;opacity:0;transition:max-height .3s,opacity .2s;}
+#tab-walk .adv-body.open{max-height:1200px;opacity:1;}
+#tab-walk .adv-inner{padding-top:10px;}
+#tab-walk .adv-preset-tabs{display:flex;gap:4px;margin-bottom:10px;}
+#tab-walk .adv-tab{flex:1;padding:4px 0;text-align:center;border-radius:6px;background:var(--card2);border:1px solid var(--border);cursor:pointer;font-size:11px;}
+#tab-walk .adv-tab.active{background:var(--gold-light);border-color:var(--gold);color:var(--gold);}
+#tab-walk .adv-tab-name{background:none;border:none;width:100%;text-align:center;font-size:11px;cursor:inherit;color:inherit;font-family:var(--font);}
+#tab-walk .adv-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+#tab-walk .adv-row label{font-size:11px;color:var(--text2);white-space:nowrap;width:90px;flex-shrink:0;}
+#tab-walk .adv-row input{flex:1;height:28px;font-size:12px;background:var(--card2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:0 6px;font-family:var(--font);}
+#tab-walk .btn-reset-adv{width:100%;margin-top:6px;padding:4px;border-radius:4px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);}
+#tab-walk .main-output-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;}
+#tab-walk .main-output-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+#tab-walk .main-output-title{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:var(--text);}
+#tab-walk .main-badge{font-size:10px;background:var(--gold-light);color:var(--gold);border:1px solid var(--gold);padding:1px 8px;border-radius:20px;}
+#tab-walk .btn-copy-main{background:var(--rose);color:#fff;border:none;border-radius:6px;padding:4px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);}
+#tab-walk #walkMainOutput{min-height:480px;resize:vertical;line-height:1.7;}
+#tab-walk .sub-outputs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+#tab-walk .sub-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;}
+#tab-walk .sub-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+#tab-walk .sub-card-label{font-size:12px;font-weight:600;color:var(--text2);}
+#tab-walk .btn-copy-sub{background:var(--card2);border:1px solid var(--border2);color:var(--text2);border-radius:5px;padding:2px 10px;font-size:11px;cursor:pointer;font-family:var(--font);}
+#tab-walk .sub-output-box{min-height:320px;resize:vertical;line-height:1.7;}
+/* Patch modal extras */
+.modal-cancel{background:transparent;border:1px solid var(--border2);color:var(--text2);border-radius:20px;padding:4px 14px;font-size:12px;cursor:pointer;font-family:var(--font);}
+.modal-confirm{background:var(--sage);color:#fff;border:none;border-radius:20px;padding:4px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);}
+/* RWD */
+@media(max-width:960px){
+  #tab-admin .top-zone{grid-template-columns:1fr;}
+  #tab-admin .week-zone{grid-template-columns:1fr;}
+  #tab-admin .admin-day-grid{grid-template-columns:repeat(4,1fr);}
+  #tab-walk .walk-grid{grid-template-columns:1fr;}
+  #tab-walk .sub-outputs-grid{grid-template-columns:1fr;}
+  #tab-admin #admin-inputA{height:280px;}
+  #tab-admin #admin-outputDiv{height:280px;}
+  #tab-admin #admin-weekInput{height:220px;}
+  #tab-admin #admin-pureOutput{height:180px;}
+  #tab-admin #admin-db{height:360px;max-height:none;}
+  #tab-admin #admin-notepad{min-height:280px;}
+}
+@media(max-width:600px){
+  #tab-admin .admin-day-grid{grid-template-columns:repeat(2,1fr);}
+  #tab-walk .sub-outputs-grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
 <body>
 
@@ -300,11 +408,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
   <div class="sidebar-logo">✦ DDB | WORKSPACE</div>
   <div class="sidebar-label">WORKSPACE</div>
   <div class="sidebar-menu">
-    <button class="snav-item" onclick="ST('note')"><span class="snav-icon">📝</span> 便簽</button>
-    <button class="snav-item active" onclick="ST('cal')"><span class="snav-icon">📅</span> 每日工單</button>
-    <button class="snav-item" onclick="ST('all')"><span class="snav-icon">🗂</span> 所有工單</button>
-    <button class="snav-item" onclick="ST('bb')"><span class="snav-icon">🔍</span> 探索搜尋</button>
-    <button class="snav-item" onclick="ST('stat')"><span class="snav-icon">📊</span> 數據紀錄</button>
+    <button class="snav-item" data-tab="note" onclick="ST('note')"><span class="snav-icon">📝</span> 便簽</button>
+    <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📅</span> 每日工單</button>
+    <button class="snav-item" data-tab="all" onclick="ST('all')"><span class="snav-icon">🗂</span> 所有工單</button>
+    <button class="snav-item" data-tab="bb" onclick="ST('bb')"><span class="snav-icon">🔍</span> 探索搜尋</button>
+    <button class="snav-item" data-tab="stat" onclick="ST('stat')"><span class="snav-icon">📊</span> 數據紀錄</button>
+    <button class="snav-item" data-tab="admin" onclick="ST('admin')"><span class="snav-icon">📋</span> 班表管理</button>
+    <button class="snav-item" data-tab="walk" onclick="ST('walk')"><span class="snav-icon">✦</span> 現走表</button>
   </div>
   <div class="sidebar-footer">
     <div class="theme-toggle-inline" id="themeToggle">
@@ -633,15 +743,235 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 </div>
 </div>
 
+<div id="tab-admin" class="panel">
+<div class="sch-wrap">
+
+  <!-- 上層 3 欄 -->
+  <div class="top-zone">
+
+    <!-- 左：日班表 -->
+    <div class="top-left">
+      <div class="card">
+        <div class="lbl">📋 當日班表輸入</div>
+        <textarea id="admin-inputA" placeholder="在此貼上本日班表…" spellcheck="false"
+          oninput="adminAutoSave('day',this.value)"></textarea>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="primary" onclick="adminConvertDay()">執行轉檔</button>
+          <button onclick="adminSortDayInput()">↕ 排序</button>
+          <button class="subtle" onclick="adminClearDayInput()">清除</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 中：轉換結果 -->
+    <div class="top-middle">
+      <div class="card">
+        <div class="lbl">✨ 轉換結果</div>
+        <div id="admin-outputDiv" class="ro-box">（轉換結果將顯示於此）</div>
+        <div id="admin-missing"></div>
+        <button class="copy-wide-a" onclick="adminCopyOutput()" style="margin-top:10px;">📋 複製結果</button>
+      </div>
+    </div>
+
+    <!-- 右：自由編輯 / 母檔同步源 -->
+    <div class="top-right">
+      <div class="card">
+        <div class="lbl">📝 自由編輯區 <span style="font-size:10px;color:var(--sage);font-weight:400;">（同步至探索搜尋）</span></div>
+        <textarea id="admin-notepad" placeholder="在此自由輸入或整理內容…" spellcheck="false"
+          oninput="adminAutoSave('note',this.value)"></textarea>
+        <div class="btn-row" style="margin-top:10px;">
+          <button class="primary" onclick="adminCopyNotepad()">📋 複製此欄</button>
+          <button class="subtle" onclick="adminClearNotepad()">清除</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /top-zone -->
+
+  <!-- 週報輸入 + 乾淨名單 -->
+  <div class="week-zone">
+    <div class="card">
+      <div class="lbl">本週預報輸入</div>
+      <div class="hint">支援：30米莎➜㈣㈤ 或 18悅潔➜㈢㈣1300-2200㈤1200-1700</div>
+      <textarea id="admin-weekInput" placeholder="在此貼上整週預報內容…" spellcheck="false"
+        oninput="adminAutoSave('week',this.value)"></textarea>
+      <div class="btn-row">
+        <button class="primary" onclick="adminConvertWeek()">⚡ 彙整週報</button>
+        <button class="subtle" onclick="adminClearWeekInput()">清除</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="lbl">預報乾淨名單</div>
+      <div class="hint">已去除時間，只顯示每人出班日期。</div>
+      <div id="admin-pureOutput" class="ro-box">（彙整週報後顯示於此）</div>
+      <button class="copy-wide-b" onclick="adminCopyPure()">📋 複製乾淨名單</button>
+    </div>
+  </div>
+
+  <!-- 週間看板 -->
+  <div class="day-panel card">
+    <div class="lbl">📅 週間排程一覽</div>
+    <div class="admin-day-grid" id="admin-weekGrid"></div>
+  </div>
+
+  <!-- 母檔資料庫 -->
+  <div class="db-zone">
+    <div class="card">
+      <div class="lbl">🗂 母檔資料庫 <span style="font-size:10px;color:var(--sage);font-weight:400;">（自動同步至探索搜尋貼上區）</span></div>
+      <div class="hint">「整理並儲存」可去重 + 降序並立即上雲。</div>
+      <div class="btn-row db-top-buttons">
+        <button class="primary" onclick="adminSortDB()">整理並儲存</button>
+        <button onclick="adminOpenPatchModal()">🔄 一鍵覆蓋更新</button>
+      </div>
+      <div style="margin-top:12px;">
+        <textarea id="admin-db" placeholder="請在此貼入母檔資料…" spellcheck="false"
+          oninput="adminAutoSave('db',this.value);syncDbToBbRaw()"></textarea>
+        <div id="admin-dbStatus">（整理後顯示統計）</div>
+        <button id="toggleDbBtn" onclick="adminToggleDbCollapse()">▼ 展開完整母檔</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:right;margin-bottom:8px;">
+    <span id="admin-globalStatus" style="font-size:12px;color:var(--text2);"></span>
+  </div>
+
+</div><!-- /sch-wrap -->
+</div><!-- /tab-admin -->
+
+<div id="tab-walk" class="panel">
+<div class="walk-wrap">
+
+  <div class="walk-hdr">
+    <div>
+      <div class="walk-hdr-title">✦ 老闆娘 現走表 ✦</div>
+      <div class="walk-hdr-sub">Schedule Formatter</div>
+    </div>
+    <div style="text-align:right;">
+      <div id="walk-status"></div>
+      <button class="walk-save-btn" onclick="walkSaveToSheet()">☁️ 儲存設定到 Sheets</button>
+    </div>
+  </div>
+
+  <div class="walk-grid">
+
+    <!-- 左側操作面板 -->
+    <div class="walk-panel-left">
+
+      <div class="walk-card">
+        <div class="walk-card-title"><span class="wdot"></span>今日日期</div>
+        <div class="date-row">
+          <input type="date" id="walk-datePicker" onchange="walkOnDateChange()">
+          <div class="date-weekday" id="walk-weekdayDisplay">（一）</div>
+        </div>
+      </div>
+
+      <div class="walk-card">
+        <div class="walk-card-title"><span class="wdot" style="background:var(--sage)"></span>每日快速編輯</div>
+        <div class="quick-label">今日改休內容</div>
+        <textarea class="quick-textarea quick-gap" id="walk-quickRest" rows="3"
+          placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
+        <div class="quick-label">今日約滿內容</div>
+        <textarea class="quick-textarea" id="walk-quickFull" rows="2"
+          placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
+      </div>
+
+      <div class="walk-card">
+        <div class="walk-card-title"><span class="wdot" style="background:var(--sky)"></span>貼上原始廣告文案</div>
+        <textarea id="walkInputText" class="raw-input" placeholder="將廣告原文貼在這裡 · · ·"></textarea>
+        <button class="btn-convert" onclick="walkProcessAll()">✦ 四款同時轉檔 ✦</button>
+      </div>
+
+      <div class="walk-card">
+        <div class="adv-toggle" onclick="walkToggleAdv()">
+          <span>⚙ 進階符號設定</span>
+          <span class="adv-arrow" id="walk-advArrow">▼</span>
+        </div>
+        <div class="adv-body" id="walk-advBody">
+          <div class="adv-inner">
+            <div class="adv-preset-tabs">
+              <div class="adv-tab" onclick="walkSwitchPreset(0)"><input class="adv-tab-name" id="walk-tabName0" value="款式 A" onclick="event.stopPropagation()"></div>
+              <div class="adv-tab" onclick="walkSwitchPreset(1)"><input class="adv-tab-name" id="walk-tabName1" value="款式 B" onclick="event.stopPropagation()"></div>
+              <div class="adv-tab" onclick="walkSwitchPreset(2)"><input class="adv-tab-name" id="walk-tabName2" value="款式 C" onclick="event.stopPropagation()"></div>
+              <div class="adv-tab active" onclick="walkSwitchPreset(3)"><input class="adv-tab-name" id="walk-tabName3" value="款式 D" onclick="event.stopPropagation()"></div>
+            </div>
+            <div class="adv-row"><label>大抬頭樣式</label><input type="text" id="walk-symTitle"></div>
+            <div class="adv-row"><label>名單前綴符號</label><input type="text" id="walk-symDot"></div>
+            <div class="adv-row"><label>中間分隔點</label><input type="text" id="walk-symMid"></div>
+            <div class="adv-row"><label>日韓分類抬頭</label><input type="text" id="walk-symJp"></div>
+            <div class="adv-row"><label>本地分類抬頭</label><input type="text" id="walk-symTw"></div>
+            <div class="adv-row"><label>時間前綴括號</label><input type="text" id="walk-timePrefix"></div>
+            <div class="adv-row"><label>時間後綴括號</label><input type="text" id="walk-timeSuffix"></div>
+            <div class="adv-row"><label>年齡組分隔線</label><input type="text" id="walk-symGroupSep"></div>
+            <div class="adv-row"><label>異動分區線</label><input type="text" id="walk-symStatusLine"></div>
+            <div class="adv-row"><label>即將登場線</label><input type="text" id="walk-symComing"></div>
+            <button class="btn-reset-adv" onclick="walkResetAll()">↺ 恢復所有預設</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /walk-panel-left -->
+
+    <!-- 右側輸出 -->
+    <div class="walk-panel-right">
+
+      <div class="main-output-card">
+        <div class="main-output-header">
+          <div class="main-output-title">
+            <span id="walkMainLabel">款式 A</span>
+            <span class="main-badge">主要</span>
+          </div>
+          <button class="btn-copy-main" onclick="walkCopyMain()">複製</button>
+        </div>
+        <textarea id="walkMainOutput" readonly placeholder="點擊「四款同時轉檔」後顯示 · · ·"></textarea>
+      </div>
+
+      <div class="sub-outputs-grid">
+        <div class="sub-card">
+          <div class="sub-card-header"><span class="sub-card-label" id="walkSubLabel1">款式 B</span><button class="btn-copy-sub" onclick="walkCopySub(1)">複製</button></div>
+          <textarea class="sub-output-box" id="walkSubOutput1" readonly placeholder="· · ·"></textarea>
+        </div>
+        <div class="sub-card">
+          <div class="sub-card-header"><span class="sub-card-label" id="walkSubLabel2">款式 C</span><button class="btn-copy-sub" onclick="walkCopySub(2)">複製</button></div>
+          <textarea class="sub-output-box" id="walkSubOutput2" readonly placeholder="· · ·"></textarea>
+        </div>
+        <div class="sub-card">
+          <div class="sub-card-header"><span class="sub-card-label" id="walkSubLabel3">款式 D</span><button class="btn-copy-sub" onclick="walkCopySub(3)">複製</button></div>
+          <textarea class="sub-output-box" id="walkSubOutput3" readonly placeholder="· · ·"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /walk-panel-right -->
+
+  </div><!-- /walk-grid -->
+</div><!-- /walk-wrap -->
+</div><!-- /tab-walk -->
+
+<!-- Patch Modal -->
+<div class="modal-overlay" id="admin-patchModal" onclick="if(event.target===this)adminClosePatchModal()">
+  <div class="modal-box">
+    <div class="modal-title-box">🔄 一鍵覆蓋更新</div>
+    <div class="modal-hint-box">貼入要新增或覆蓋的人員資料。相同名字自動替換舊資料，全新名字直接新增，不影響其餘人員。</div>
+    <textarea id="admin-dbPatch" placeholder="在此貼入要新增或覆蓋的資料…" spellcheck="false"></textarea>
+    <div id="admin-patchResult"></div>
+    <div class="modal-footer-box">
+      <button class="modal-cancel" onclick="adminClosePatchModal()">取消</button>
+      <button class="modal-confirm" onclick="adminPatchDB()">✓ 確定覆蓋</button>
+    </div>
+  </div>
+</div>
+
 
 </div>
 
 <nav class="bottom-nav">
-  <button class="bnav-item" onclick="ST('note')"><span class="bnav-icon">📝</span>便簽</button>
-  <button class="bnav-item active" onclick="ST('cal')"><span class="bnav-icon">📅</span>工單</button>
-  <button class="bnav-item" onclick="ST('all')"><span class="bnav-icon">🗂</span>所有</button>
-  <button class="bnav-item" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
-  <button class="bnav-item" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
+  <button class="bnav-item" data-tab="note" onclick="ST('note')"><span class="bnav-icon">📝</span>便簽</button>
+  <button class="bnav-item active" data-tab="cal" onclick="ST('cal')"><span class="bnav-icon">📅</span>工單</button>
+  <button class="bnav-item" data-tab="all" onclick="ST('all')"><span class="bnav-icon">🗂</span>所有</button>
+  <button class="bnav-item" data-tab="bb" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
+  <button class="bnav-item" data-tab="stat" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
+  <button class="bnav-item" data-tab="admin" onclick="ST('admin')"><span class="bnav-icon">📋</span>班表</button>
+  <button class="bnav-item" data-tab="walk" onclick="ST('walk')"><span class="bnav-icon">✦</span>現走</button>
 </nav>
 
 
@@ -1377,17 +1707,16 @@ function submitStatPartPayment(ui, auntieName) {
 }
 
 function ST(id){
-  var allTabs=['note','cal','all','bb','stat'];
-  allTabs.forEach(function(t,i){
+  var allTabs=['note','cal','all','bb','stat','admin','walk'];
+  allTabs.forEach(function(t){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
-    var elSNav = document.querySelectorAll('.snav-item')[i];
-    if(elSNav) elSNav.classList.toggle('active',t===id);
   });
-  // bottom nav: note,cal,all,bb,stat → indices 0-4
-  ['note','cal','all','bb','stat'].forEach(function(t,i){
-    var elBNav = document.querySelectorAll('.bnav-item')[i];
-    if(elBNav) elBNav.classList.toggle('active',t===id);
+  document.querySelectorAll('.snav-item').forEach(function(el){
+    el.classList.toggle('active', el.dataset.tab===id);
+  });
+  document.querySelectorAll('.bnav-item').forEach(function(el){
+    el.classList.toggle('active', el.dataset.tab===id);
   });
   if(id==='cal') updImpDates();
   if(id==='note') { RSG(); renderMultiNoteList(); }
@@ -2281,7 +2610,516 @@ window.onload=function(){
 
   // ★ 每 30 秒自動重新抓雲端資料，讓多人同時使用時畫面保持最新
   setInterval(function(){ loadAllDataFromCloud(true); }, 30000);
+
+  // Admin panel init
+  adminRenderWeekGrid();
+  walkInitDate();
+  walkSyncTabNames();
+  walkRenderPresetSettings();
+  loadAdminFromSheets();
 };
+
+/* ══════════════════════════════════════════
+   ADMIN PANEL — UTILS
+══════════════════════════════════════════ */
+function copyText(text, msg) {
+  var fallback = function() {
+    var el = document.createElement('textarea');
+    el.value = text;
+    el.style.cssText = 'position:fixed;opacity:0;top:0;left:0;width:1px;height:1px;';
+    document.body.appendChild(el); el.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(el);
+    toast(msg || '✓ 已複製');
+  };
+  try {
+    navigator.clipboard.writeText(text).then(function(){ toast(msg||'✓ 已複製'); }).catch(fallback);
+  } catch(e) { fallback(); }
+}
+
+function showAdminStatus(msg, ms) {
+  var el = document.getElementById('admin-globalStatus');
+  if (!el) return;
+  el.textContent = msg;
+  clearTimeout(showAdminStatus._t);
+  if (ms !== 0) showAdminStatus._t = setTimeout(function(){ el.textContent = ''; }, ms != null ? ms : 3000);
+}
+function showWalkStatus(msg) {
+  var el = document.getElementById('walk-status');
+  if (!el) return;
+  el.textContent = msg;
+  clearTimeout(showWalkStatus._t);
+  showWalkStatus._t = setTimeout(function(){ el.textContent = ''; }, 3500);
+}
+
+/* ── GAS Auto-Save (1.5s debounce) ── */
+var _adminSaveTimers = {};
+function adminAutoSave(key, val) {
+  showAdminStatus('✎ 儲存中…', 0);
+  clearTimeout(_adminSaveTimers[key]);
+  _adminSaveTimers[key] = setTimeout(function() {
+    if (typeof google !== 'undefined' && google.script) {
+      google.script.run
+        .withSuccessHandler(function(){ showAdminStatus('✓ 已同步至 Sheets'); })
+        .withFailureHandler(function(e){ showAdminStatus('⚠ 儲存失敗：' + e.message); })
+        .save(key, val);
+    }
+  }, 1500);
+}
+
+/* ── Sync db → bb-raw ── */
+function syncDbToBbRaw() {
+  var dbVal = document.getElementById('admin-db');
+  var bbRaw = document.getElementById('bb-raw');
+  if (dbVal && bbRaw) {
+    bbRaw.value = dbVal.value;
+    saveLS('bb-raw-cache', bbRaw.value);
+  }
+}
+
+/* ══════════════════════════════════════════
+   ADMIN PANEL — SCHEDULE LOGIC
+══════════════════════════════════════════ */
+var ADMIN_CIRCLE_MAP = {'㈠':'一','㈡':'二','㈢':'三','㈣':'四','㈤':'五','㈥':'六','㈦':'七','①':'一','②':'二','③':'三','④':'四','⑤':'五','⑥':'六','⑦':'七'};
+var ADMIN_DAY_MAP   = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'日':7};
+var ADMIN_TO_CIRCLE = {1:'㈠',2:'㈡',3:'㈢',4:'㈣',5:'㈤',6:'㈥',7:'㈦'};
+var ADMIN_DAY_NAMES = {1:'週一',2:'週二',3:'週三',4:'週四',5:'週五',6:'週六',7:'週日'};
+var adminWeekData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
+
+function adminNormCircle(s) {
+  for (var k in ADMIN_CIRCLE_MAP) s = s.split(k).join('('+ADMIN_CIRCLE_MAP[k]+')');
+  return s;
+}
+function adminParseToMap(raw) {
+  var map = new Map();
+  if (!raw) return map;
+  raw.split(/
+\s*
+/).forEach(function(block) {
+    var b = block.trim(); if (!b) return;
+    var nm = b.match(/『([^』]+)』/);
+    var pm = b.match(/🤍(\d+)/);
+    if (nm && pm) map.set(nm[1].trim(), {price: parseInt(pm[1], 10), content: b});
+  });
+  return map;
+}
+
+function adminSortDB() {
+  var raw = document.getElementById('admin-db').value.trim();
+  if (!raw) { alert('資料庫是空的'); return; }
+  var arr = Array.from(adminParseToMap(raw).values()).sort(function(a,b){ return b.price - a.price; });
+  var sorted = arr.map(function(x){ return x.content; }).join('
+
+');
+  document.getElementById('admin-db').value = sorted;
+  document.getElementById('admin-dbStatus').textContent = '✓ 去重 + 降序完成（共 '+arr.length+' 筆）';
+  adminAutoSave('db', sorted);
+  syncDbToBbRaw();
+  toast('✓ 整理完成，共 '+arr.length+' 筆');
+}
+
+function adminOpenPatchModal() {
+  document.getElementById('admin-dbPatch').value = '';
+  document.getElementById('admin-patchResult').textContent = '';
+  document.getElementById('admin-patchModal').classList.add('open');
+  setTimeout(function(){ document.getElementById('admin-dbPatch').focus(); }, 80);
+}
+function adminClosePatchModal() { document.getElementById('admin-patchModal').classList.remove('open'); }
+function adminPatchDB() {
+  var patchRaw = document.getElementById('admin-dbPatch').value.trim();
+  if (!patchRaw) { document.getElementById('admin-patchResult').textContent = '⚠️ 請先貼入資料'; return; }
+  var existMap = adminParseToMap(document.getElementById('admin-db').value.trim());
+  var patchMap = adminParseToMap(patchRaw);
+  if (!patchMap.size) { document.getElementById('admin-patchResult').textContent = '⚠️ 找不到有效格式（需有 『名字』 和 🤍價格）'; return; }
+  var ow = 0, add = 0;
+  patchMap.forEach(function(val, name) {
+    if (existMap.has(name)) ow++; else add++;
+    existMap.set(name, val);
+  });
+  var arr = Array.from(existMap.values()).sort(function(a,b){ return b.price - a.price; });
+  var sorted = arr.map(function(x){ return x.content; }).join('
+
+');
+  document.getElementById('admin-db').value = sorted;
+  adminAutoSave('db', sorted);
+  syncDbToBbRaw();
+  adminClosePatchModal();
+  document.getElementById('admin-dbStatus').textContent = '✓ 覆蓋 '+ow+' 筆、新增 '+add+' 筆，共 '+existMap.size+' 筆';
+  toast('✓ 覆蓋完成！覆蓋 '+ow+' 筆、新增 '+add+' 筆');
+}
+
+function adminSortDayInput() {
+  var ta = document.getElementById('admin-inputA');
+  var seen = new Map();
+  ta.value.split('
+').map(function(l){ return l.trim(); }).filter(Boolean).forEach(function(line) {
+    var m = line.match(/^(\d+)\s*([^\s\d→➜\-]+)/);
+    if (m) seen.set(m[2].trim(), {price: parseInt(m[1],10), line: line});
+    else seen.set('__'+line, {price:-1, line: line});
+  });
+  ta.value = Array.from(seen.values()).sort(function(a,b){ return b.price - a.price; }).map(function(x){ return x.line; }).join('
+');
+  adminAutoSave('day', ta.value);
+  toast('✓ 已依牌價排序並去除重複');
+}
+
+function adminConvertDay() {
+  var dbMap = adminParseToMap(document.getElementById('admin-db').value.trim());
+  var resultMap = new Map(), missing = [];
+  document.getElementById('admin-inputA').value.trim().split('
+').filter(Boolean).forEach(function(line) {
+    var m = line.match(/^(\d+)\s*([^\s\d→➜\-]+)\s*(\d{3,4}[^\d]+\d{3,4})/);
+    if (!m) return;
+    var price = parseInt(m[1],10), name = m[2].trim(), time = m[3].replace(/\s+/g,'');
+    var entry = dbMap.get(name);
+    if (entry) {
+      var text = entry.content;
+      if (text.includes('🕒')) text = text.replace(/🕒[^
+]*/, '🕒'+time);
+      else {
+        var parts = text.split('
+');
+        var idx = parts.findIndex(function(p){ return p.includes('『'+name+'』'); });
+        if (idx !== -1) parts.splice(idx+1, 0, '🕒'+time);
+        else parts.push('🕒'+time);
+        text = parts.join('
+');
+      }
+      resultMap.set(name, {price: price, text: text});
+    } else if (!missing.includes(name)) missing.push(name);
+  });
+  var sorted = Array.from(resultMap.values()).sort(function(a,b){ return b.price - a.price; });
+  document.getElementById('admin-outputDiv').textContent = sorted.map(function(x){ return x.text; }).join('
+
+') || '（格式不符或無資料）';
+  document.getElementById('admin-outputDiv').scrollTop = 0;
+  document.getElementById('admin-missing').textContent = missing.length ? '⚠️ 找不到母檔：'+missing.join('、') : '';
+}
+
+function adminClearDayInput() {
+  if (!confirm('確定清除？')) return;
+  document.getElementById('admin-inputA').value = '';
+  document.getElementById('admin-outputDiv').textContent = '（轉換結果將顯示於此）';
+  document.getElementById('admin-missing').textContent = '';
+  adminAutoSave('day', '');
+}
+function adminCopyOutput() {
+  var text = document.getElementById('admin-outputDiv').textContent;
+  if (!text || text.startsWith('（')) return;
+  copyText(text, '✓ 已複製轉換結果');
+}
+
+function adminConvertWeek() {
+  var rawInput = document.getElementById('admin-weekInput').value.trim();
+  if (!rawInput) { alert('請先輸入週報內容'); return; }
+  var raw = adminNormCircle(rawInput);
+  adminWeekData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
+  var pureList = [];
+  raw.split('
+').map(function(l){ return l.trim(); }).filter(function(l){ return l && !/^[⏔➜→✦꒰꒱\s\-=*]+$/.test(l) && /^\d/.test(l); })
+    .forEach(function(line) {
+      var mm = line.match(/^(\d+)\s*([^\s\d→➜\(\)]+)\s*[→➜]?\s*/);
+      if (!mm) return;
+      var price = parseInt(mm[1],10), name = mm[2].trim();
+      var sched = line.substring(mm[0].length).trim();
+      var active = new Set();
+      if (sched) {
+        var re = /((?:\([一二三四五六七日]\))+)([^(]*)/g, m2;
+        while ((m2 = re.exec(sched)) !== null) {
+          var chars = m2[1].match(/[一二三四五六七日]/g) || [];
+          var t = m2[2].trim().replace(/\s+/g,'') || '未定';
+          chars.forEach(function(ch){ var dn = ADMIN_DAY_MAP[ch]; if (dn) { adminWeekData[dn].push({price:price,name:name,time:t}); active.add(dn); } });
+        }
+        if (!active.size) {
+          (sched.match(/\([一二三四五六七日]\)/g)||[]).forEach(function(d){
+            var ch = d.replace(/[()]/g,''), dn = ADMIN_DAY_MAP[ch];
+            if (dn) { adminWeekData[dn].push({price:price,name:name,time:'未定'}); active.add(dn); }
+          });
+        }
+      }
+      var days = Array.from(active).sort(function(a,b){ return a-b; });
+      pureList.push({price:price, text:price+name+(days.length ? '➜'+days.map(function(n){ return ADMIN_TO_CIRCLE[n]; }).join('') : '（待定）')});
+    });
+  pureList.sort(function(a,b){ return b.price - a.price; });
+  document.getElementById('admin-pureOutput').textContent = pureList.map(function(x){ return x.text; }).join('
+') || '（無有效資料）';
+  for (var i=1;i<=7;i++) adminWeekData[i].sort(function(a,b){ return b.price - a.price; });
+  adminRenderWeekGrid();
+  toast('✓ 週報彙整完成，看板已更新');
+}
+
+function adminClearWeekInput() {
+  if (!confirm('確定清除？')) return;
+  document.getElementById('admin-weekInput').value = '';
+  document.getElementById('admin-pureOutput').textContent = '（彙整週報後顯示於此）';
+  adminAutoSave('week', '');
+}
+function adminCopyPure() {
+  var text = document.getElementById('admin-pureOutput').textContent;
+  if (!text || text.startsWith('（')) return;
+  copyText(text, '✓ 已複製乾淨名單');
+}
+
+function adminRenderWeekGrid() {
+  var html = '';
+  for (var i = 1; i <= 7; i++) {
+    var list = adminWeekData[i];
+    var items = list.length
+      ? list.map(function(x){ return '<div class="admin-day-item"><span class="admin-day-item-name">'+x.price+' '+x.name+'</span><span class="admin-day-item-time">'+x.time+'</span></div>'; }).join('')
+      : '<div style="color:var(--text3);font-size:11px;text-align:center;padding-top:14px;">暫無排班</div>';
+    html += '<div class="admin-day-box"><div class="admin-day-hdr"><span class="admin-day-name">'+ADMIN_DAY_NAMES[i]+'</span><span class="admin-day-count">'+list.length+' 筆</span></div><div class="admin-day-list">'+items+'</div><button class="admin-day-copy" onclick="adminCopySingleDay('+i+')">📋 複製</button></div>';
+  }
+  document.getElementById('admin-weekGrid').innerHTML = html;
+}
+
+function adminCopySingleDay(d) {
+  var list = adminWeekData[d];
+  if (!list || !list.length) { alert('當天沒有資料'); return; }
+  copyText(list.map(function(x){ return x.price+x.name+(x.time&&x.time!=='未定'?' '+x.time:''); }).join('
+'), '✓ 已複製 '+ADMIN_DAY_NAMES[d]+' 班表');
+}
+
+function adminCopyNotepad() {
+  var text = document.getElementById('admin-notepad').value;
+  if (!text) return;
+  copyText(text, '✓ 已複製筆記欄內容');
+}
+function adminClearNotepad() {
+  if (!confirm('確定清除筆記欄？')) return;
+  document.getElementById('admin-notepad').value = '';
+  adminAutoSave('note', '');
+}
+
+function adminToggleDbCollapse() {
+  var box = document.getElementById('admin-db'), btn = document.getElementById('toggleDbBtn');
+  var expanded = box.style.maxHeight === 'none' || box.style.maxHeight === '';
+  if (expanded) {
+    box.style.maxHeight = '280px'; box.style.overflowY = 'hidden';
+    btn.textContent = '▼ 展開完整母檔';
+  } else {
+    box.style.maxHeight = 'none'; box.style.overflowY = 'auto';
+    btn.textContent = '▲ 收起母檔';
+  }
+}
+
+/* ══════════════════════════════════════════
+   現走表 LOGIC
+══════════════════════════════════════════ */
+var WALK_DEFAULTS = [
+  {name:"款式 A",symTitle:"✦ {DATE} 當日名單 ✦",symDot:"▫️ ",symMid:"．",symJp:"═══【 🇯🇵 日韓 】═══",symTw:"═══【 🇹🇼 本地 】═══",timePrefix:"[ ",timeSuffix:" ]",symGroupSep:"· · · · ·",symStatusLine:"════꒰ 💡 異動 ꒱════",symComing:"✦── 即將登場 ──✦"},
+  {name:"款式 B",symTitle:"🌸 {DATE} 在席名單 🌸",symDot:"◦ ",symMid:"·",symJp:"〔 🇯🇵 日韓系 〕",symTw:"〔 🇹🇼 本地系 〕",timePrefix:"⏰",timeSuffix:"",symGroupSep:"- - - - -",symStatusLine:"──── 💬 異動通知 ────",symComing:"🌟 即將登場 🌟"},
+  {name:"款式 C",symTitle:"📋 {DATE} 當日出席表",symDot:"• ",symMid:"｜",symJp:"— 日韓 —",symTw:"— 本地 —",timePrefix:"",timeSuffix:" 到",symGroupSep:"──────",symStatusLine:"· · · 異動 · · ·",symComing:"＊ 即將登場 ＊"},
+  {name:"款式 D",symTitle:"💎 {DATE} 名單 💎",symDot:"❖ ",symMid:"✦",symJp:"【 日韓精選 】",symTw:"【 本地精選 】",timePrefix:"（",timeSuffix:"）",symGroupSep:"∙ ∙ ∙ ∙ ∙",symStatusLine:"══ ✧ 異動資訊 ✧ ══",symComing:"✨ 即將登場 ✨"}
+];
+var WALK_FIELDS = ['symTitle','symDot','symMid','symJp','symTw','timePrefix','timeSuffix','symGroupSep','symStatusLine','symComing'];
+var WD_NAMES = ['日','一','二','三','四','五','六'];
+var walkPresets = JSON.parse(JSON.stringify(WALK_DEFAULTS));
+var walkCurrentPreset = 0;
+var walkAdvOpen = false;
+
+function walkGEl(id){ return document.getElementById(id); }
+
+function walkInitDate() {
+  var now = new Date();
+  var pad = function(n){ return String(n).padStart(2,'0'); };
+  walkGEl('walk-datePicker').value = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  walkUpdateWeekday(now);
+}
+function walkOnDateChange() {
+  var val = walkGEl('walk-datePicker').value;
+  if (val) walkUpdateWeekday(new Date(val + 'T00:00:00'));
+}
+function walkUpdateWeekday(d) {
+  walkGEl('walk-weekdayDisplay').textContent = '（' + WD_NAMES[d.getDay()] + '）';
+}
+function walkGetDateString() {
+  var val = walkGEl('walk-datePicker').value;
+  if (!val) return '';
+  var d = new Date(val + 'T00:00:00');
+  return (d.getMonth()+1) + '/' + d.getDate() + ' (' + WD_NAMES[d.getDay()] + ')';
+}
+
+function walkToggleAdv() {
+  walkAdvOpen = !walkAdvOpen;
+  walkGEl('walk-advBody').classList.toggle('open', walkAdvOpen);
+  walkGEl('walk-advArrow').classList.toggle('open', walkAdvOpen);
+}
+function walkSyncTabNames() {
+  for (var i=0;i<4;i++) walkGEl('walk-tabName'+i).value = walkPresets[i].name;
+}
+function walkRenderPresetSettings() {
+  var p = walkPresets[walkCurrentPreset];
+  WALK_FIELDS.forEach(function(k){ walkGEl('walk-'+k).value = p[k] != null ? p[k] : ''; });
+}
+function walkSaveCurrentToState() {
+  var p = walkPresets[walkCurrentPreset];
+  WALK_FIELDS.forEach(function(k){ p[k] = walkGEl('walk-'+k).value; });
+  p.name = walkGEl('walk-tabName'+walkCurrentPreset).value;
+}
+function walkSwitchPreset(idx) {
+  walkSaveCurrentToState();
+  walkCurrentPreset = idx;
+  document.querySelectorAll('#tab-walk .adv-tab').forEach(function(t,i){ t.classList.toggle('active', i===idx); });
+  walkRenderPresetSettings();
+}
+
+function walkSaveToSheet() {
+  walkSaveCurrentToState();
+  for (var i=0;i<4;i++) walkPresets[i].name = walkGEl('walk-tabName'+i).value;
+  var json = JSON.stringify({presets:walkPresets, quickRest:walkGEl('walk-quickRest').value, quickFull:walkGEl('walk-quickFull').value});
+  if (typeof google !== 'undefined' && google.script) {
+    google.script.run
+      .withSuccessHandler(function(){ showWalkStatus('☁️ 已儲存至 Sheets'); })
+      .withFailureHandler(function(e){ showWalkStatus('⚠ 儲存失敗：' + e.message); })
+      .save('walk', json);
+  } else {
+    try { localStorage.setItem('walk-presets', json); } catch(e) {}
+    showWalkStatus('✓ 已暫存');
+  }
+}
+function walkResetAll() {
+  if (!confirm('確定要恢復所有預設值嗎？')) return;
+  walkPresets = JSON.parse(JSON.stringify(WALK_DEFAULTS));
+  walkSyncTabNames(); walkRenderPresetSettings();
+  showWalkStatus('↺ 已恢復預設值');
+}
+
+function walkParseInput(input) {
+  var lines = input.split('
+');
+  var region='', comingGirls=[], jpHkGirls=[], taiwanGirls=[], cur=null;
+  for (var i=0;i<lines.length;i++) {
+    var line = lines[i].trim(); if (!line) continue;
+    var clean = line.replace(/\s+/g,'');
+    if (clean.includes('即將登場')) { region='coming'; continue; }
+    if (clean.includes('日韓推薦')) { region='jphk'; continue; }
+    if (clean.includes('台妹推薦')) { region='taiwan'; continue; }
+    if (line.includes('本週預報')||line.includes('注意事項')) { region='end'; continue; }
+    var m = line.match(/🤍\s*(\d+)\s*『([^』]+)』/);
+    if (m) {
+      cur = {age:m[1], name:m[2], time:'1300'};
+      for (var j=i+1;j<Math.min(i+15,lines.length);j++) {
+        var nl = lines[j].trim();
+        if (nl.includes('🤍')||nl.includes('✤')||nl.includes('━━')) break;
+        if (nl.includes('🕒')) {
+          if (region==='coming') comingGirls.push({age:cur.age,name:cur.name,detail:nl.replace('🕒','').replace('➜',' ').trim()});
+          else { var tm=nl.match(/🕒\s*(\d{4})/); if(tm) cur.time=tm[1]; }
+          break;
+        }
+      }
+      if (region==='jphk')   jpHkGirls.push(cur);
+      if (region==='taiwan') taiwanGirls.push(cur);
+    }
+  }
+  return {comingGirls:comingGirls, jpHkGirls:jpHkGirls, taiwanGirls:taiwanGirls};
+}
+
+function walkBuildOutput(p, data, dateStr, txtRest, txtFull) {
+  var comingGirls=data.comingGirls, jpHkGirls=data.jpHkGirls, taiwanGirls=data.taiwanGirls;
+  var mid = p.symMid ? ' '+p.symMid+' ' : ' ';
+  var sep = p.symGroupSep || '';
+  var r = p.symTitle.replace('{DATE}', dateStr)+'
+
+'+p.symJp+'
+';
+  jpHkGirls.forEach(function(g){ r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'
+'; });
+  if (!jpHkGirls.length) r+='｜無｜
+';
+  r+='
+'+p.symTw+'
+';
+  var t1=taiwanGirls.filter(function(g){return +g.age>25;});
+  var t2=taiwanGirls.filter(function(g){return +g.age>=21&&+g.age<=25;});
+  var t3=taiwanGirls.filter(function(g){return +g.age>=18&&+g.age<=20;});
+  var t4=taiwanGirls.filter(function(g){return +g.age<18;});
+  var has=false;
+  var og=function(arr){ arr.forEach(function(g){ r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'
+'; }); };
+  if(t1.length){og(t1);has=true;}
+  if(t2.length){if(has&&sep)r+=sep+'
+';og(t2);has=true;}
+  if(t3.length){if(has&&sep)r+=sep+'
+';og(t3);has=true;}
+  if(t4.length){if(has&&sep)r+=sep+'
+';og(t4);}
+  if(!taiwanGirls.length) r+='｜無｜
+';
+  r+='
+';
+  if(p.symStatusLine.trim()) r+=p.symStatusLine+'
+';
+  if(txtRest.trim()) r+=txtRest+'
+
+';
+  if(txtFull.trim()) r+=txtFull+'
+';
+  if(comingGirls.length){ r+='
+'+p.symComing+'
+'; comingGirls.forEach(function(g){ r+=g.age+' '+g.name+'
+'+g.detail+'
+'; }); }
+  return r;
+}
+
+function walkProcessAll() {
+  var input = walkGEl('walkInputText').value;
+  if (!input.trim()) { alert('請先貼上文案再點轉檔。'); return; }
+  walkSaveCurrentToState();
+  var dateStr = walkGetDateString();
+  var txtRest = walkGEl('walk-quickRest').value;
+  var txtFull = walkGEl('walk-quickFull').value;
+  var data = walkParseInput(input);
+  walkGEl('walkMainOutput').value = walkBuildOutput(walkPresets[0], data, dateStr, txtRest, txtFull);
+  walkGEl('walkMainLabel').textContent = walkPresets[0].name;
+  for (var i=1;i<=3;i++) {
+    walkGEl('walkSubOutput'+i).value = walkBuildOutput(walkPresets[i], data, dateStr, txtRest, txtFull);
+    walkGEl('walkSubLabel'+i).textContent = walkPresets[i].name;
+  }
+  showWalkStatus('✦ 四款轉檔完成');
+}
+function walkCopyMain() {
+  var v = walkGEl('walkMainOutput').value;
+  if (!v.trim()) { alert('請先點擊轉檔。'); return; }
+  copyText(v, '✅ 已複製「'+walkPresets[0].name+'」');
+}
+function walkCopySub(i) {
+  var v = walkGEl('walkSubOutput'+i).value;
+  if (!v.trim()) { alert('請先點擊轉檔。'); return; }
+  copyText(v, '✅ 已複製「'+walkPresets[i].name+'」');
+}
+
+/* ── Load Admin Data from Sheets ── */
+function loadAdminFromSheets() {
+  if (typeof google === 'undefined' || !google.script) return;
+  google.script.run
+    .withSuccessHandler(function(data) {
+      if (data.day)  { var e=document.getElementById('admin-inputA'); if(e) e.value=data.day; }
+      if (data.week) { var e=document.getElementById('admin-weekInput'); if(e) e.value=data.week; }
+      if (data.note) { var e=document.getElementById('admin-notepad'); if(e) e.value=data.note; }
+      if (data.db)   {
+        var e=document.getElementById('admin-db'); if(e){ e.value=data.db; syncDbToBbRaw(); }
+      }
+      if (data.walk) {
+        try {
+          var w = JSON.parse(data.walk);
+          if (Array.isArray(w.presets) && w.presets.length===4) {
+            walkPresets = w.presets; walkSyncTabNames(); walkRenderPresetSettings();
+          }
+          var qr=document.getElementById('walk-quickRest'),qf=document.getElementById('walk-quickFull');
+          if(qr&&w.quickRest!=null) qr.value=w.quickRest;
+          if(qf&&w.quickFull!=null) qf.value=w.quickFull;
+        } catch(e) {}
+      } else {
+        var qr=document.getElementById('walk-quickRest'),qf=document.getElementById('walk-quickFull');
+        if(qr) qr.value='▫️ 今日改休 ➜\n35 妹妹名字';
+        if(qf) qf.value='▫️ 今日約滿 ➜\n｜無｜';
+      }
+      showAdminStatus('✓ 班表資料已載入');
+    })
+    .withFailureHandler(function(e){ showAdminStatus('⚠ 班表載入失敗：'+e.message); })
+    .loadAll();
+}
 
 </script>
 </body></html>
