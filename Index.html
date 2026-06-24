@@ -16,27 +16,28 @@
 }
 
 body.dark-theme {
-  --bg:#3a3530; --card:#2f2a26; --card2:#352f2a; --border:#4a4239; --border2:#5a524a;
-  --text:#e8e0d8; --text2:#b8a898; --text3:#8a7a68; --rose:#f08898; --rose-light:#4a2838;
-  --rose-border:#6a4858; --sage:#88c8a8; --sage-light:#3a5548; --sage-border:#5a8a78;
-  --sky:#7a9fd5; --sky-light:#3a4a68; --peach:#e5a878; --peach-light:#5a4a38;
-  --gold:#d4b878; --gold-light:#4a4428;
+  --bg:#26221f; --card:#312c28; --card2:#3a342f; --border:#4a433d; --border2:#5c544c;
+  --text:#f2ebe1; --text2:#bfb2a3; --text3:#8c8175; --rose:#e6b3ba; --rose-light:#453235;
+  --rose-border:#664a4e; --sage:#a1c2a8; --sage-light:#304035; --sage-border:#4a6652;
+  --sky:#a1b8d6; --sky-light:#2c384a; --peach:#e8bd9b; --peach-light:#4a382b;
+  --gold:#d4b882; --gold-light:#423826; --accent:#d4b882; --accent2:#e6b3ba;
+  --cream:#2c2824; --surface:#2a2520;
 }
 
 body.light-theme {
-  --bg:#f9f6f0; --card:#fefdfb; --card2:#faf8f4; --border:#e8e3db; --border2:#ddd5cd;
-  --text:#5a4a38; --text2:#8a7a68; --text3:#b8a898; --rose:#d8647a; --rose-light:#f5e8eb;
-  --rose-border:#e8bcc8; --sage:#6a9876; --sage-light:#e8f3ed; --sage-border:#b8d8c4;
-  --sky:#5a8aa5; --sky-light:#e8eef8; --peach:#c88a5a; --peach-light:#f5ebe0;
-  --gold:#a8806a; --gold-light:#f8f3e8;
+  --bg:#F2F7F4; --card:#FFFFFF; --card2:#EAF2ED; --border:#D5E6DC; --border2:#C0D8CB;
+  --text:#3A4A40; --text2:#627A68; --text3:#94A89A; --rose:#d87b8c; --rose-light:#fce8ec;
+  --rose-border:#e8c0cc; --sage:#6a9876; --sage-light:#e0f0e8; --sage-border:#b0d8c0;
+  --sky:#6a8ea5; --sky-light:#daeef8; --peach:#d89870; --peach-light:#f5ebe0;
+  --gold:#a88a70; --gold-light:#f5ede0; --cream:#eef5f1; --surface:#f8fcfa;
 }
 
 body.warm-theme {
-  --bg:#f5f0e8; --card:#fdfaf7; --card2:#faf5f0; --border:#e8ddd2; --border2:#ddd0c4;
-  --text:#3a2818; --text2:#6a5a48; --text3:#9a8a78; --rose:#e08878; --rose-light:#fce8e4;
-  --rose-border:#f0c8c0; --sage:#78a878; --sage-light:#e8f5e8; --sage-border:#b8dab8;
-  --sky:#6a8ab5; --sky-light:#e8f0f8; --peach:#d88860; --peach-light:#f5e8d8;
-  --gold:#b8906a; --gold-light:#faf5e8;
+  --bg:#FDF5F7; --card:#FFFFFF; --card2:#FAEDF0; --border:#F2DCE0; --border2:#E8C8D0;
+  --text:#4A3A3D; --text2:#7A6267; --text3:#A89498; --rose:#e07a8f; --rose-light:#fce8ec;
+  --rose-border:#f0b8c8; --sage:#809e8a; --sage-light:#e8f4ec; --sage-border:#b8d8c4;
+  --sky:#7a94b5; --sky-light:#e4eef8; --peach:#d88c68; --peach-light:#faead8;
+  --gold:#b89470; --gold-light:#fdf0e0; --cream:#fdf0f4; --surface:#fff8fa;
 }
 
 body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:0.9375rem;line-height:1.5;min-height:100vh;transition:background 0.3s,color 0.3s;}
@@ -44,11 +45,25 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:0.
 .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:0.25rem;color:var(--text3);font-size:0.6875rem;font-weight:500;border:none;background:none;min-height:44px;}
 .bnav-item.active{color:var(--rose)}
 .bnav-icon{font-size:1.25rem;line-height:1}
-.top-nav{display:none;position:sticky;top:0;z-index:200;background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5rem;height:var(--nav-h);align-items:center;gap:0;box-shadow:0 1px 8px rgba(0,0,0,.05);}
-.tnav-logo{font-size:1rem;font-weight:600;color:var(--text);margin-right:2rem;letter-spacing:.02em}
-.tnav-item{padding:0 1.125rem;font-size:0.875rem;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;height:var(--nav-h);display:flex;align-items:center;border:none;background:none;white-space:nowrap;}
-.tnav-item.active{color:var(--rose);border-bottom-color:var(--rose)}
+.top-nav{display:none;}
 .app{padding-bottom:var(--bottom-h)}
+/* ── Sidebar ── */
+.sidebar{display:none;position:fixed;top:0;left:0;bottom:0;width:240px;background:var(--card);border-right:1px solid var(--border);flex-direction:column;padding:24px 16px;z-index:1000;transition:background .3s,border-color .3s;}
+.sidebar-logo{font-size:16px;font-weight:700;letter-spacing:.06em;color:var(--gold);margin-bottom:32px;padding-left:4px;}
+.sidebar-label{font-size:10px;font-weight:600;letter-spacing:.15em;color:var(--text3);margin-bottom:10px;padding-left:8px;text-transform:uppercase;}
+.sidebar-menu{display:flex;flex-direction:column;gap:3px;}
+.snav-item{display:flex;align-items:center;gap:10px;width:100%;background:transparent;border:none;color:var(--text2);font-size:13px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .18s;text-align:left;font-family:var(--font);}
+.snav-item:hover{background:var(--card2);color:var(--text);}
+.snav-item.active{color:var(--gold);font-weight:600;background:var(--gold-light);}
+.snav-icon{font-size:15px;opacity:.85;}
+.sidebar-footer{margin-top:auto;border-top:1px solid var(--border);padding-top:16px;display:flex;flex-direction:column;gap:14px;}
+.theme-toggle-inline{display:flex;gap:4px;}
+.theme-toggle-inline button{flex:1;padding:5px 0;font-size:13px;border:1px solid var(--border2);background:var(--card2);border-radius:6px;cursor:pointer;transition:.18s;}
+.theme-toggle-inline button.active{background:var(--gold);border-color:var(--gold);}
+.sidebar-user{display:flex;align-items:center;gap:10px;padding:6px 4px;}
+.sidebar-avatar{width:34px;height:34px;border-radius:50%;background:var(--sky);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;}
+.sidebar-user-name{font-size:13px;font-weight:600;color:var(--text);}
+.sidebar-user-role{font-size:11px;color:var(--text3);}
 .panel{display:none;padding:0.4rem;max-width:1400px;margin:0 auto}
 .panel.active{display:block}
 .sub-panel{display:none}
@@ -71,17 +86,22 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:0.
 .btn-sm{min-height:30px;padding:0.25rem 0.5rem;font-size:0.8125rem}
 input,select,textarea{font-family:var(--font);font-size:0.9375rem;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:0.3rem 0.5rem;width:100%;transition:.1s;}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,99,122,.1)}
-.cal-nav-row{display:flex;align-items:center;justify-content:space-between;padding:0.3rem 0.7rem;border-bottom:1px solid var(--border);background:var(--card2); flex-wrap:wrap; gap:4px;}
-.cal-month{font-size:0.9375rem;font-weight:600;color:var(--text); min-width:60px; text-align:center;}
-.cal-arrow{background:none;border:none;cursor:pointer;font-size:1.25rem;color:var(--text2);padding:0 0.5rem;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;border-radius:var(--r-sm)}
-.cal-wd{display:grid;grid-template-columns:repeat(7,1fr);background:var(--card2);border-bottom:1px solid var(--border)}
-.cal-wd span{text-align:center;font-size:0.6875rem;font-weight:600;color:var(--text3);padding:0.25rem 0}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0.2rem}
-.cal-day{display:flex;flex-direction:column;align-items:center;padding:0.1rem;cursor:pointer;border-radius:var(--r-sm);min-height:36px;justify-content:center}
-.dn{font-size:0.8125rem;font-weight:500;color:var(--text);width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;border-radius:50%}
-.cal-day.other .dn{color:var(--text3)}
-.cal-day.today .dn{background:var(--text);color:#fff}
-.cal-day.selected .dn{background:var(--rose);color:#fff}
+.cal-nav-row{display:flex;align-items:center;padding:4px 0 16px 0;background:transparent;border-bottom:none;flex-wrap:wrap;gap:4px;}
+.cal-month{font-size:22px;font-weight:600;color:var(--text);letter-spacing:.03em;font-style:italic;}
+.cal-arrow{background:var(--card2);border:1px solid var(--border);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);cursor:pointer;transition:.2s;}
+.cal-arrow:hover{background:var(--border);color:var(--text);}
+.cal-wd{display:grid;grid-template-columns:repeat(7,1fr);background:transparent;border-bottom:none;padding-bottom:10px;}
+.cal-wd span{text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:0.25rem 0}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0;gap:6px;}
+.cal-day{display:flex;flex-direction:column;align-items:center;padding:0;cursor:pointer;border-radius:12px;min-height:42px;justify-content:center;background:var(--card2);border:1.5px solid var(--border);transition:all .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.03);}
+.cal-day:hover:not(.other){transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.07);border-color:var(--border2);}
+.dn{font-size:0.8125rem;font-weight:600;color:var(--text);width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:12px;}
+.cal-day.other{background:transparent;border-color:transparent;box-shadow:none;opacity:.3;}
+.cal-day.other .dn{color:var(--text3);}
+.cal-day.today{border-color:var(--rose);background:var(--rose-light);}
+.cal-day.today .dn{color:var(--rose);}
+.cal-day.selected{border-color:var(--rose);background:var(--card);box-shadow:0 0 0 3px rgba(232,99,122,.18);}
+.cal-day.selected .dn{color:var(--rose);font-weight:700;}
 .ddots{display:flex;gap:2px;margin-top:2px;height:4px;align-items:center;justify-content:center}
 .dot{width:4px;height:4px;border-radius:50%;background:var(--rose)}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -224,13 +244,16 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 .stat-btn-row { display: flex; gap: 0.4rem; margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px dashed var(--border); justify-content: flex-end; align-items: center; }
 
 @media(min-width:1024px){
-  .bottom-nav{display:none}
-  .top-nav{display:flex}
-  .app{padding-bottom:0;padding-top:0}
-  .panel{padding:0.8rem}
+  .bottom-nav{display:none;}
+  .top-nav{display:none;}
+  .sidebar{display:flex;}
+  .app{padding-bottom:0;padding-top:0;margin-left:240px;max-width:calc(100% - 240px);}
+  .panel{padding:1rem;max-width:100%;}
   .wo-desktop{display:grid;grid-template-columns:260px 1fr;gap:0.6rem;align-items:start}
-  .cal-col{position:sticky;top:calc(var(--nav-h)+0.8rem);align-self:start;display:flex;flex-direction:column;gap:0.4rem;width:100%}
-  #toast { bottom: 20px; }
+  .cal-col{position:sticky;top:1rem;align-self:start;display:flex;flex-direction:column;gap:0.4rem;width:100%}
+  #toast{bottom:20px;}
+  #cal-card-el{border-radius:16px;padding:12px 16px;}
+  .cloud-sync-badge{top:6px;right:8px;}
 }
 @media(max-width:1023px){
   .bottom-nav{display:flex}
@@ -263,21 +286,30 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 </head>
 <body>
 
-<div class="theme-toggle-btn" id="themeToggle">
-  <button onclick="setTheme('default')" class="active">🌞</button>
-  <button onclick="setTheme('warm-theme')">🔥</button>
-  <button onclick="setTheme('dark-theme')">🌙</button>
-  <button onclick="setTheme('light-theme')">☁️</button>
-</div>
-
-<nav class="top-nav">
-  <span class="tnav-logo">DDB</span>
-  <button class="tnav-item active" onclick="ST('wo')">📋 工單</button>
-  <button class="tnav-item" onclick="ST('bb')">🔍 搜尋</button>
-  <button class="tnav-item" onclick="ST('sched')">📅 班表</button>
-  <button class="tnav-item" onclick="ST('stat')">📊 統計</button>
-  <button class="tnav-item" onclick="ST('format')">✨ 轉檔</button>
-</nav>
+<aside class="sidebar">
+  <div class="sidebar-logo">✦ DDB | WORKSPACE</div>
+  <div class="sidebar-label">WORKSPACE</div>
+  <div class="sidebar-menu">
+    <button class="snav-item active" onclick="ST('wo')"><span class="snav-icon">📋</span> 我的工單</button>
+    <button class="snav-item" onclick="ST('bb')"><span class="snav-icon">🔍</span> 探索搜尋</button>
+    <button class="snav-item" onclick="ST('stat')"><span class="snav-icon">📊</span> 數據紀錄</button>
+  </div>
+  <div class="sidebar-footer">
+    <div class="theme-toggle-inline" id="themeToggle">
+      <button onclick="setTheme('default')" class="active">🌞</button>
+      <button onclick="setTheme('warm-theme')">🌸</button>
+      <button onclick="setTheme('dark-theme')">🌙</button>
+      <button onclick="setTheme('light-theme')">🌿</button>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">D</div>
+      <div>
+        <div class="sidebar-user-name">DDB Admin</div>
+        <div class="sidebar-user-role">管理者 · 日常營運</div>
+      </div>
+    </div>
+  </div>
+</aside>
 
 <div id="cloud-loading-overlay">
   <div class="cloud-spinner"></div>
@@ -303,8 +335,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
         <div style="font-size:1rem; font-weight:600; color:var(--accent);">📝 多行程便簽（5區）</div>
         <div style="flex:1"></div>
 <button class="btn btn-sage btn-sm" onclick="addMultiNote()" style="height:32px;">＋ 新增</button>
-<button onclick="manualSaveToCloud()" style="margin-left:6px; padding:6px 10px; font-size:12px; background:var(--sky-light); border:1px solid var(--sky); color:var(--sky); border-radius:4px; cursor:pointer; font-weight:500;">☁ 立即同步</button>
-<button onclick="loadAllDataFromCloud()" style="margin-left:6px; padding:6px 10px; font-size:12px; background:var(--peach-light); border:1px solid var(--peach); color:var(--peach); border-radius:4px; cursor:pointer; font-weight:500;">↓ 重新載入</button>
       </div>
 
       <div style="display:flex; gap:10px; height: calc(100vh - 170px);">
@@ -319,43 +349,43 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
           <div id="multi-note-list" style="flex:1; overflow-y:auto; padding:8px; font-size:13px;"></div>
         </div>
 
-        <!-- 右側 5 個彩色編輯區 -->
-        <div style="flex:1; display:flex; gap:10px; overflow-x:auto; padding-bottom:10px;">
+        <!-- 右側 4 個彩色編輯區 -->
+        <div style="flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; overflow-x:auto; padding-bottom:10px;">
 
-          <!-- 1. Sky -->
-          <div style="flex:1; min-width:210px; background:white; border:2px solid #B8D4E8; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
-            <div style="padding:6px 10px; background:#B8D4E8; color:#2a4a5a; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
-              <span id="multi-time1">Sky</span>
-              <button onclick="saveMultiNote(1)" style="padding:1px 8px; background:white; border:1px solid #B8D4E8; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+          <!-- 1. Lavender -->
+          <div style="min-width:200px; background:var(--card); border:2px solid #c8c0d8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+            <div style="padding:8px 12px; background:#e8e2f4; color:#4a3a6a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; border-radius:10px 10px 0 0;">
+              <span id="multi-time1">💜 Lavender</span>
+              <button onclick="saveMultiNote(1)" style="padding:2px 10px; background:white; border:1px solid #c8c0d8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
             </div>
-            <textarea id="multi-editor1" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第1個行程..."></textarea>
+            <textarea id="multi-editor1" style="flex:1; min-height:200px; padding:12px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第1個行程..."></textarea>
           </div>
 
-          <!-- 2. Sand -->
-          <div style="flex:1; min-width:210px; background:white; border:2px solid #F5E0D4; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
-            <div style="padding:6px 10px; background:#F5E0D4; color:#5a4a3a; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
-              <span id="multi-time2">Sand</span>
-              <button onclick="saveMultiNote(2)" style="padding:1px 8px; background:white; border:1px solid #F5E0D4; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+          <!-- 2. Rose -->
+          <div style="min-width:200px; background:var(--card); border:2px solid #e8b8c4; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+            <div style="padding:8px 12px; background:#fce4ec; color:#6a2a3a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; border-radius:10px 10px 0 0;">
+              <span id="multi-time2">🌹 Rose</span>
+              <button onclick="saveMultiNote(2)" style="padding:2px 10px; background:white; border:1px solid #e8b8c4; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
             </div>
-            <textarea id="multi-editor2" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第2個行程..."></textarea>
+            <textarea id="multi-editor2" style="flex:1; min-height:200px; padding:12px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第2個行程..."></textarea>
           </div>
 
           <!-- 3. Mint -->
-          <div style="flex:1; min-width:210px; background:white; border:2px solid #C8E6D8; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
-            <div style="padding:6px 10px; background:#C8E6D8; color:#2a5a45; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
-              <span id="multi-time3">Mint</span>
-              <button onclick="saveMultiNote(3)" style="padding:1px 8px; background:white; border:1px solid #C8E6D8; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+          <div style="min-width:200px; background:var(--card); border:2px solid #a8d4b8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+            <div style="padding:8px 12px; background:#d8f0e4; color:#2a5a40; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; border-radius:10px 10px 0 0;">
+              <span id="multi-time3">🌿 Mint</span>
+              <button onclick="saveMultiNote(3)" style="padding:2px 10px; background:white; border:1px solid #a8d4b8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
             </div>
-            <textarea id="multi-editor3" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第3個行程..."></textarea>
+            <textarea id="multi-editor3" style="flex:1; min-height:200px; padding:12px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第3個行程..."></textarea>
           </div>
 
-          <!-- 4. Lilac -->
-          <div style="flex:1; min-width:210px; background:white; border:2px solid #D9CECD; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
-            <div style="padding:6px 10px; background:#D9CECD; color:#8a7a6f; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
-              <span id="multi-time4">Lilac</span>
-              <button onclick="saveMultiNote(4)" style="padding:1px 8px; background:white; border:1px solid #E0D4E8; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
+          <!-- 4. Peach -->
+          <div style="min-width:200px; background:var(--card); border:2px solid #e8c8a8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+            <div style="padding:8px 12px; background:#faebd8; color:#6a3a1a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; border-radius:10px 10px 0 0;">
+              <span id="multi-time4">🍑 Peach</span>
+              <button onclick="saveMultiNote(4)" style="padding:2px 10px; background:white; border:1px solid #e8c8a8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
             </div>
-            <textarea id="multi-editor4" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第4個行程..."></textarea>
+            <textarea id="multi-editor4" style="flex:1; min-height:200px; padding:12px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第4個行程..."></textarea>
           </div>
 
         </div>
@@ -540,84 +570,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
   </div>
 </div>
 
-<div id="tab-sched" class="panel">
-  <div class="sched-hdr">
-    <div class="sched-hdr-title">班表與週報管理系統</div>
-    <div class="sched-hdr-ver" id="versionLabel"></div>
-  </div>
-  <div class="top-zone">
-    <div class="top-left">
-      <div class="sched-card">
-        <div class="sched-lbl">📋 當日班表輸入</div>
-        <textarea class="sched-ta" id="inputA" placeholder="在此貼上本日班表…" oninput="saveLS('sch-input-day',this.value)" spellcheck="false"></textarea>
-        <div class="sched-btn-row">
-          <button class="sched-btn primary" onclick="convertDay()">執行轉檔</button>
-          <button class="sched-btn" onclick="sortDayInput()">↕ 排序</button>
-          <button class="sched-btn" onclick="clearDayInput()" style="color:#c9949b; border-color:#dcc9d0;">清除</button>
-        </div>
-      </div>
-      <div class="sched-card">
-        <div class="sched-lbl">✨ 轉換結果</div>
-        <div id="outputDiv" class="ro-box"></div>
-        <div id="missing"></div>
-        <button class="output-toggle" id="outputToggle" onclick="toggleOutputDiv()">▼ 展開完整結果</button>
-        <button class="copy-wide" onclick="copyOutput()">📋 複製結果</button>
-      </div>
-    </div>
-    <div class="top-right">
-      <div class="sched-card" style="flex:1;display:flex;flex-direction:column">
-        <div class="sched-lbl">📝 自由編輯區</div>
-        <textarea class="sched-ta" id="notepad" placeholder="在此自由輸入或整理內容…" oninput="saveLS('sch-notepad',this.value)" spellcheck="false" style="flex:1;min-height:300px"></textarea>
-        <div class="sched-btn-row">
-          <button class="sched-btn primary" onclick="copyNotepad()">📋 複製此欄</button>
-          <button class="sched-btn" onclick="clearNotepad()" style="color:#c9949b; border-color:#dcc9d0;">清除</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="week-zone">
-    <div class="sched-card">
-      <div class="sched-lbl">本週預報輸入</div>
-      <div class="sched-hint">支援：30米莎➜㈣㈤ 或 18悅潔➜㈢㈣1300-2200㈤1200-1700</div>
-      <textarea class="sched-ta" id="weekInput" placeholder="在此貼上整週預報內容…" oninput="saveLS('sch-input-week',this.value)" spellcheck="false"></textarea>
-      <div class="sched-btn-row">
-        <button class="sched-btn primary" onclick="convertWeek()">⚡ 彙整週報</button>
-        <button class="sched-btn" onclick="sortWeekInput()">↕ 一鍵排序</button>
-        <button class="sched-btn" onclick="clearWeekInput()" style="color:#c9949b; border-color:#dcc9d0;">清除</button>
-      </div>
-    </div>
-    <div class="sched-card">
-      <div class="sched-lbl">預報乾淨名單</div>
-      <div class="sched-hint">已去除時間，只顯示每人出班日期。</div>
-      <div id="pureOutput" class="ro-box"></div>
-      <button class="copy-wide alt" onclick="copyPure()">📋 複製乾淨名單</button>
-    </div>
-  </div>
-  <div class="day-panel sched-card">
-    <div class="sched-lbl">📅 週間排程一覽</div>
-    <div class="day-grid" id="weekGrid"></div>
-  </div>
-  <div class="db-zone">
-    <div class="sched-card">
-      <div class="sched-lbl">🗂 母檔資料庫</div>
-      <div class="sched-hint">點「整理並儲存」自動去重 + 降序排好。</div>
-      <div class="sched-btn-row db-top-buttons" style="margin: 5px 0 3px;">
-        <button class="sched-btn primary" onclick="sortDB()">整理並儲存</button>
-        <button class="sched-btn" onclick="openPatchModal()">🔄 一鍵覆蓋更新</button>
-      </div>
-      <details id="dbCollapsible" class="db-collapsible" open="">
-        <summary>▶ 點擊展開母檔內容（可編輯資料）</summary>
-        <div class="db-content">
-          <textarea class="sched-ta" id="db" placeholder="請在此貼入母檔資料…" oninput="saveLS('sch-db',this.value)" spellcheck="false"></textarea>
-          <div class="sched-btn-row">
-            <button class="sched-btn primary" style="background: linear-gradient(135deg, #7a6650, #968169);" onclick="exportNewVersion()">產生最新版本</button>
-          </div>
-          <div id="dbStatus" style="font-size:11px; margin-top:4px; color:var(--green)"></div>
-        </div>
-      </details>
-    </div>
-  </div>
-</div>
 
 <div id="tab-bb" class="panel">
   <div class="card">
@@ -685,137 +637,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 </div>
 </div>
 
-<div id="tab-format" class="panel">
-  <style>
-  .fmt-wrap{display:grid;grid-template-columns:300px 1fr;gap:0.5rem;align-items:start}
-  @media(max-width:700px){.fmt-wrap{grid-template-columns:1fr}}
-  .fmt-left{display:flex;flex-direction:column;gap:0.3rem}
-  .fmt-right{display:flex;flex-direction:column;gap:0.3rem}
-  .fmt-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.3rem}
-  @media(max-width:900px){.fmt-sub-grid{grid-template-columns:1fr}}
-  .fmt-adv-body{overflow:hidden;max-height:0;transition:max-height 0.35s ease,opacity 0.25s ease;opacity:0}
-  .fmt-adv-body.open{max-height:1400px;opacity:1}
-  .fmt-adv-arrow{font-size:10px;transition:transform 0.22s ease;display:inline-block}
-  .fmt-adv-arrow.open{transform:rotate(180deg)}
-  .fmt-preset-tabs{display:flex;gap:4px;margin-bottom:0.5rem}
-  .fmt-tab{flex:1;padding:4px 2px;text-align:center;border:1.5px solid var(--border);border-radius:var(--r-sm);background:transparent;cursor:pointer;font-size:11px;font-weight:500;color:var(--text2);font-family:var(--font)}
-  .fmt-tab.active{background:var(--rose-light);border-color:var(--rose-border);color:var(--rose)}
-  .fmt-tab input{border:none;background:transparent;font-size:11px;font-weight:500;color:inherit;text-align:center;width:100%;cursor:text;font-family:var(--font)}
-  .fmt-tab input:focus{outline:none;border-bottom:1px dashed var(--rose)}
-  .fmt-row{display:flex;align-items:flex-start;margin-bottom:6px;gap:6px}
-  .fmt-row label{width:80px;font-size:11px;font-weight:500;color:var(--text2);padding-top:6px;flex-shrink:0}
-  .fmt-row input,.fmt-row textarea{flex:1;font-size:12px;padding:4px 8px}
-  .fmt-row textarea{height:44px;resize:vertical}
-  .fmt-main-out{width:100%;min-height:400px;font-family:var(--mono);font-size:12.5px;white-space:pre;line-height:1.75;resize:vertical}
-  .fmt-sub-out{width:100%;min-height:280px;font-family:var(--mono);font-size:11.5px;white-space:pre;line-height:1.7;resize:vertical}
-  </style>
-  <div class="fmt-wrap">
-    <div class="fmt-left">
-      <div class="card">
-        <div class="card-head"><span class="card-title">📅 日期</span></div>
-        <div style="padding:0.5rem;display:flex;align-items:center;gap:0.5rem">
-          <input type="date" id="fmtDatePicker" onchange="fmtOnDateChange()" style="flex:1">
-          <span id="fmtWeekday" style="font-size:1rem;color:var(--rose);white-space:nowrap"></span>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="card-title">✏️ 每日快速編輯</span></div>
-        <div style="padding:0.5rem">
-          <div style="font-size:11px;color:var(--text2);margin-bottom:4px">今日改休</div>
-          <textarea id="fmtQuickRest" rows="3" style="margin-bottom:0.4rem" placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
-          <div style="font-size:11px;color:var(--text2);margin-bottom:4px">今日約滿</div>
-          <textarea id="fmtQuickFull" rows="2" placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-head"><span class="card-title">📋 貼上原始廣告文案</span></div>
-        <div style="padding:0.5rem">
-          <textarea id="fmtInputText" rows="8" style="font-family:var(--mono);font-size:12px;resize:vertical;margin-bottom:0.4rem" placeholder="將廣告原文貼在這裡…"></textarea>
-          <button class="btn btn-rose" style="width:100%" onclick="fmtProcessAll()">✦ 四款同時轉檔</button>
-        </div>
-      </div>
-      <div class="card">
-        <div style="padding:0.4rem 0.7rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="fmtToggleAdv()">
-          <span style="font-size:12px;color:var(--text2);font-weight:500">⚙ 進階符號設定</span>
-          <span class="fmt-adv-arrow open" id="fmtAdvArrow">▼</span>
-        </div>
-        <div class="fmt-adv-body open" id="fmtAdvBody">
-          <div style="padding:0 0.7rem 0.7rem">
-            <div class="fmt-preset-tabs" id="fmtPresetTabs">
-              <div class="fmt-tab active" onclick="fmtSwitchPreset(0)"><input class="fmt-tab-name" id="fmtTabName0" value="款式 A" onclick="event.stopPropagation()"></div>
-              <div class="fmt-tab" onclick="fmtSwitchPreset(1)"><input class="fmt-tab-name" id="fmtTabName1" value="款式 B" onclick="event.stopPropagation()"></div>
-              <div class="fmt-tab" onclick="fmtSwitchPreset(2)"><input class="fmt-tab-name" id="fmtTabName2" value="款式 C" onclick="event.stopPropagation()"></div>
-              <div class="fmt-tab" onclick="fmtSwitchPreset(3)"><input class="fmt-tab-name" id="fmtTabName3" value="款式 D" onclick="event.stopPropagation()"></div>
-            </div>
-            <div class="fmt-row"><label>大抬頭樣式</label><input type="text" id="fmtSymTitle"></div>
-            <div class="fmt-row"><label>名單前綴</label><input type="text" id="fmtSymDot"></div>
-            <div class="fmt-row"><label>中間分隔點</label><input type="text" id="fmtSymMid"></div>
-            <div class="fmt-row"><label>日韓抬頭</label><input type="text" id="fmtSymJp"></div>
-            <div class="fmt-row"><label>本地抬頭</label><input type="text" id="fmtSymTw"></div>
-            <div class="fmt-row"><label>時間前綴</label><input type="text" id="fmtTimePrefix"></div>
-            <div class="fmt-row"><label>時間後綴</label><input type="text" id="fmtTimeSuffix"></div>
-            <div class="fmt-row"><label>年齡組分隔</label><input type="text" id="fmtSymGroupSep"></div>
-            <div class="fmt-row"><label>異動分區線</label><input type="text" id="fmtSymStatusLine"></div>
-            <div class="fmt-row"><label>即將登場線</label><input type="text" id="fmtSymComing"></div>
-            <div style="display:flex;gap:0.4rem;margin-top:0.4rem">
-              <button class="btn btn-plain btn-sm" onclick="fmtResetAll()">↺ 恢復預設</button>
-              <button class="btn btn-sage btn-sm" onclick="fmtSavePresets()">☁ 儲存設定</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="fmt-right">
-      <div class="card" style="border-top:3px solid var(--rose)">
-        <div class="card-head">
-          <span class="card-title" id="fmtMainLabel">款式 A</span>
-          <span class="card-sub">主要</span>
-          <button class="btn btn-rose btn-sm" style="margin-left:auto" onclick="fmtCopyMain()">複製</button>
-        </div>
-        <div style="padding:0.5rem">
-          <textarea id="fmtMainOutput" class="fmt-main-out" readonly placeholder="點擊「四款同時轉檔」後顯示…"></textarea>
-        </div>
-      </div>
-      <div class="fmt-sub-grid">
-        <div class="card" style="border-top:3px solid var(--sage)">
-          <div class="card-head"><span class="card-title" id="fmtSubLabel1">款式 B</span><button class="btn btn-sage btn-sm" style="margin-left:auto" onclick="fmtCopySub(1)">複製</button></div>
-          <div style="padding:0.5rem"><textarea id="fmtSubOutput1" class="fmt-sub-out" readonly placeholder="· · ·"></textarea></div>
-        </div>
-        <div class="card" style="border-top:3px solid var(--sky)">
-          <div class="card-head"><span class="card-title" id="fmtSubLabel2">款式 C</span><button class="btn btn-sky btn-sm" style="margin-left:auto" onclick="fmtCopySub(2)">複製</button></div>
-          <div style="padding:0.5rem"><textarea id="fmtSubOutput2" class="fmt-sub-out" readonly placeholder="· · ·"></textarea></div>
-        </div>
-        <div class="card" style="border-top:3px solid var(--peach)">
-          <div class="card-head"><span class="card-title" id="fmtSubLabel3">款式 D</span><button class="btn btn-plain btn-sm" style="margin-left:auto;border-color:var(--peach);color:var(--peach)" onclick="fmtCopySub(3)">複製</button></div>
-          <div style="padding:0.5rem"><textarea id="fmtSubOutput3" class="fmt-sub-out" readonly placeholder="· · ·"></textarea></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 </div>
 
 <nav class="bottom-nav">
   <button class="bnav-item active" onclick="ST('wo')"><span class="bnav-icon">📋</span>工單</button>
   <button class="bnav-item" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
-  <button class="bnav-item" onclick="ST('sched')"><span class="bnav-icon">📅</span>班表</button>
   <button class="bnav-item" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
-  <button class="bnav-item" onclick="ST('format')"><span class="bnav-icon">✨</span>轉檔</button>
 </nav>
 
-<div class="modal-overlay" id="patchModal" onclick="modalOverlayClick(event)">
-  <div class="modal-box">
-    <div class="modal-title-box">🔄 一鍵覆蓋更新</div>
-    <div class="modal-hint-box">貼入要新增或覆蓋的人員資料。</div>
-    <textarea id="dbPatch" placeholder="在此貼入要新增或覆蓋的資料…" spellcheck="false"></textarea>
-    <div id="patchResult"></div>
-    <div class="modal-footer-box">
-      <button class="modal-cancel" onclick="closePatchModal()">取消</button>
-      <button class="modal-confirm" onclick="patchDB()">✓ 確定覆蓋</button>
-    </div>
-  </div>
-</div>
 
 <div id="toast" class=""></div>
 
@@ -854,13 +684,6 @@ var WDS=['一','二','三','四','五','六','日'];
 var calMode = 'month';
 var sortDir = { name: 1, time: 1 }; 
 
-const EMBEDDED_DB = ``; 
-const EMBEDDED_DATE = `2026/6/20`;
-let weekData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
-const CIRCLE_MAP = {'㈠':'一','㈡':'二','㈢':'三','㈣':'四','㈤':'五','㈥':'六','①':'一','②':'二','③':'三','④':'四','⑤':'五','⑥':'六','⑦':'七'};
-const DAY_MAP   = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'日':7};
-const TO_CIRCLE = {1:'㈠',2:'㈡',3:'㈢',4:'㈣',5:'㈤',6:'㈥',7:'㈦'};
-const DAY_NAMES = {1:'週一',2:'週二',3:'週三',4:'週四',5:'週五',6:'週六',7:'週日'};
 
 function load(){
   try{notes=JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){notes={};}
@@ -891,13 +714,11 @@ function manualSaveToCloud() {
 function saveAllDataToCloud() {
   if(typeof google==='undefined'||!google.script||!google.script.run) return;
   setSyncStatus('syncing','儲存中…');
-  var schDB = document.getElementById('db') ? document.getElementById('db').value : (loadLS('sch-db')||'');
+  // 系統一只傳輸輕量資料，嚴禁夾帶班表/轉檔大型資料
   var payload = {
     action: 'saveAllData',
-    multiNotes: multiNotes,
-    workOrders: notes,
-    formatPresets: fmtPresets,
-    schDB: schDB
+    multiNotes: JSON.parse(JSON.stringify(multiNotes || [])),
+    workOrders: JSON.parse(JSON.stringify(notes || {}))
   };
   google.script.run
     .withSuccessHandler(function(result) {
@@ -954,15 +775,7 @@ function loadAllDataFromCloud(silent) {
         try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
         RC(); RR(); RW(); renderUnpaidDashboard(); renderAllOrders();
       }
-      if (data.formatPresets && Array.isArray(data.formatPresets) && data.formatPresets.length === 4) {
-        fmtPresets = data.formatPresets;
-        fmtSyncTabNames(); fmtRenderPresetSettings();
-      }
-      if (data.schDB && typeof data.schDB === 'string' && data.schDB.trim()) {
-        saveLS('sch-db', data.schDB);
-        var dbEl = document.getElementById('db');
-        if (dbEl) dbEl.value = data.schDB;
-      }
+      // 系統一不處理班表/轉檔資料（由系統二獨立管理）
       hideLoadingOverlay();
       setSyncStatus('ok','已同步');
       setTimeout(function(){ setSyncStatus('',''); }, 3000);
@@ -1545,17 +1358,16 @@ function submitStatPartPayment(ui, auntieName) {
 }
 
 function ST(id){
-  ['wo','bb','sched','stat','format'].forEach(function(t,i){
+  ['wo','bb','stat'].forEach(function(t,i){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
-    var elTNav = document.querySelectorAll('.tnav-item')[i];
-    if(elTNav) elTNav.classList.toggle('active',t===id);
     var elBNav = document.querySelectorAll('.bnav-item')[i];
     if(elBNav) elBNav.classList.toggle('active',t===id);
+    var elSNav = document.querySelectorAll('.snav-item')[i];
+    if(elSNav) elSNav.classList.toggle('active',t===id);
   });
   if(id==='wo') updImpDates();
   if(id==='stat') renderUnpaidDashboard();
-  if(id==='format') fmtRenderPresetSettings();
 }
 
 function SST(id){
@@ -1923,6 +1735,8 @@ function KN(e,r,c){
   else if(e.key==='Escape'){quickSave(r,c,e.target.value);selR=-1;selC=-1;RR();}
   else if(e.key==='ArrowUp'&&r>0){e.preventDefault();quickSave(r,c,e.target.value);OE(r-1,c);}
   else if(e.key==='ArrowDown'&&r<maxR){e.preventDefault();quickSave(r,c,e.target.value);OE(r+1,c);}
+  else if(e.key==='ArrowLeft'&&e.target.selectionStart===0&&c>0){e.preventDefault();quickSave(r,c,e.target.value);OE(r,c-1);}
+  else if(e.key==='ArrowRight'&&e.target.selectionEnd===e.target.value.length&&c<COLS.length-1){e.preventDefault();quickSave(r,c,e.target.value);OE(r,c+1);}
 }
 
 function RW(){
@@ -1962,7 +1776,7 @@ function newSticky(){
   var now = new Date();
   var ts = (now.getMonth()+1)+'/'+now.getDate()+' '+(now.getHours()<10?'0':'')+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
   var newId = 's'+Date.now();
-  stickies.unshift({ id: newId, text: '', time: ts, color: 'sc-yellow', pinned: false, tags: [] });
+  stickies.unshift({ id: newId, text: '', time: ts, color: 'sc-gold', pinned: false, tags: [] });
   saveS(); RSG(); selectSticky(newId);
 }
 
@@ -1977,7 +1791,7 @@ function selectSticky(id){
   document.getElementById('editor-time').textContent = s.time;
   document.getElementById('editor-pin').textContent = s.pinned ? '⭐' : '☆';
   
-  var cHtml = ['sc-yellow','sc-green','sc-blue','sc-pink','sc-peach'].map(function(c){
+  var cHtml = ['sc-gold','sc-green','sc-sky','sc-rose','sc-peach'].map(function(c){
     var isActive = (s.color === c) ? ' border:2px solid var(--text); ' : ' border:1px solid transparent; ';
     return '<div style="width:20px;height:20px;border-radius:50%;cursor:pointer;'+isActive+'background:var(--'+c.substring(3)+');" onclick="updateStickyColor(\''+id+'\',\''+c+'\'); selectSticky(\''+id+'\');"></div>';
   }).join('');
@@ -2061,7 +1875,7 @@ function RSG(){
     var isActive = (s.id === currentStickyId);
     var bg = isActive ? 'var(--card2)' : 'transparent';
     var border = isActive ? '3px solid var(--accent)' : '3px solid transparent';
-    var dotColor = 'var(--' + (s.color||'sc-yellow').substring(3) + ')';
+    var dotColor = 'var(--' + (s.color||'sc-gold').substring(3) + ')';
     var textPreview = s.text.substring(0, 30).replace(/</g,'&lt;') || '(空白便簽)';
     
     return `<div style="padding:0.4rem; cursor:pointer; background:${bg}; border-left:${border}; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:4px;" onclick="selectSticky('${s.id}')">
@@ -2190,7 +2004,6 @@ function RBB(){
   }).join('')+'</div>';
 }
 
-function normCircle(s){ for(const [k,v] of Object.entries(CIRCLE_MAP)) s=s.split(k).join('('+v+')'); return s; }
 function toast(msg){
   const el=document.getElementById('toast');
   if(!el) return;
@@ -2198,238 +2011,7 @@ function toast(msg){
   setTimeout(function(){el.className='';},2400);
 }
 
-function parseToMap(raw){
-  const map=new Map();
-  if(!raw) return map;
-  raw.split(/\n\s*\n/).forEach(function(block){
-    const b=block.trim(); if(!b) return;
-    const nm=b.match(/『([^』]+)』/);
-    const pm=b.match(/🤍(\d+)/);
-    if(nm&&pm) map.set(nm[1].trim(),{price:parseInt(pm[1],10),content:b});
-  });
-  return map;
-}
 
-function sortDB(){
-  const raw=document.getElementById('db').value.trim();
-  if(!raw){alert('資料庫是空的');return;}
-  const arr=Array.from(parseToMap(raw).values()).sort(function(a,b){return b.price-a.price;});
-  document.getElementById('db').value=arr.map(function(x){return x.content;}).join('\n\n');
-  saveLS('sch-db',document.getElementById('db').value);
-  document.getElementById('dbStatus').textContent='✓ 去重 + 降序完成（共 '+arr.length+' 筆）';
-  if(typeof google!='undefined'&&google.script&&google.script.run) saveAllDataToCloud();
-}
-
-function openPatchModal(){
-  document.getElementById('dbPatch').value='';
-  document.getElementById('patchResult').textContent='';
-  document.getElementById('patchModal').classList.add('open');
-  setTimeout(function(){document.getElementById('dbPatch').focus();},80);
-}
-function closePatchModal(){ document.getElementById('patchModal').classList.remove('open'); }
-function modalOverlayClick(e){ if(e.target===document.getElementById('patchModal')) closePatchModal(); }
-
-function patchDB(){
-  const patchRaw=document.getElementById('dbPatch').value.trim();
-  if(!patchRaw){document.getElementById('patchResult').textContent='⚠️ 請先貼入資料';return;}
-  const existMap=parseToMap(document.getElementById('db').value.trim());
-  const patchMap=parseToMap(patchRaw);
-  if(patchMap.size===0){ document.getElementById('patchResult').textContent='⚠️ 找不到有效格式'; return; }
-  let ow=0,add=0;
-  patchMap.forEach(function(val,name){ if(existMap.has(name)) ow++; else add++; existMap.set(name,val); });
-  const arr=Array.from(existMap.values()).sort(function(a,b){return b.price-a.price;});
-  document.getElementById('db').value=arr.map(function(x){return x.content;}).join('\n\n');
-  saveLS('sch-db',document.getElementById('db').value);
-  closePatchModal();
-  document.getElementById('dbStatus').textContent='✓ 覆蓋 '+ow+' 筆、新增 '+add+' 筆，共 '+existMap.size+' 筆';
-  toast('✓ 覆蓋完成！');
-  if(typeof google!='undefined'&&google.script&&google.script.run) saveAllDataToCloud();
-}
-
-function toggleOutputDiv(){
-  var el=document.getElementById('outputDiv');
-  var btn=document.getElementById('outputToggle');
-  var expanded=el.classList.toggle('expanded');
-  btn.textContent=expanded?'▲ 收起結果':'▼ 展開完整結果';
-}
-
-function sortWeekInput(){
-  var ta=document.getElementById('weekInput');
-  var lines=ta.value.split('\n').filter(function(l){return l.trim();});
-  lines.sort(function(a,b){
-    var ma=a.match(/^\d+/), mb=b.match(/^\d+/);
-    return (mb?parseInt(mb[0]):0)-(ma?parseInt(ma[0]):0);
-  });
-  ta.value=lines.join('\n');
-  saveLS('sch-input-week',ta.value);
-}
-
-function sortDayInput(){
-  const ta=document.getElementById('inputA');
-  const lines=ta.value.split('\n').map(function(l){return l.trim();}).filter(Boolean);
-  const seen=new Map();
-  lines.forEach(function(line){
-    const m=line.match(/^(\d+)\s*([^\s\d→➜\-]+)/);
-    if(m) seen.set(m[2].trim(),{price:parseInt(m[1],10),line:line});
-    else seen.set('__r__'+line,{price:-1,line:line});
-  });
-  ta.value=Array.from(seen.values()).sort(function(a,b){return b.price-a.price;}).map(function(x){return x.line;}).join('\n');
-  saveLS('sch-input-day',ta.value);
-  toast('✓ 已依牌價排序並去除重複');
-}
-
-function convertDay(){
-  const dbMap=parseToMap(document.getElementById('db').value.trim());
-  const lines=document.getElementById('inputA').value.trim().split('\n').filter(Boolean);
-  const resultMap=new Map();
-  const missing=[];
-  lines.forEach(function(line){
-    const m=line.match(/^(\d+)\s*([^\s\d→➜\-]+)\s*(\d{3,4}[^\d]+\d{3,4})/);
-    if(!m) return;
-    const price=parseInt(m[1],10),name=m[2].trim(),time=m[3].replace(/\s+/g,'');
-    const entry=dbMap.get(name);
-    if(entry){
-      let text=entry.content;
-      if(text.indexOf('🕒')!==-1) text=text.replace(/🕒[^\n]*/,'🕒'+time);
-      else{
-        const parts=text.split('\n');
-        const idx=parts.findIndex(function(p){return p.indexOf('『'+name+'』')!==-1;});
-        if(idx!==-1) parts.splice(idx+1,0,'🕒'+time); else parts.push('🕒'+time);
-        text=parts.join('\n');
-      }
-      resultMap.set(name,{price:price,text:text});
-    } else {
-      if(missing.indexOf(name)===-1) missing.push(name);
-    }
-  });
-  const sorted=Array.from(resultMap.values()).sort(function(a,b){return b.price-a.price;});
-  document.getElementById('outputDiv').textContent=sorted.map(function(x){return x.text;}).join('\n\n')||'（格式不符或無資料）';
-  document.getElementById('outputDiv').scrollTop=0;
-  document.getElementById('missing').textContent=missing.length?'⚠️ 找不到母檔：'+missing.join('、'):'';
-}
-
-function clearDayInput(){
-  if(!confirm('確定清除？')) return;
-  document.getElementById('inputA').value='';
-  localStorage.removeItem('sch-input-day');
-  document.getElementById('outputDiv').textContent='';
-  document.getElementById('missing').textContent='';
-}
-
-function copyOutput(){
-  const text=document.getElementById('outputDiv').textContent;
-  if(!text||text.startsWith('（')) return;
-  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製轉換結果');});
-}
-
-function convertWeek(){
-  const rawInput=document.getElementById('weekInput').value.trim();
-  if(!rawInput){alert('請先輸入週報內容');return;}
-  const raw=normCircle(rawInput);
-  weekData={1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
-  const pureList=[];
-  const lines=raw.split('\n').map(function(l){return l.trim();}).filter(function(l){
-    if(!l) return false;
-    if(/^[⏔➜→✦꒰꒱\s\-=*]+$/.test(l)) return false;
-    return /^\d/.test(l);
-  });
-  lines.forEach(function(line){
-    const mm=line.match(/^(\d+)\s*([^\s\d→➜\(\)]+)\s*[→➜]?\s*/);
-    if(!mm) return;
-    const price=parseInt(mm[1],10),name=mm[2].trim();
-    const sched=line.substring(mm[0].length).trim();
-    const active=new Set();
-    if(sched){
-      const re=/((?:\([一二三四五六七日]\))+)([^(]*)/g;
-      let m;
-      while((m=re.exec(sched))!==null){
-        const chars=m[1].match(/[一二三四五六七日]/g)||[];
-        const t=m[2].trim().replace(/\s+/g,'')||'未定';
-        chars.forEach(function(ch){
-          const dn=DAY_MAP[ch];
-          if(dn){weekData[dn].push({price:price,name:name,time:t});active.add(dn);}
-        });
-      }
-      if(active.size===0){
-        (sched.match(/\([一二三四五六七日]\)/g)||[]).forEach(function(d){
-          const ch=d.replace(/[()]/g,''),dn=DAY_MAP[ch];
-          if(dn){weekData[dn].push({price:price,name:name,time:'未定'});active.add(dn);}
-        });
-      }
-    }
-    const days=Array.from(active).sort(function(a,b){return a-b;});
-    const circ=days.map(function(n){return TO_CIRCLE[n];}).join('');
-    pureList.push({price:price,text:price+name+(circ?'➜'+circ:'（待定）')});
-  });
-  pureList.sort(function(a,b){return b.price-a.price;});
-  document.getElementById('pureOutput').textContent=pureList.map(function(x){return x.text;}).join('\n')||'（無有效資料）';
-  document.getElementById('pureOutput').scrollTop=0;
-  for(let i=1;i<=7;i++) weekData[i].sort(function(a,b){return b.price-a.price;});
-  renderWeekGrid();
-  toast('✓ 週報彙整完成，看板已更新');
-}
-
-function clearWeekInput(){
-  if(!confirm('確定清除？')) return;
-  document.getElementById('weekInput').value='';
-  localStorage.removeItem('sch-input-week');
-  document.getElementById('pureOutput').textContent='';
-}
-
-function copyPure(){
-  const text=document.getElementById('pureOutput').textContent;
-  if(!text||text.startsWith('（')) return;
-  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製乾淨名單');});
-}
-
-function renderWeekGrid(){
-  const c=document.getElementById('weekGrid');
-  let html='';
-  for(let i=1;i<=7;i++){
-    const list=weekData[i];
-    const items=list.length>0
-      ?list.map(function(x){
-          return '<div class="day-item"><span class="day-item-name">'+x.price+' '+x.name+'</span><span class="day-item-time">'+x.time+'</span></div>';
-       }).join('')
-      :'<div style="color:#ccc;font-size:11px;text-align:center;padding-top:14px;">暫無排班</div>';
-    html+='<div class="day-box"><div class="day-hdr"><span class="day-name">'+DAY_NAMES[i]+'</span><span class="day-count">'+list.length+' 筆</span></div><div class="day-list">'+items+'</div><button class="day-copy" onclick="copySingleDay('+i+')">📋 複製</button></div>';
-  }
-  c.innerHTML=html;
-}
-
-function copySingleDay(d){
-  const list=weekData[d];
-  if(!list||!list.length){alert('當天沒有資料');return;}
-  list.sort(function(a,b){return b.price-a.price;});
-  const text=list.map(function(x){return x.price+x.name+(x.time&&x.time!=='未定'?' '+x.time:'');}).join('\n');
-  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製 '+DAY_NAMES[d]+' 班表');});
-}
-
-function copyNotepad(){
-  const text=document.getElementById('notepad').value;
-  if(!text) return;
-  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製筆記欄內容');});
-}
-function clearNotepad(){
-  if(!confirm('確定清除筆記欄？')) return;
-  document.getElementById('notepad').value='';
-  localStorage.removeItem('sch-notepad');
-}
-
-function exportNewVersion(){
-  const dbContent=document.getElementById('db').value.trim();
-  if(!dbContent){alert('母檔是空的');return;}
-  const date=new Date().toLocaleDateString('zh-TW');
-  const escaped=dbContent.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
-  let html=document.documentElement.outerHTML;
-  html=html.replace(/const EMBEDDED_DB\s*=\s*`[\s\S]*?`;/,'const EMBEDDED_DB = `'+escaped+'`;');
-  html=html.replace(/const EMBEDDED_DATE\s*=\s*`[\s\S]*?`;/,'const EMBEDDED_DATE = `'+date+'`;');
-  const blob=new Blob([html],{type:'text/html'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='工作台_'+new Date().toISOString().slice(0,10)+'.html';
-  a.click();
-}
 
 function loadLS(k){ try{return localStorage.getItem(k)||'';}catch(e){return '';} }
 function saveLS(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
@@ -2606,45 +2188,12 @@ window.onload=function(){
   renderAllOrders();
   renderMultiNoteList();
 
-  // 班表暫存（本機 UI 狀態，不影響共用資料）
+  // 搜尋頁籤：bb-raw 快取恢復
   var bbRawCache = loadLS('bb-raw-cache');
   var bbRawEl = document.getElementById('bb-raw');
   if(bbRawEl && bbRawCache){ bbRawEl.value = bbRawCache; parseBB(); }
 
-  var iaEl = document.getElementById('inputA');
-  if(iaEl) iaEl.value = loadLS('sch-input-day');
-  var wiEl = document.getElementById('weekInput');
-  if(wiEl) wiEl.value = loadLS('sch-input-week');
-  var npEl = document.getElementById('notepad');
-  if(npEl) npEl.value = loadLS('sch-notepad');
-
-  // db：先用本機快取，雲端回來後覆蓋
-  var sDB = loadLS('sch-db');
-  var dbEl = document.getElementById('db');
-  if(dbEl) {
-    if(sDB) dbEl.value=sDB;
-    else if(EMBEDDED_DB&&EMBEDDED_DB!=='__DB_CONTENT__') dbEl.value=EMBEDDED_DB;
-  }
-
-  var vlEl = document.getElementById('versionLabel');
-  if(vlEl && EMBEDDED_DATE && EMBEDDED_DATE!=='__EMBED_DATE__') {
-    vlEl.textContent='版本更新：'+EMBEDDED_DATE;
-  }
-
-  renderWeekGrid();
-
-  const dbDetails = document.getElementById('dbCollapsible');
-  if (dbDetails) {
-    const saved = loadLS('sch-db-open');
-    if (saved === 'true') dbDetails.setAttribute('open', '');
-    else dbDetails.removeAttribute('open');
-    dbDetails.addEventListener('toggle', function () {
-      saveLS('sch-db-open', dbDetails.hasAttribute('open') ? 'true' : 'false');
-    });
-  }
-
   initAutoSync();
-  fmtInit();
 
   // ★ 主要：雲端為主，強制載入最新資料（覆蓋本機快取）
   loadAllDataFromCloud();
@@ -2653,185 +2202,5 @@ window.onload=function(){
   setInterval(function(){ loadAllDataFromCloud(true); }, 30000);
 };
 
-// ==================== 老闆娘轉檔器 (fmt*) ====================
-var FMT_DEFAULTS = [
-  {name:"款式 A",symTitle:"✦ {DATE} 當日名單 ✦",symDot:"▫️ ",symMid:"．",symJp:"═══【 🇯🇵 日韓 】═══",symTw:"═══【 🇹🇼 本地 】═══",timePrefix:"[ ",timeSuffix:" ]",symGroupSep:"· · · · ·",symStatusLine:"════꒰ 💡 異動 ꒱════",symComing:"✦── 即將登場 ──✦"},
-  {name:"款式 B",symTitle:"🌸 {DATE} 在席名單 🌸",symDot:"◦ ",symMid:"·",symJp:"〔 🇯🇵 日韓系 〕",symTw:"〔 🇹🇼 本地系 〕",timePrefix:"⏰",timeSuffix:"",symGroupSep:"- - - - -",symStatusLine:"──── 💬 異動通知 ────",symComing:"🌟 即將登場 🌟"},
-  {name:"款式 C",symTitle:"📋 {DATE} 當日出席表",symDot:"• ",symMid:"｜",symJp:"— 日韓 —",symTw:"— 本地 —",timePrefix:"",timeSuffix:" 到",symGroupSep:"──────",symStatusLine:"· · · 異動 · · ·",symComing:"＊ 即將登場 ＊"},
-  {name:"款式 D",symTitle:"💎 {DATE} 名單 💎",symDot:"❖ ",symMid:"✦",symJp:"【 日韓精選 】",symTw:"【 本地精選 】",timePrefix:"（",timeSuffix:"）",symGroupSep:"∙ ∙ ∙ ∙ ∙",symStatusLine:"══ ✧ 異動資訊 ✧ ══",symComing:"✨ 即將登場 ✨"}
-];
-var FMT_FIELDS = ['symTitle','symDot','symMid','symJp','symTw','timePrefix','timeSuffix','symGroupSep','symStatusLine','symComing'];
-var FMT_WEEKDAYS = ['日','一','二','三','四','五','六'];
-
-var fmtPresets = JSON.parse(JSON.stringify(FMT_DEFAULTS));
-var fmtCurrentPreset = 0;
-var fmtAdvOpen = true;
-
-function fmtInit() {
-  var saved = loadLS('fmt-presets');
-  if (saved) { try { var p = JSON.parse(saved); if (p.length===4) fmtPresets=p; } catch(e){} }
-  fmtSyncTabNames();
-  fmtRenderPresetSettings();
-  var t = new Date();
-  var ds = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
-  var dp = document.getElementById('fmtDatePicker');
-  if(dp) dp.value = ds;
-  fmtUpdateWeekday(t);
-  var qr = loadLS('fmt-quickRest'); if(qr && document.getElementById('fmtQuickRest')) document.getElementById('fmtQuickRest').value=qr;
-  var qf = loadLS('fmt-quickFull'); if(qf && document.getElementById('fmtQuickFull')) document.getElementById('fmtQuickFull').value=qf;
-}
-
-function fmtOnDateChange() {
-  var val = document.getElementById('fmtDatePicker').value;
-  if(!val) return;
-  fmtUpdateWeekday(new Date(val+'T00:00:00'));
-}
-
-function fmtUpdateWeekday(d) {
-  var el = document.getElementById('fmtWeekday');
-  if(el) el.textContent = '（'+FMT_WEEKDAYS[d.getDay()]+'）';
-}
-
-function fmtGetDateStr() {
-  var val = document.getElementById('fmtDatePicker').value;
-  if(!val) return '';
-  var d = new Date(val+'T00:00:00');
-  return (d.getMonth()+1)+'/'+d.getDate()+' ('+FMT_WEEKDAYS[d.getDay()]+')';
-}
-
-function fmtToggleAdv() {
-  fmtAdvOpen = !fmtAdvOpen;
-  document.getElementById('fmtAdvBody').classList.toggle('open', fmtAdvOpen);
-  document.getElementById('fmtAdvArrow').classList.toggle('open', fmtAdvOpen);
-}
-
-function fmtSyncTabNames() {
-  for(var i=0;i<4;i++) { var el=document.getElementById('fmtTabName'+i); if(el) el.value=fmtPresets[i].name; }
-}
-
-function fmtSwitchPreset(idx) {
-  fmtSaveCurrentToState();
-  fmtCurrentPreset = idx;
-  var tabs = document.querySelectorAll('.fmt-tab');
-  tabs.forEach(function(t,i){ t.classList.toggle('active',i===idx); });
-  fmtRenderPresetSettings();
-}
-
-function fmtRenderPresetSettings() {
-  var p = fmtPresets[fmtCurrentPreset];
-  if(!p) return;
-  FMT_FIELDS.forEach(function(k){ var el=document.getElementById('fmt'+k.charAt(0).toUpperCase()+k.slice(1)); if(el) el.value=p[k]||''; });
-}
-
-function fmtSaveCurrentToState() {
-  var p = fmtPresets[fmtCurrentPreset];
-  FMT_FIELDS.forEach(function(k){ var el=document.getElementById('fmt'+k.charAt(0).toUpperCase()+k.slice(1)); if(el) p[k]=el.value; });
-  var nm=document.getElementById('fmtTabName'+fmtCurrentPreset); if(nm) p.name=nm.value;
-}
-
-function fmtSavePresets() {
-  fmtSaveCurrentToState();
-  for(var i=0;i<4;i++){var nm=document.getElementById('fmtTabName'+i);if(nm)fmtPresets[i].name=nm.value;}
-  saveLS('fmt-presets', JSON.stringify(fmtPresets));
-  var qr=document.getElementById('fmtQuickRest'); if(qr) saveLS('fmt-quickRest',qr.value);
-  var qf=document.getElementById('fmtQuickFull'); if(qf) saveLS('fmt-quickFull',qf.value);
-  if(typeof google!='undefined'&&google.script&&google.script.run) saveAllDataToCloud();
-  toast('✓ 設定已儲存');
-}
-
-function fmtResetAll() {
-  if(!confirm('確定要恢復所有預設值嗎？')) return;
-  fmtPresets = JSON.parse(JSON.stringify(FMT_DEFAULTS));
-  fmtSyncTabNames(); fmtRenderPresetSettings();
-  toast('↺ 已恢復預設值');
-}
-
-function fmtParseInput(input) {
-  var lines = input.split('\n');
-  var region='', comingGirls=[], jpHkGirls=[], taiwanGirls=[], currentGirl=null;
-  for(var i=0;i<lines.length;i++){
-    var line=lines[i].trim(); if(!line) continue;
-    if(line.replace(/\s+/g,'').indexOf('即將登場')>=0){region='coming';continue;}
-    if(line.replace(/\s+/g,'').indexOf('日韓推薦')>=0){region='jphk';continue;}
-    if(line.replace(/\s+/g,'').indexOf('台妹推薦')>=0){region='taiwan';continue;}
-    if(line.indexOf('本週預報')>=0||line.indexOf('注意事項')>=0){region='end';continue;}
-    var m=line.match(/🤍\s*(\d+)\s*『([^』]+)』/);
-    if(m){
-      currentGirl={age:m[1],name:m[2],time:'1300'};
-      for(var j=i+1;j<Math.min(i+15,lines.length);j++){
-        var nl=lines[j].trim();
-        if(nl.indexOf('🤍')>=0||nl.indexOf('✤')>=0||nl.indexOf('━━')>=0) break;
-        if(nl.indexOf('🕒')>=0){
-          if(region==='coming') comingGirls.push({age:currentGirl.age,name:currentGirl.name,detail:nl.replace('🕒','').replace('➜',' ').trim()});
-          else { var tm=nl.match(/🕒\s*(\d{4})/); if(tm) currentGirl.time=tm[1]; }
-          break;
-        }
-      }
-      if(region==='jphk') jpHkGirls.push(currentGirl);
-      if(region==='taiwan') taiwanGirls.push(currentGirl);
-    }
-  }
-  return {comingGirls:comingGirls,jpHkGirls:jpHkGirls,taiwanGirls:taiwanGirls};
-}
-
-function fmtBuildOutput(p, data, dateStr, txtRest, txtFull) {
-  var comingGirls=data.comingGirls, jpHkGirls=data.jpHkGirls, taiwanGirls=data.taiwanGirls;
-  var mid = p.symMid ? ' '+p.symMid+' ' : ' ';
-  var sep = p.symGroupSep || '';
-  var title = p.symTitle.replace('{DATE}', dateStr);
-  var r = title+'\n\n'+p.symJp+'\n';
-  jpHkGirls.forEach(function(g){ r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'\n'; });
-  if(!jpHkGirls.length) r+='｜無｜\n';
-  r+='\n'+p.symTw+'\n';
-  var t1=taiwanGirls.filter(function(g){return parseInt(g.age)>25;});
-  var t2=taiwanGirls.filter(function(g){return parseInt(g.age)>=21&&parseInt(g.age)<=25;});
-  var t3=taiwanGirls.filter(function(g){return parseInt(g.age)>=18&&parseInt(g.age)<=20;});
-  var t4=taiwanGirls.filter(function(g){return parseInt(g.age)<18;});
-  var has=false;
-  var og=function(arr){arr.forEach(function(g){r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'\n';});};
-  if(t1.length){og(t1);has=true;}
-  if(t2.length){if(has&&sep)r+=sep+'\n';og(t2);has=true;}
-  if(t3.length){if(has&&sep)r+=sep+'\n';og(t3);has=true;}
-  if(t4.length){if(has&&sep)r+=sep+'\n';og(t4);}
-  if(!taiwanGirls.length) r+='｜無｜\n';
-  r+='\n';
-  if(p.symStatusLine.trim()) r+=p.symStatusLine+'\n';
-  if(txtRest.trim()) r+=txtRest+'\n\n';
-  if(txtFull.trim()) r+=txtFull+'\n';
-  if(comingGirls.length){r+='\n'+p.symComing+'\n';comingGirls.forEach(function(g){r+=g.age+' '+g.name+'\n'+g.detail+'\n';});}
-  return r;
-}
-
-function fmtProcessAll() {
-  var input = document.getElementById('fmtInputText').value;
-  if(!input.trim()){alert('請先貼上文案再點轉檔。');return;}
-  fmtSaveCurrentToState();
-  var dateStr = fmtGetDateStr();
-  var txtRest = document.getElementById('fmtQuickRest').value;
-  var txtFull = document.getElementById('fmtQuickFull').value;
-  var data = fmtParseInput(input);
-  document.getElementById('fmtMainOutput').value = fmtBuildOutput(fmtPresets[0], data, dateStr, txtRest, txtFull);
-  document.getElementById('fmtMainLabel').textContent = fmtPresets[0].name;
-  for(var i=1;i<=3;i++){
-    document.getElementById('fmtSubOutput'+i).value = fmtBuildOutput(fmtPresets[i], data, dateStr, txtRest, txtFull);
-    document.getElementById('fmtSubLabel'+i).textContent = fmtPresets[i].name;
-  }
-  toast('✦ 四款轉檔完成');
-}
-
-function fmtCopyMain() {
-  var ta=document.getElementById('fmtMainOutput');
-  if(!ta.value.trim()){alert('請先點擊轉檔。');return;}
-  ta.select(); document.execCommand('copy');
-  toast('✅ 已複製「'+fmtPresets[0].name+'」');
-}
-
-function fmtCopySub(i) {
-  var ta=document.getElementById('fmtSubOutput'+i);
-  if(!ta.value.trim()){alert('請先點擊轉檔。');return;}
-  ta.select(); document.execCommand('copy');
-  toast('✅ 已複製「'+fmtPresets[i].name+'」');
-}
-// ==================== /老闆娘轉檔器 ====================
 </script>
 </body></html>

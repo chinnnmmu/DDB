@@ -1,15 +1,17 @@
 // ==================== DDB GAS Web App 後端 ====================
-// 對應 BB4.HTML 前端使用的 API
+// System 1 (Index.html): workOrders + multiNotes only
+// System 2 (Admin.html): schDB + formatPresets only
 
 var SHEET_NAME_NOTES    = 'MultiNotes';
 var SHEET_NAME_ORDERS   = 'WorkOrders';
 var SHEET_NAME_META     = 'Meta';
-var SHEET_NAME_SETTINGS = 'Settings';
+var SHEET_NAME_ADMIN    = 'AdminSettings';
 
 // ---- 入口點 ----
 function doGet(e) {
-  return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('DDB 工作台')
+  var page = e && e.parameter && e.parameter.page === 'admin' ? 'Admin' : 'Index';
+  return HtmlService.createHtmlOutputFromFile(page)
+    .setTitle(page === 'Admin' ? 'DDB 後台管理' : 'DDB 工作台')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
@@ -21,9 +23,8 @@ function getOrCreateSheet(name) {
   return sh;
 }
 
-// ==================== saveAllData ====================
-// payload = { action, multiNotes, workOrders }
-// 前端呼叫：google.script.run.saveAllData(payload)
+// ==================== System 1: saveAllData ====================
+// payload = { multiNotes, workOrders }
 function saveAllData(payload) {
   try {
     if (typeof payload === 'string') payload = JSON.parse(payload);
@@ -38,7 +39,7 @@ function saveAllData(payload) {
       });
     }
 
-    // 2. 儲存工單 (WorkOrders) — 扁平化所有日期下的工單
+    // 2. 儲存工單 (WorkOrders)
     if (payload.workOrders && typeof payload.workOrders === 'object') {
       var shO = getOrCreateSheet(SHEET_NAME_ORDERS);
       shO.clearContents();
@@ -57,18 +58,7 @@ function saveAllData(payload) {
       });
     }
 
-    // 3. 儲存轉檔器設定與班表母檔 (Settings)
-    var shS = getOrCreateSheet(SHEET_NAME_SETTINGS);
-    shS.clearContents();
-    shS.appendRow(['key', 'value']);
-    if (payload.formatPresets && Array.isArray(payload.formatPresets)) {
-      shS.appendRow(['formatPresets', JSON.stringify(payload.formatPresets)]);
-    }
-    if (payload.schDB && typeof payload.schDB === 'string') {
-      shS.appendRow(['schDB', payload.schDB]);
-    }
-
-    // 4. 記錄同步時間
+    // 3. 記錄同步時間
     var shM = getOrCreateSheet(SHEET_NAME_META);
     shM.clearContents();
     shM.appendRow(['lastSync', new Date().toLocaleString('zh-TW')]);
@@ -79,8 +69,7 @@ function saveAllData(payload) {
   }
 }
 
-// ==================== loadAllData ====================
-// 前端呼叫：google.script.run.loadAllData()
+// ==================== System 1: loadAllData ====================
 function loadAllData() {
   try {
     var result = { multiNotes: [], workOrders: {} };
@@ -117,21 +106,66 @@ function loadAllData() {
       }
     }
 
-    // 3. 讀取轉檔器設定與班表母檔
-    var shS = getOrCreateSheet(SHEET_NAME_SETTINGS);
-    var sData = shS.getDataRange().getValues();
-    for (var k = 1; k < sData.length; k++) {
-      var key = String(sData[k][0]);
-      if (key === 'formatPresets') {
-        try { result.formatPresets = JSON.parse(sData[k][1]); } catch(e) {}
+    return result;
+  } catch (err) {
+    return { multiNotes: [], workOrders: {}, error: err.message };
+  }
+}
+
+// ==================== System 2: saveAdminData ====================
+// payload = { schDB, formatPresets }
+function saveAdminData(payload) {
+  try {
+    if (typeof payload === 'string') payload = JSON.parse(payload);
+
+    var shA = getOrCreateSheet(SHEET_NAME_ADMIN);
+    shA.clearContents();
+    shA.appendRow(['key', 'value']);
+
+    if (payload.schDB && typeof payload.schDB === 'string') {
+      shA.appendRow(['schDB', payload.schDB]);
+    }
+    if (payload.formatPresets && Array.isArray(payload.formatPresets)) {
+      shA.appendRow(['formatPresets', JSON.stringify(payload.formatPresets)]);
+    }
+
+    // 記錄同步時間
+    var shM = getOrCreateSheet(SHEET_NAME_META);
+    var metaData = shM.getDataRange().getValues();
+    var found = false;
+    for (var i = 1; i < metaData.length; i++) {
+      if (metaData[i][0] === 'adminSync') {
+        shM.getRange(i + 1, 2).setValue(new Date().toLocaleString('zh-TW'));
+        found = true; break;
       }
+    }
+    if (!found) shM.appendRow(['adminSync', new Date().toLocaleString('zh-TW')]);
+
+    return { success: true, message: '管理資料同步成功' };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+}
+
+// ==================== System 2: loadAdminData ====================
+function loadAdminData() {
+  try {
+    var result = { schDB: '', formatPresets: [] };
+
+    var shA = getOrCreateSheet(SHEET_NAME_ADMIN);
+    var aData = shA.getDataRange().getValues();
+    for (var k = 1; k < aData.length; k++) {
+      var key = String(aData[k][0]);
       if (key === 'schDB') {
-        result.schDB = String(sData[k][1]);
+        result.schDB = String(aData[k][1]);
+      }
+      if (key === 'formatPresets') {
+        try { result.formatPresets = JSON.parse(aData[k][1]); } catch(e) {}
       }
     }
 
     return result;
   } catch (err) {
-    return { multiNotes: [], workOrders: {}, error: err.message };
+    return { schDB: '', formatPresets: [], error: err.message };
   }
 }
