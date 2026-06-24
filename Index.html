@@ -263,6 +263,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
   <button class="tnav-item" onclick="ST('bb')">🔍 搜尋</button>
   <button class="tnav-item" onclick="ST('sched')">📅 班表</button>
   <button class="tnav-item" onclick="ST('stat')">📊 統計</button>
+  <button class="tnav-item" onclick="ST('format')">✨ 轉檔</button>
 </nav>
 
 <div class="app">
@@ -660,14 +661,125 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
     <div style="padding:0.5rem" id="stat-dashboard-list"></div>
   </div>
 </div>
+</div>
 
-</div> 
+<div id="tab-format" class="panel">
+  <style>
+  .fmt-wrap{display:grid;grid-template-columns:300px 1fr;gap:0.5rem;align-items:start}
+  @media(max-width:700px){.fmt-wrap{grid-template-columns:1fr}}
+  .fmt-left{display:flex;flex-direction:column;gap:0.3rem}
+  .fmt-right{display:flex;flex-direction:column;gap:0.3rem}
+  .fmt-sub-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.3rem}
+  @media(max-width:900px){.fmt-sub-grid{grid-template-columns:1fr}}
+  .fmt-adv-body{overflow:hidden;max-height:0;transition:max-height 0.35s ease,opacity 0.25s ease;opacity:0}
+  .fmt-adv-body.open{max-height:1400px;opacity:1}
+  .fmt-adv-arrow{font-size:10px;transition:transform 0.22s ease;display:inline-block}
+  .fmt-adv-arrow.open{transform:rotate(180deg)}
+  .fmt-preset-tabs{display:flex;gap:4px;margin-bottom:0.5rem}
+  .fmt-tab{flex:1;padding:4px 2px;text-align:center;border:1.5px solid var(--border);border-radius:var(--r-sm);background:transparent;cursor:pointer;font-size:11px;font-weight:500;color:var(--text2);font-family:var(--font)}
+  .fmt-tab.active{background:var(--rose-light);border-color:var(--rose-border);color:var(--rose)}
+  .fmt-tab input{border:none;background:transparent;font-size:11px;font-weight:500;color:inherit;text-align:center;width:100%;cursor:text;font-family:var(--font)}
+  .fmt-tab input:focus{outline:none;border-bottom:1px dashed var(--rose)}
+  .fmt-row{display:flex;align-items:flex-start;margin-bottom:6px;gap:6px}
+  .fmt-row label{width:80px;font-size:11px;font-weight:500;color:var(--text2);padding-top:6px;flex-shrink:0}
+  .fmt-row input,.fmt-row textarea{flex:1;font-size:12px;padding:4px 8px}
+  .fmt-row textarea{height:44px;resize:vertical}
+  .fmt-main-out{width:100%;min-height:400px;font-family:var(--mono);font-size:12.5px;white-space:pre;line-height:1.75;resize:vertical}
+  .fmt-sub-out{width:100%;min-height:280px;font-family:var(--mono);font-size:11.5px;white-space:pre;line-height:1.7;resize:vertical}
+  </style>
+  <div class="fmt-wrap">
+    <div class="fmt-left">
+      <div class="card">
+        <div class="card-head"><span class="card-title">📅 日期</span></div>
+        <div style="padding:0.5rem;display:flex;align-items:center;gap:0.5rem">
+          <input type="date" id="fmtDatePicker" onchange="fmtOnDateChange()" style="flex:1">
+          <span id="fmtWeekday" style="font-size:1rem;color:var(--rose);white-space:nowrap"></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">✏️ 每日快速編輯</span></div>
+        <div style="padding:0.5rem">
+          <div style="font-size:11px;color:var(--text2);margin-bottom:4px">今日改休</div>
+          <textarea id="fmtQuickRest" rows="3" style="margin-bottom:0.4rem" placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:4px">今日約滿</div>
+          <textarea id="fmtQuickFull" rows="2" placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span class="card-title">📋 貼上原始廣告文案</span></div>
+        <div style="padding:0.5rem">
+          <textarea id="fmtInputText" rows="8" style="font-family:var(--mono);font-size:12px;resize:vertical;margin-bottom:0.4rem" placeholder="將廣告原文貼在這裡…"></textarea>
+          <button class="btn btn-rose" style="width:100%" onclick="fmtProcessAll()">✦ 四款同時轉檔</button>
+        </div>
+      </div>
+      <div class="card">
+        <div style="padding:0.4rem 0.7rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="fmtToggleAdv()">
+          <span style="font-size:12px;color:var(--text2);font-weight:500">⚙ 進階符號設定</span>
+          <span class="fmt-adv-arrow open" id="fmtAdvArrow">▼</span>
+        </div>
+        <div class="fmt-adv-body open" id="fmtAdvBody">
+          <div style="padding:0 0.7rem 0.7rem">
+            <div class="fmt-preset-tabs" id="fmtPresetTabs">
+              <div class="fmt-tab active" onclick="fmtSwitchPreset(0)"><input class="fmt-tab-name" id="fmtTabName0" value="款式 A" onclick="event.stopPropagation()"></div>
+              <div class="fmt-tab" onclick="fmtSwitchPreset(1)"><input class="fmt-tab-name" id="fmtTabName1" value="款式 B" onclick="event.stopPropagation()"></div>
+              <div class="fmt-tab" onclick="fmtSwitchPreset(2)"><input class="fmt-tab-name" id="fmtTabName2" value="款式 C" onclick="event.stopPropagation()"></div>
+              <div class="fmt-tab" onclick="fmtSwitchPreset(3)"><input class="fmt-tab-name" id="fmtTabName3" value="款式 D" onclick="event.stopPropagation()"></div>
+            </div>
+            <div class="fmt-row"><label>大抬頭樣式</label><input type="text" id="fmtSymTitle"></div>
+            <div class="fmt-row"><label>名單前綴</label><input type="text" id="fmtSymDot"></div>
+            <div class="fmt-row"><label>中間分隔點</label><input type="text" id="fmtSymMid"></div>
+            <div class="fmt-row"><label>日韓抬頭</label><input type="text" id="fmtSymJp"></div>
+            <div class="fmt-row"><label>本地抬頭</label><input type="text" id="fmtSymTw"></div>
+            <div class="fmt-row"><label>時間前綴</label><input type="text" id="fmtTimePrefix"></div>
+            <div class="fmt-row"><label>時間後綴</label><input type="text" id="fmtTimeSuffix"></div>
+            <div class="fmt-row"><label>年齡組分隔</label><input type="text" id="fmtSymGroupSep"></div>
+            <div class="fmt-row"><label>異動分區線</label><input type="text" id="fmtSymStatusLine"></div>
+            <div class="fmt-row"><label>即將登場線</label><input type="text" id="fmtSymComing"></div>
+            <div style="display:flex;gap:0.4rem;margin-top:0.4rem">
+              <button class="btn btn-plain btn-sm" onclick="fmtResetAll()">↺ 恢復預設</button>
+              <button class="btn btn-sage btn-sm" onclick="fmtSavePresets()">☁ 儲存設定</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fmt-right">
+      <div class="card" style="border-top:3px solid var(--rose)">
+        <div class="card-head">
+          <span class="card-title" id="fmtMainLabel">款式 A</span>
+          <span class="card-sub">主要</span>
+          <button class="btn btn-rose btn-sm" style="margin-left:auto" onclick="fmtCopyMain()">複製</button>
+        </div>
+        <div style="padding:0.5rem">
+          <textarea id="fmtMainOutput" class="fmt-main-out" readonly placeholder="點擊「四款同時轉檔」後顯示…"></textarea>
+        </div>
+      </div>
+      <div class="fmt-sub-grid">
+        <div class="card" style="border-top:3px solid var(--sage)">
+          <div class="card-head"><span class="card-title" id="fmtSubLabel1">款式 B</span><button class="btn btn-sage btn-sm" style="margin-left:auto" onclick="fmtCopySub(1)">複製</button></div>
+          <div style="padding:0.5rem"><textarea id="fmtSubOutput1" class="fmt-sub-out" readonly placeholder="· · ·"></textarea></div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--sky)">
+          <div class="card-head"><span class="card-title" id="fmtSubLabel2">款式 C</span><button class="btn btn-sky btn-sm" style="margin-left:auto" onclick="fmtCopySub(2)">複製</button></div>
+          <div style="padding:0.5rem"><textarea id="fmtSubOutput2" class="fmt-sub-out" readonly placeholder="· · ·"></textarea></div>
+        </div>
+        <div class="card" style="border-top:3px solid var(--peach)">
+          <div class="card-head"><span class="card-title" id="fmtSubLabel3">款式 D</span><button class="btn btn-plain btn-sm" style="margin-left:auto;border-color:var(--peach);color:var(--peach)" onclick="fmtCopySub(3)">複製</button></div>
+          <div style="padding:0.5rem"><textarea id="fmtSubOutput3" class="fmt-sub-out" readonly placeholder="· · ·"></textarea></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
 
 <nav class="bottom-nav">
   <button class="bnav-item active" onclick="ST('wo')"><span class="bnav-icon">📋</span>工單</button>
   <button class="bnav-item" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
   <button class="bnav-item" onclick="ST('sched')"><span class="bnav-icon">📅</span>班表</button>
   <button class="bnav-item" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
+  <button class="bnav-item" onclick="ST('format')"><span class="bnav-icon">✨</span>轉檔</button>
 </nav>
 
 <div class="modal-overlay" id="patchModal" onclick="modalOverlayClick(event)">
@@ -748,7 +860,8 @@ function saveAllDataToCloud() {
   var payload = {
     action: 'saveAllData',
     multiNotes: multiNotes,
-    workOrders: notes  // 同時上傳工單資料
+    workOrders: notes,
+    formatPresets: fmtPresets
   };
 
   google.script.run
@@ -781,6 +894,10 @@ function loadAllDataFromCloud() {
         save();
         RC(); RR(); RW(); renderUnpaidDashboard(); renderAllOrders();
         changed = true;
+      }
+      if (data.formatPresets && Array.isArray(data.formatPresets) && data.formatPresets.length === 4) {
+        fmtPresets = data.formatPresets;
+        fmtSyncTabNames(); fmtRenderPresetSettings(); changed = true;
       }
       if (changed) toast('✓ 已從試算表載入資料');
     })
@@ -1361,7 +1478,7 @@ function submitStatPartPayment(ui, auntieName) {
 }
 
 function ST(id){
-  ['wo','bb','sched','stat'].forEach(function(t,i){
+  ['wo','bb','sched','stat','format'].forEach(function(t,i){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
     var elTNav = document.querySelectorAll('.tnav-item')[i];
@@ -1371,6 +1488,7 @@ function ST(id){
   });
   if(id==='wo') updImpDates();
   if(id==='stat') renderUnpaidDashboard();
+  if(id==='format') fmtRenderPresetSettings();
 }
 
 function SST(id){
@@ -2445,6 +2563,190 @@ window.onload=function(){
 
   // 初始化自動同步功能
   initAutoSync();
+
+  // 初始化轉檔器
+  fmtInit();
 };
+
+// ==================== 老闆娘轉檔器 (fmt*) ====================
+var FMT_DEFAULTS = [
+  {name:"款式 A",symTitle:"✦ {DATE} 當日名單 ✦",symDot:"▫️ ",symMid:"．",symJp:"═══【 🇯🇵 日韓 】═══",symTw:"═══【 🇹🇼 本地 】═══",timePrefix:"[ ",timeSuffix:" ]",symGroupSep:"· · · · ·",symStatusLine:"════꒰ 💡 異動 ꒱════",symComing:"✦── 即將登場 ──✦"},
+  {name:"款式 B",symTitle:"🌸 {DATE} 在席名單 🌸",symDot:"◦ ",symMid:"·",symJp:"〔 🇯🇵 日韓系 〕",symTw:"〔 🇹🇼 本地系 〕",timePrefix:"⏰",timeSuffix:"",symGroupSep:"- - - - -",symStatusLine:"──── 💬 異動通知 ────",symComing:"🌟 即將登場 🌟"},
+  {name:"款式 C",symTitle:"📋 {DATE} 當日出席表",symDot:"• ",symMid:"｜",symJp:"— 日韓 —",symTw:"— 本地 —",timePrefix:"",timeSuffix:" 到",symGroupSep:"──────",symStatusLine:"· · · 異動 · · ·",symComing:"＊ 即將登場 ＊"},
+  {name:"款式 D",symTitle:"💎 {DATE} 名單 💎",symDot:"❖ ",symMid:"✦",symJp:"【 日韓精選 】",symTw:"【 本地精選 】",timePrefix:"（",timeSuffix:"）",symGroupSep:"∙ ∙ ∙ ∙ ∙",symStatusLine:"══ ✧ 異動資訊 ✧ ══",symComing:"✨ 即將登場 ✨"}
+];
+var FMT_FIELDS = ['symTitle','symDot','symMid','symJp','symTw','timePrefix','timeSuffix','symGroupSep','symStatusLine','symComing'];
+var FMT_WEEKDAYS = ['日','一','二','三','四','五','六'];
+
+var fmtPresets = JSON.parse(JSON.stringify(FMT_DEFAULTS));
+var fmtCurrentPreset = 0;
+var fmtAdvOpen = true;
+
+function fmtInit() {
+  var saved = loadLS('fmt-presets');
+  if (saved) { try { var p = JSON.parse(saved); if (p.length===4) fmtPresets=p; } catch(e){} }
+  fmtSyncTabNames();
+  fmtRenderPresetSettings();
+  var t = new Date();
+  var ds = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+  var dp = document.getElementById('fmtDatePicker');
+  if(dp) dp.value = ds;
+  fmtUpdateWeekday(t);
+  var qr = loadLS('fmt-quickRest'); if(qr && document.getElementById('fmtQuickRest')) document.getElementById('fmtQuickRest').value=qr;
+  var qf = loadLS('fmt-quickFull'); if(qf && document.getElementById('fmtQuickFull')) document.getElementById('fmtQuickFull').value=qf;
+}
+
+function fmtOnDateChange() {
+  var val = document.getElementById('fmtDatePicker').value;
+  if(!val) return;
+  fmtUpdateWeekday(new Date(val+'T00:00:00'));
+}
+
+function fmtUpdateWeekday(d) {
+  var el = document.getElementById('fmtWeekday');
+  if(el) el.textContent = '（'+FMT_WEEKDAYS[d.getDay()]+'）';
+}
+
+function fmtGetDateStr() {
+  var val = document.getElementById('fmtDatePicker').value;
+  if(!val) return '';
+  var d = new Date(val+'T00:00:00');
+  return (d.getMonth()+1)+'/'+d.getDate()+' ('+FMT_WEEKDAYS[d.getDay()]+')';
+}
+
+function fmtToggleAdv() {
+  fmtAdvOpen = !fmtAdvOpen;
+  document.getElementById('fmtAdvBody').classList.toggle('open', fmtAdvOpen);
+  document.getElementById('fmtAdvArrow').classList.toggle('open', fmtAdvOpen);
+}
+
+function fmtSyncTabNames() {
+  for(var i=0;i<4;i++) { var el=document.getElementById('fmtTabName'+i); if(el) el.value=fmtPresets[i].name; }
+}
+
+function fmtSwitchPreset(idx) {
+  fmtSaveCurrentToState();
+  fmtCurrentPreset = idx;
+  var tabs = document.querySelectorAll('.fmt-tab');
+  tabs.forEach(function(t,i){ t.classList.toggle('active',i===idx); });
+  fmtRenderPresetSettings();
+}
+
+function fmtRenderPresetSettings() {
+  var p = fmtPresets[fmtCurrentPreset];
+  if(!p) return;
+  FMT_FIELDS.forEach(function(k){ var el=document.getElementById('fmt'+k.charAt(0).toUpperCase()+k.slice(1)); if(el) el.value=p[k]||''; });
+}
+
+function fmtSaveCurrentToState() {
+  var p = fmtPresets[fmtCurrentPreset];
+  FMT_FIELDS.forEach(function(k){ var el=document.getElementById('fmt'+k.charAt(0).toUpperCase()+k.slice(1)); if(el) p[k]=el.value; });
+  var nm=document.getElementById('fmtTabName'+fmtCurrentPreset); if(nm) p.name=nm.value;
+}
+
+function fmtSavePresets() {
+  fmtSaveCurrentToState();
+  for(var i=0;i<4;i++){var nm=document.getElementById('fmtTabName'+i);if(nm)fmtPresets[i].name=nm.value;}
+  saveLS('fmt-presets', JSON.stringify(fmtPresets));
+  var qr=document.getElementById('fmtQuickRest'); if(qr) saveLS('fmt-quickRest',qr.value);
+  var qf=document.getElementById('fmtQuickFull'); if(qf) saveLS('fmt-quickFull',qf.value);
+  if(typeof google!='undefined'&&google.script&&google.script.run) saveAllDataToCloud();
+  toast('✓ 設定已儲存');
+}
+
+function fmtResetAll() {
+  if(!confirm('確定要恢復所有預設值嗎？')) return;
+  fmtPresets = JSON.parse(JSON.stringify(FMT_DEFAULTS));
+  fmtSyncTabNames(); fmtRenderPresetSettings();
+  toast('↺ 已恢復預設值');
+}
+
+function fmtParseInput(input) {
+  var lines = input.split('\n');
+  var region='', comingGirls=[], jpHkGirls=[], taiwanGirls=[], currentGirl=null;
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim(); if(!line) continue;
+    if(line.replace(/\s+/g,'').indexOf('即將登場')>=0){region='coming';continue;}
+    if(line.replace(/\s+/g,'').indexOf('日韓推薦')>=0){region='jphk';continue;}
+    if(line.replace(/\s+/g,'').indexOf('台妹推薦')>=0){region='taiwan';continue;}
+    if(line.indexOf('本週預報')>=0||line.indexOf('注意事項')>=0){region='end';continue;}
+    var m=line.match(/🤍\s*(\d+)\s*『([^』]+)』/);
+    if(m){
+      currentGirl={age:m[1],name:m[2],time:'1300'};
+      for(var j=i+1;j<Math.min(i+15,lines.length);j++){
+        var nl=lines[j].trim();
+        if(nl.indexOf('🤍')>=0||nl.indexOf('✤')>=0||nl.indexOf('━━')>=0) break;
+        if(nl.indexOf('🕒')>=0){
+          if(region==='coming') comingGirls.push({age:currentGirl.age,name:currentGirl.name,detail:nl.replace('🕒','').replace('➜',' ').trim()});
+          else { var tm=nl.match(/🕒\s*(\d{4})/); if(tm) currentGirl.time=tm[1]; }
+          break;
+        }
+      }
+      if(region==='jphk') jpHkGirls.push(currentGirl);
+      if(region==='taiwan') taiwanGirls.push(currentGirl);
+    }
+  }
+  return {comingGirls:comingGirls,jpHkGirls:jpHkGirls,taiwanGirls:taiwanGirls};
+}
+
+function fmtBuildOutput(p, data, dateStr, txtRest, txtFull) {
+  var comingGirls=data.comingGirls, jpHkGirls=data.jpHkGirls, taiwanGirls=data.taiwanGirls;
+  var mid = p.symMid ? ' '+p.symMid+' ' : ' ';
+  var sep = p.symGroupSep || '';
+  var title = p.symTitle.replace('{DATE}', dateStr);
+  var r = title+'\n\n'+p.symJp+'\n';
+  jpHkGirls.forEach(function(g){ r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'\n'; });
+  if(!jpHkGirls.length) r+='｜無｜\n';
+  r+='\n'+p.symTw+'\n';
+  var t1=taiwanGirls.filter(function(g){return parseInt(g.age)>25;});
+  var t2=taiwanGirls.filter(function(g){return parseInt(g.age)>=21&&parseInt(g.age)<=25;});
+  var t3=taiwanGirls.filter(function(g){return parseInt(g.age)>=18&&parseInt(g.age)<=20;});
+  var t4=taiwanGirls.filter(function(g){return parseInt(g.age)<18;});
+  var has=false;
+  var og=function(arr){arr.forEach(function(g){r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'\n';});};
+  if(t1.length){og(t1);has=true;}
+  if(t2.length){if(has&&sep)r+=sep+'\n';og(t2);has=true;}
+  if(t3.length){if(has&&sep)r+=sep+'\n';og(t3);has=true;}
+  if(t4.length){if(has&&sep)r+=sep+'\n';og(t4);}
+  if(!taiwanGirls.length) r+='｜無｜\n';
+  r+='\n';
+  if(p.symStatusLine.trim()) r+=p.symStatusLine+'\n';
+  if(txtRest.trim()) r+=txtRest+'\n\n';
+  if(txtFull.trim()) r+=txtFull+'\n';
+  if(comingGirls.length){r+='\n'+p.symComing+'\n';comingGirls.forEach(function(g){r+=g.age+' '+g.name+'\n'+g.detail+'\n';});}
+  return r;
+}
+
+function fmtProcessAll() {
+  var input = document.getElementById('fmtInputText').value;
+  if(!input.trim()){alert('請先貼上文案再點轉檔。');return;}
+  fmtSaveCurrentToState();
+  var dateStr = fmtGetDateStr();
+  var txtRest = document.getElementById('fmtQuickRest').value;
+  var txtFull = document.getElementById('fmtQuickFull').value;
+  var data = fmtParseInput(input);
+  document.getElementById('fmtMainOutput').value = fmtBuildOutput(fmtPresets[0], data, dateStr, txtRest, txtFull);
+  document.getElementById('fmtMainLabel').textContent = fmtPresets[0].name;
+  for(var i=1;i<=3;i++){
+    document.getElementById('fmtSubOutput'+i).value = fmtBuildOutput(fmtPresets[i], data, dateStr, txtRest, txtFull);
+    document.getElementById('fmtSubLabel'+i).textContent = fmtPresets[i].name;
+  }
+  toast('✦ 四款轉檔完成');
+}
+
+function fmtCopyMain() {
+  var ta=document.getElementById('fmtMainOutput');
+  if(!ta.value.trim()){alert('請先點擊轉檔。');return;}
+  ta.select(); document.execCommand('copy');
+  toast('✅ 已複製「'+fmtPresets[0].name+'」');
+}
+
+function fmtCopySub(i) {
+  var ta=document.getElementById('fmtSubOutput'+i);
+  if(!ta.value.trim()){alert('請先點擊轉檔。');return;}
+  ta.select(); document.execCommand('copy');
+  toast('✅ 已複製「'+fmtPresets[i].name+'」');
+}
+// ==================== /老闆娘轉檔器 ====================
 </script>
 </body></html>

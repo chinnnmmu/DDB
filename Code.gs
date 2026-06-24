@@ -1,9 +1,10 @@
 // ==================== DDB GAS Web App 後端 ====================
 // 對應 BB4.HTML 前端使用的 API
 
-var SHEET_NAME_NOTES   = 'MultiNotes';
-var SHEET_NAME_ORDERS  = 'WorkOrders';
-var SHEET_NAME_META    = 'Meta';
+var SHEET_NAME_NOTES    = 'MultiNotes';
+var SHEET_NAME_ORDERS   = 'WorkOrders';
+var SHEET_NAME_META     = 'Meta';
+var SHEET_NAME_SETTINGS = 'Settings';
 
 // ---- 入口點 ----
 function doGet(e) {
@@ -56,7 +57,15 @@ function saveAllData(payload) {
       });
     }
 
-    // 3. 記錄同步時間
+    // 3. 儲存轉檔器設定 (formatPresets)
+    if (payload.formatPresets && Array.isArray(payload.formatPresets)) {
+      var shS = getOrCreateSheet(SHEET_NAME_SETTINGS);
+      shS.clearContents();
+      shS.appendRow(['key', 'value']);
+      shS.appendRow(['formatPresets', JSON.stringify(payload.formatPresets)]);
+    }
+
+    // 4. 記錄同步時間
     var shM = getOrCreateSheet(SHEET_NAME_META);
     shM.clearContents();
     shM.appendRow(['lastSync', new Date().toLocaleString('zh-TW')]);
@@ -102,6 +111,16 @@ function loadAllData() {
           settledDate: String(r[10]), settledAmount: String(r[11]),
           id: String(r[12])
         });
+      }
+    }
+
+    // 3. 讀取轉檔器設定
+    var shS = getOrCreateSheet(SHEET_NAME_SETTINGS);
+    var sData = shS.getDataRange().getValues();
+    for (var k = 1; k < sData.length; k++) {
+      if (String(sData[k][0]) === 'formatPresets') {
+        try { result.formatPresets = JSON.parse(sData[k][1]); } catch(e) {}
+        break;
       }
     }
 
