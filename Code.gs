@@ -57,12 +57,15 @@ function saveAllData(payload) {
       });
     }
 
-    // 3. 儲存轉檔器設定 (formatPresets)
+    // 3. 儲存轉檔器設定與班表母檔 (Settings)
+    var shS = getOrCreateSheet(SHEET_NAME_SETTINGS);
+    shS.clearContents();
+    shS.appendRow(['key', 'value']);
     if (payload.formatPresets && Array.isArray(payload.formatPresets)) {
-      var shS = getOrCreateSheet(SHEET_NAME_SETTINGS);
-      shS.clearContents();
-      shS.appendRow(['key', 'value']);
       shS.appendRow(['formatPresets', JSON.stringify(payload.formatPresets)]);
+    }
+    if (payload.schDB && typeof payload.schDB === 'string') {
+      shS.appendRow(['schDB', payload.schDB]);
     }
 
     // 4. 記錄同步時間
@@ -114,13 +117,16 @@ function loadAllData() {
       }
     }
 
-    // 3. 讀取轉檔器設定
+    // 3. 讀取轉檔器設定與班表母檔
     var shS = getOrCreateSheet(SHEET_NAME_SETTINGS);
     var sData = shS.getDataRange().getValues();
     for (var k = 1; k < sData.length; k++) {
-      if (String(sData[k][0]) === 'formatPresets') {
+      var key = String(sData[k][0]);
+      if (key === 'formatPresets') {
         try { result.formatPresets = JSON.parse(sData[k][1]); } catch(e) {}
-        break;
+      }
+      if (key === 'schDB') {
+        result.schDB = String(sData[k][1]);
       }
     }
 
