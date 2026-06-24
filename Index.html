@@ -413,11 +413,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
         <div class="card" id="imp-card-el">
           <div class="card-head"><span class="card-title">⚡ 快速輸入</span></div>
           <div style="padding:0.5rem">
-            <textarea id="imp-raw" style="height:15rem;font-size:0.9375rem;font-family:var(--mono)" placeholder=""></textarea>
-            <div class="row-gap">
-              <select id="imp-date-sel" style="flex:1;min-width:8rem"><option value="">選擇已有日期...</option></select>
-              <input id="imp-date-inp" placeholder="或手動輸入 M/D" style="flex:1;min-width:8rem">
-              <button class="btn btn-sage" id="imp-btn">匯入</button>
+            <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.4rem;">第1行可輸入日期（如 6/24），之後每行一筆工單。括號內容自動放備記。</div>
+            <textarea id="imp-raw" style="height:15rem;font-size:0.9375rem;font-family:var(--mono)" placeholder="6/24&#10;16莫凡 2200香格里拉2+1 加藤(V)320 128&#10;22江月 2200敦北住家2+1 H巨人(~)400 146"></textarea>
+            <div class="row-gap" style="margin-top:6px;">
+              <button class="btn btn-sage" id="imp-btn">⚡ 匯入</button>
+              <button class="btn btn-plain btn-sm" onclick="document.getElementById('imp-raw').value=''">清除</button>
             </div>
             <div class="imp-msg" id="imp-msg"></div>
           </div>
@@ -440,10 +440,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 
             <div id="quick-add-wrap" style="padding: 0.8rem; background: var(--card2); border-bottom: 1px solid var(--border);">
               <!-- 多行解析區 -->
-              <div style="margin-bottom:0.5rem;">
-                <button class="btn btn-plain btn-sm" onclick="toggleMultiPaste()" id="multi-paste-toggle" style="font-size:0.8125rem;">📋 多行貼入解析</button>
-              </div>
-              <div id="multi-paste-area" style="display:none; margin-bottom:0.6rem; background:var(--card); border:1px solid var(--border); border-radius:var(--r-sm); padding:0.5rem;">
+              <div id="multi-paste-area" style="margin-bottom:0.6rem; background:var(--card); border:1px solid var(--border); border-radius:var(--r-sm); padding:0.5rem;">
                 <div style="font-size:0.75rem; color:var(--text3); margin-bottom:0.3rem;">支援格式：第1行=日期+時間、第2行=妹妹名、之後=地點、末行=備記(3+1等)</div>
                 <textarea id="qa-multi" style="height:5.5rem; font-size:0.875rem; font-family:var(--mono); width:100%; resize:none;" placeholder="7/1（週三）13:00&#10;北鼻&#10;嘉賓閣溫泉會館&#10;臺北市北投區光明路230號&#10;3+1"></textarea>
                 <div style="display:flex; gap:6px; margin-top:0.4rem; align-items:center;">
@@ -651,22 +648,17 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 
 <script>
 function setTheme(themeName) {
-  document.body.classList.remove('dark-theme', 'light-theme', 'warm-theme');
-  if (themeName !== 'default') {
-    document.body.classList.add(themeName);
-  }
-  var btns = document.querySelectorAll('.theme-toggle-btn button, #themeToggle button');
-  btns.forEach(function(btn){ btn.classList.remove('active'); });
-  var btnMap = {'default': 0, 'warm-theme': 1, 'dark-theme': 2, 'light-theme': 3};
-  if (btnMap[themeName] !== undefined && btns[btnMap[themeName]]) {
-    btns[btnMap[themeName]].classList.add('active');
-  }
-  localStorage.setItem('ddb-theme', themeName);
+  try {
+    if(!document.body) return;
+    document.body.classList.remove('dark-theme', 'light-theme', 'warm-theme');
+    if (themeName !== 'default') document.body.classList.add(themeName);
+    try { localStorage.setItem('ddb-theme', themeName); } catch(e){}
+    var btns = document.querySelectorAll('#themeToggle button');
+    if(!btns || !btns.length) return;
+    var order = ['default','warm-theme','dark-theme','light-theme'];
+    btns.forEach(function(btn, i){ btn.classList.toggle('active', order[i] === themeName); });
+  } catch(e) { console.warn('setTheme error', e); }
 }
-window.addEventListener('load', function() {
-  const savedTheme = localStorage.getItem('ddb-theme') || 'default';
-  setTheme(savedTheme);
-}, false);
 
 var SK='ddb9',SNK='ddb9s';
 
@@ -771,18 +763,19 @@ function loadAllDataFromCloud(silent) {
   google.script.run
     .withSuccessHandler(function(data) {
       clearTimeout(cloudTimeout);
-      // 雲端為主：不管本機有沒有資料，都套用雲端資料
-      if (data.multiNotes && Array.isArray(data.multiNotes)) {
-        multiNotes = data.multiNotes;
-        try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}
-        renderMultiNoteList();
-      }
-      if (data.workOrders && typeof data.workOrders === 'object') {
-        notes = data.workOrders;
-        try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
-        RC(); RR(); RW(); renderUnpaidDashboard(); renderAllOrders();
-      }
-      // 系統一不處理班表/轉檔資料（由系統二獨立管理）
+      try {
+        if (data && data.multiNotes && Array.isArray(data.multiNotes)) {
+          multiNotes = data.multiNotes;
+          try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}
+          renderMultiNoteList();
+        }
+        if (data && data.workOrders && typeof data.workOrders === 'object') {
+          notes = data.workOrders;
+          try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
+          try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
+          try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
+        }
+      } catch(handlerErr) { console.error('loadAllData handler:', handlerErr); }
       hideLoadingOverlay();
       setSyncStatus('ok','已同步');
       setTimeout(function(){ setSyncStatus('',''); }, 3000);
@@ -1911,32 +1904,66 @@ function updImpDates(){
   var sel=document.getElementById('imp-date-sel'),dates=Object.keys(notes).sort().reverse();
   if(sel) sel.innerHTML='<option value="">選擇已有日期...</option>'+dates.map(function(d){return '<option value="'+d+'">'+d+'</option>';}).join('');
 }
+// 智能解析單行工單：16莫凡 2200香格里拉2+1 加藤(V)320 128
 function parseImpLine(line){
-  line=line.trim();if(!line)return null;
-  var m=line.match(/^(\d+)([^\d]+?)\s+(\d{4})\s*(.*)$/);if(!m)return null;
-  var pai=m[1],name=m[2].trim(),time=m[3],rest=m[4].trim(),parts=rest.split(/\s+/),numIdx=-1;
-  for(var i=0;i<parts.length;i++){if(/^\d+$/.test(parts[i])){numIdx=i;break;}}
-  var place='',auntie='',shi='';
-  if(numIdx<0){if(parts.length>1){auntie=parts[parts.length-1];place=parts.slice(0,parts.length-1).join(' ');}else{place=parts.join(' ');}}
-  else if(numIdx===0){shi=parts[0];}
-  else{auntie=parts[numIdx-1];place=parts.slice(0,numIdx-1).join(' ');shi=parts[numIdx];}
-  var p=parseFloat(pai),s=parseFloat(shi),ee='';
-  if(!isNaN(p)&&p>0){var base=Math.round(p*6);ee=(!isNaN(s)&&s>0)?String(Math.round(s-base)):String(-base);}
-  return {id:'r'+Date.now()+Math.random(),pai:pai,name:name,place:time+(place?' '+place:''),auntie:auntie,shi:shi,rebate:'',ee:ee,note:'',settled:false,settledDate:'',settledAmount:''};
+  line=line.trim(); if(!line) return null;
+  // 格式：{牌}{姓名} {時間}{地點} {阿姨}({備記}){實收} {EE}
+  // 括號內容 → 備記
+  var note='';
+  line=line.replace(/\(([^)]*)\)/g,function(_,n){note=(note?note+' ':'')+n;return '';});
+
+  // 拆出首段數字=牌，緊接中文/英=姓名
+  var m=line.match(/^(\d+)([一-龥A-Za-z]+)\s+(.*)/);
+  if(!m) return null;
+  var pai=m[1], name=m[2], rest=m[3].trim();
+
+  // rest 末尾兩個純整數 = 實收、EE
+  var numMatches=rest.match(/(\d+)\s+(\d+)$/);
+  var shi='',ee='';
+  if(numMatches){ shi=numMatches[1]; ee=numMatches[2]; rest=rest.slice(0,rest.length-numMatches[0].length).trim(); }
+
+  // rest 現在是：{時間}{地點} {阿姨} 或 {時間}{地點+阿姨}
+  // 若末段是中文/英文字串 → 阿姨
+  var auntie='',place=rest;
+  var lastWord=rest.match(/([一-龥A-Za-z]+)$/);
+  if(lastWord && lastWord[0].length>=2 && !/\d/.test(lastWord[0])){
+    auntie=lastWord[0];
+    place=rest.slice(0,rest.length-lastWord[0].length).trim();
+  }
+
+  return {id:'r'+Date.now()+Math.random(),pai:pai,name:name,place:place,auntie:auntie,shi:shi,rebate:'',ee:ee,note:note,settled:false,settledDate:'',settledAmount:''};
 }
+
 function doImport(){
-  var raw=document.getElementById('imp-raw').value.trim(),msg=document.getElementById('imp-msg');
+  var raw=document.getElementById('imp-raw').value.trim();
+  var msg=document.getElementById('imp-msg');
   if(!raw){msg.textContent='請先輸入工單內容';return;}
-  var dateVal=normDate(document.getElementById('imp-date-inp').value.trim()||document.getElementById('imp-date-sel').value);
-  if(!dateVal){msg.textContent='請選擇或輸入匯入日期';return;}
-  var lines=raw.split('\n'),parsed=[];
-  lines.forEach(function(l){var r=parseImpLine(l);if(r)parsed.push(r);});
+
+  var lines=raw.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+  var dateVal='', orderLines=lines;
+
+  // 第1行如果是日期格式（M/D 或 M-D）就自動讀取
+  if(lines.length && /^(\d{1,2})[\/\-](\d{1,2})$/.test(lines[0])){
+    dateVal=normDate(lines[0]);
+    orderLines=lines.slice(1);
+  } else {
+    // 否則用目前選取的日期
+    var k=selKey(); if(k) dateVal=k;
+  }
+
+  if(!dateVal){msg.textContent='請在第1行輸入日期（如 6/24），或先在行事曆點選日期';return;}
+
+  var parsed=[];
+  orderLines.forEach(function(l){var r=parseImpLine(l);if(r)parsed.push(r);});
   if(!parsed.length){msg.textContent='解析失敗，請確認格式';return;}
   if(!notes[dateVal])notes[dateVal]=[];
   parsed.forEach(function(r){notes[dateVal].push(r);});
-  save();updImpDates();RC();if(selDate){RR();RW();renderAllOrders();}
-  msg.textContent='✓ 成功匯入 '+parsed.length+' 筆到 '+dateVal;document.getElementById('imp-raw').value='';
-  renderUnpaidDashboard();
+  save();updImpDates();
+  var dParts=dateVal.split('/');
+  SD(parseInt(dParts[0]),parseInt(dParts[1])-1,parseInt(dParts[2]));
+  renderAllOrders();renderUnpaidDashboard();
+  msg.textContent='✓ 成功匯入 '+parsed.length+' 筆到 '+dateVal;
+  document.getElementById('imp-raw').value='';
 }
 
 function TC(el){el.classList.toggle('on');RBB();}
@@ -1990,26 +2017,37 @@ function RBB(){
   var el=document.getElementById('bb-list');
   if(!el) return;
   if(!rows.length){el.innerHTML='<div class="empty">'+(bbData.length?'沒有符合條件':'請先貼入班表並解析')+'</div>';return;}
-  
-  var hasF = svcFs.length > 0;
-  el.innerHTML='<div>'+rows.map(function(g){
-    var isJP = g.section === 'jp', specs = g.specs;
-    var tagShow = hasF ? g.tags.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.tags;
-    var tagH = tagShow.map(function(t){return '<span class="ptag '+(hasF?'tmatch':'tsage')+'">'+t+'</span>';}).join('');
-    var okShow = hasF ? g.ok.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.ok;
-    var okH = okShow.map(function(t){return '<span class="ptag '+(hasF?'tmatch':'tsky')+'">✓'+t+'</span>';}).join('');
-    var ngShow = hasF ? g.ng.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.ng;
-    var ngH = ngShow.map(function(t){return '<span class="ptag '+(hasF?'tmatch':'trose')+'">✗'+t+'</span>';}).join('');
-    var svcShow = hasF ? g.services.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.services;
-    var svcH = svcShow.map(function(s){return '<span class="ptag '+(hasF?'tmatch':'tpeach')+'">'+s+'</span>';}).join('');
-    var freeShow = hasF ? g.free.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}) : g.free;
-    var freeH = freeShow.map(function(s){return '<span class="ptag '+(hasF?'tmatch':'tlatte')+'">'+s+'</span>';}).join('');
-    
-    var row1 = (tagH || okH || ngH) ? '<div class="prow">' + tagH + okH + ngH + '</div>' : '';
-    var row2 = svcH ? '<div class="prow"><span class="tmuted">◼</span>' + svcH + '</div>' : '';
-    var row3 = freeH ? '<div class="prow"><span class="tmuted">◻</span>' + freeH + '</div>' : '';
-    return '<div class="bbp '+(isJP?'jp':'tw')+'"><div class="prow"><span class="pprice">'+g.price+'</span> <span class="pname">『'+g.name+'』</span>'+(specs?'<span class="pspec">'+specs+'</span>':'')+(g.timeRaw?'<span class="ptime">'+g.timeRaw+'</span>':'')+'<span class="ptag '+(isJP?'tsky':'tsage')+'" style="font-size:.6875rem;margin-left:4px">'+(isJP?'日韓':'台妹')+'</span></div>'+row1+row2+row3+'</div>';
-  }).join('')+'</div>';
+
+  function renderCard(g){
+    var isJP=g.section==='jp', specs=g.specs;
+    var hasF=svcFs.length>0;
+    var tagH=(hasF?g.tags.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.tags).map(function(t){return '<span class="ptag '+(hasF?'tmatch':'tsage')+'">'+t+'</span>';}).join('');
+    var okH=(hasF?g.ok.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.ok).map(function(t){return '<span class="ptag '+(hasF?'tmatch':'tsky')+'">✓'+t+'</span>';}).join('');
+    var ngH=(hasF?g.ng.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.ng).map(function(t){return '<span class="ptag '+(hasF?'tmatch':'trose')+'">✗'+t+'</span>';}).join('');
+    var svcH=(hasF?g.services.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.services).map(function(s){return '<span class="ptag '+(hasF?'tmatch':'tpeach')+'">'+s+'</span>';}).join('');
+    var freeH=(hasF?g.free.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.free).map(function(s){return '<span class="ptag '+(hasF?'tmatch':'tlatte')+'">'+s+'</span>';}).join('');
+    var row1=(tagH||okH||ngH)?'<div class="prow">'+tagH+okH+ngH+'</div>':'';
+    var row2=svcH?'<div class="prow"><span class="tmuted">◼</span>'+svcH+'</div>':'';
+    var row3=freeH?'<div class="prow"><span class="tmuted">◻</span>'+freeH+'</div>':'';
+    return '<div class="bbp '+(isJP?'jp':'tw')+'"><div class="prow"><span class="pprice">'+g.price+'</span> <span class="pname">『'+g.name+'』</span>'+(specs?'<span class="pspec">'+specs+'</span>':'')+(g.timeRaw?'<span class="ptime">'+g.timeRaw+'</span>':'')+'</div>'+row1+row2+row3+'</div>';
+  }
+
+  // 判斷是否有日韓/台妹篩選 chip
+  var chipFs = getFs();
+  var filterJP = chipFs.indexOf('日韓')>=0, filterTW = chipFs.indexOf('台妹')>=0;
+  var showJP = !filterTW || filterJP, showTW = !filterJP || filterTW;
+  var jpRows = rows.filter(function(g){return g.section==='jp';});
+  var twRows = rows.filter(function(g){return g.section!=='jp';});
+  var html = '';
+  if(showJP && jpRows.length){
+    html += '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--sky);padding:6px 4px 4px;">🇯🇵 日韓（'+jpRows.length+'）</div>';
+    html += jpRows.map(renderCard).join('');
+  }
+  if(showTW && twRows.length){
+    html += '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--sage);padding:10px 4px 4px;">🇹🇼 台妹（'+twRows.length+'）</div>';
+    html += twRows.map(renderCard).join('');
+  }
+  el.innerHTML = html || '<div class="empty">沒有符合條件</div>';
 }
 
 function toast(msg){
@@ -2183,6 +2221,9 @@ function copyLastQa(){
 }
 
 window.onload=function(){
+  // 主題恢復
+  try { setTheme(localStorage.getItem('ddb-theme') || 'default'); } catch(e){}
+
   var impBtn = document.getElementById('imp-btn');
   if(impBtn) impBtn.onclick=doImport;
 
