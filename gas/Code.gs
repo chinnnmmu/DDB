@@ -24,8 +24,10 @@ function doGet() {
 
 // ── Sheet helpers ──────────────────────────────
 
+const SPREADSHEET_ID = '1DUx0mfmoSuW10UnydNJl_gNMoWZXQzmTER0KHu5NPvU';
+
 function getSheet_(name) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   return ss.getSheetByName(name) || ss.insertSheet(name);
 }
 
