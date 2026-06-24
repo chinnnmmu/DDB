@@ -655,10 +655,10 @@ function setTheme(themeName) {
   if (themeName !== 'default') {
     document.body.classList.add(themeName);
   }
-  const btns = document.querySelectorAll('.theme-toggle-btn button');
-  btns.forEach(btn => btn.classList.remove('active'));
-  const btnMap = {'default': 0, 'warm-theme': 1, 'dark-theme': 2, 'light-theme': 3};
-  if (btnMap[themeName] !== undefined) {
+  var btns = document.querySelectorAll('.theme-toggle-btn button, #themeToggle button');
+  btns.forEach(function(btn){ btn.classList.remove('active'); });
+  var btnMap = {'default': 0, 'warm-theme': 1, 'dark-theme': 2, 'light-theme': 3};
+  if (btnMap[themeName] !== undefined && btns[btnMap[themeName]]) {
     btns[btnMap[themeName]].classList.add('active');
   }
   localStorage.setItem('ddb-theme', themeName);
