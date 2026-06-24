@@ -669,13 +669,11 @@ var sortDir = { name: 1, time: 1 };
 
 
 function load(){
-  try{notes=JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){notes={};}
-  try{stickies=JSON.parse(localStorage.getItem(SNK)||'[]');}catch(e){stickies=[];}
-  try{multiNotes=JSON.parse(localStorage.getItem('ddb-multi-notes')||'[]');}catch(e){multiNotes=[];}
+  notes={};
+  multiNotes=[];
 }
 var _cloudSaveTimer = null;
 function save(){
-  try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
   clearTimeout(_cloudSaveTimer);
   _cloudSaveTimer = setTimeout(function(){
     saveAllDataToCloud();
@@ -684,7 +682,6 @@ function save(){
 function saveS(){try{localStorage.setItem(SNK,JSON.stringify(stickies));}catch(e){}}
 var _notesSyncTimer = null;
 function saveMultiNotes(){
-  try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}
   clearTimeout(_notesSyncTimer);
   _notesSyncTimer = setTimeout(function(){ saveAllDataToCloud(); }, 800);
 }
@@ -757,12 +754,10 @@ function loadAllDataFromCloud(silent) {
       try {
         if (data && data.multiNotes && Array.isArray(data.multiNotes)) {
           multiNotes = data.multiNotes;
-          try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}
           renderMultiNoteList();
         }
         if (data && data.workOrders && typeof data.workOrders === 'object') {
           notes = data.workOrders;
-          try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
           try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
           try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
         }
@@ -2256,8 +2251,6 @@ window.onload=function(){
   if(impBtn) impBtn.onclick=doImport;
   ST('cal'); // 預設顯示每日工單
 
-  // 先用 localStorage 快取填畫面（讓畫面不空白），雲端回來後會覆蓋
-  load();
   RC();
   SD(today.getFullYear(), today.getMonth(), today.getDate());
   RBB();
