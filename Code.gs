@@ -1,18 +1,57 @@
 // ==================== DDB GAS Web App 後端 ====================
-// System 1 (Index.html): workOrders + multiNotes only
-// System 2 (Admin.html): schDB + formatPresets only
+// System 1 (Index.html): workOrders + multiNotes
+// System 2 (Admin.html): day/week/note/db/walk (key-value store)
 
 var SHEET_NAME_NOTES    = 'MultiNotes';
 var SHEET_NAME_ORDERS   = 'WorkOrders';
 var SHEET_NAME_META     = 'Meta';
 var SHEET_NAME_ADMIN    = 'AdminSettings';
+var SHEET_NAME_KV       = 'AdminData';   // System 2 key-value store
 
 // ---- 入口點 ----
 function doGet(e) {
   var page = e && e.parameter && e.parameter.page === 'admin' ? 'Admin' : 'Index';
   return HtmlService.createHtmlOutputFromFile(page)
-    .setTitle(page === 'Admin' ? 'DDB 後台管理' : 'DDB 工作台')
+    .setTitle(page === 'Admin' ? '班表管理系統' : 'DDB 工作台')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+// ==================== System 2: save(key, val) ====================
+// 儲存任意 key-value 到 AdminData sheet
+function save(key, val) {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_KV);
+    var data = sh.getDataRange().getValues();
+    // 尋找是否已有這個 key
+    for (var i = 0; i < data.length; i++) {
+      if (String(data[i][0]) === String(key)) {
+        sh.getRange(i + 1, 2).setValue(val);
+        return { success: true };
+      }
+    }
+    // 沒有就新增一行
+    sh.appendRow([key, val]);
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+}
+
+// ==================== System 2: loadAll() ====================
+// 讀取所有 key-value，回傳 { day, week, note, db, walk }
+function loadAll() {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_KV);
+    var data = sh.getDataRange().getValues();
+    var result = { day: '', week: '', note: '', db: '', walk: '' };
+    data.forEach(function(row) {
+      var k = String(row[0]);
+      if (k in result) result[k] = String(row[1] || '');
+    });
+    return result;
+  } catch (err) {
+    return { day: '', week: '', note: '', db: '', walk: '', error: err.message };
+  }
 }
 
 // ---- 工具：取得或建立 Sheet ----

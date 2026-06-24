@@ -1,13 +1,19 @@
-<html lang="zh-Hant"><head>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>班表與週報管理系統</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&amp;family=Noto+Sans+TC:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<title>班表管理系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;1,400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
-:root {
-  --cream:   #faf7f2;
+/* ══════════════════════════════════════════
+   CSS VARIABLES — Light / Dark
+══════════════════════════════════════════ */
+:root{
+  --bg:      #fcfaf8;
   --surface: #fffcf8;
   --card:    #ffffff;
   --border:  #e8d9c5;
@@ -19,400 +25,568 @@
   --hint:    #c0ab96;
   --danger:  #c96b7e;
   --green:   #6a9e7a;
+  --shadow:  rgba(140,118,92,.07);
   --r:       10px;
-  --gap:     16px;
+  /* 現走表 palette */
+  --tan:           #b89a7a;
+  --tan-dark:      #8a6a4a;
+  --tan-btn:       #9a7a5a;
+  --fog-pink:      #c8a8a2;
+  --fog-pink-pale: #edddd9;
+  --fog-green:     #8aaa8a;
+  --fog-blue:      #8aa0b8;
+  --fog-lavender:  #a098c0;
+  --text-soft:     #7a6650;
+  --text-mid:      #5a4a38;
+  --text-label:    #6a5640;
+  --input-bg:      #faf6f0;
+  --card-bg:       rgba(255,252,248,0.92);
+}
+html.dark{
+  --bg:      #2a2420;
+  --surface: #1e1a17;
+  --card:    #2e2925;
+  --border:  #4a3e32;
+  --border2: #5a4e42;
+  --accent:  #c8a87a;
+  --accent2: #b89a72;
+  --text:    #e8d9c5;
+  --muted:   #7a6a5a;
+  --hint:    #6a5a4a;
+  --danger:  #e8808a;
+  --green:   #8abf9a;
+  --shadow:  rgba(0,0,0,.25);
+  --tan:           #8a6a4a;
+  --tan-dark:      #c8a87a;
+  --tan-btn:       #9a7a5a;
+  --fog-pink:      #a88882;
+  --fog-pink-pale: #3a2e2c;
+  --fog-green:     #6a8a6a;
+  --fog-blue:      #6a8098;
+  --fog-lavender:  #8078a0;
+  --text-soft:     #a89880;
+  --text-mid:      #c8b9a5;
+  --text-label:    #b8a890;
+  --input-bg:      #221e1b;
+  --card-bg:       rgba(46,41,37,.95);
 }
 
-body {
-  font-family: "Noto Sans TC", sans-serif;
-  background: var(--cream);
-  color: var(--text);
-  font-size: 13px;
-  line-height: 1.5;
-  padding: 16px 14px 80px;
+/* ══════════════════════════════════════════
+   BASE
+══════════════════════════════════════════ */
+body{
+  font-family:"Noto Sans TC",sans-serif;
+  background:var(--bg);color:var(--text);
+  font-size:13px;line-height:1.5;
+  padding:0 0 80px;min-height:100vh;
+  transition:background .2s,color .2s;
 }
 
-.wrap {
-  max-width: 1400px;
-  margin: 0 auto;
+/* ══════════════════════════════════════════
+   PAGE HEADER
+══════════════════════════════════════════ */
+.page-hdr{
+  position:sticky;top:0;z-index:100;
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:10px 20px;
+  display:flex;align-items:center;gap:14px;
+  box-shadow:0 2px 12px var(--shadow);
+}
+.hdr-brand{ flex:0 0 auto; }
+.hdr-brand-title{
+  font-family:"Noto Serif TC",serif;
+  font-size:17px;font-weight:700;color:var(--accent);
+}
+.hdr-brand-sub{font-size:10px;color:var(--hint);margin-top:1px;letter-spacing:.04em;}
+
+/* Tab nav */
+.tab-nav{display:flex;gap:4px;margin-left:8px;}
+.tab-btn{
+  padding:6px 18px;border-radius:20px;
+  border:1.5px solid var(--border);
+  background:transparent;color:var(--muted);
+  font-family:"Noto Sans TC",sans-serif;
+  font-size:12px;font-weight:500;cursor:pointer;
+  transition:all .18s;
+}
+.tab-btn:hover{border-color:var(--accent2);color:var(--accent);}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* Right controls */
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.save-status{font-size:11px;color:var(--green);min-width:140px;text-align:right;}
+.dark-toggle{
+  padding:6px 12px;border-radius:20px;
+  border:1.5px solid var(--border);
+  background:transparent;color:var(--muted);font-size:14px;
+  cursor:pointer;transition:all .18s;
+}
+.dark-toggle:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ══════════════════════════════════════════
+   LOADING OVERLAY
+══════════════════════════════════════════ */
+#loadingOverlay{
+  position:fixed;inset:0;z-index:9000;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:14px;
+  transition:opacity .3s;
+}
+#loadingOverlay.hidden{opacity:0;pointer-events:none;}
+.loading-spinner{
+  width:32px;height:32px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:13px;color:var(--muted);}
+
+/* ══════════════════════════════════════════
+   TAB SECTIONS
+══════════════════════════════════════════ */
+.tab-content{display:none;padding:16px 20px 20px;}
+.tab-content.active{display:block;}
+
+/* ══════════════════════════════════════════
+   SHARED COMPONENTS
+══════════════════════════════════════════ */
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:0 1px 6px var(--shadow);
+  padding:14px 16px;
+  transition:background .2s,border-color .2s;
+}
+.lbl{
+  font-size:13px;font-weight:700;color:var(--accent2);
+  letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;
+}
+.hint{font-size:11.5px;color:var(--hint);margin-bottom:8px;line-height:1.5;}
+
+textarea{
+  font-family:"Noto Sans TC",sans-serif;
+  width:100%;border:1px solid var(--border);border-radius:6px;
+  padding:10px 11px;font-size:13px;
+  background:var(--surface);color:var(--text);
+  outline:none;resize:none;overflow-y:auto;line-height:1.5;
+  transition:border-color .18s,background .2s,color .2s;
+}
+textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(140,118,92,.12);}
+
+.ro-box{
+  font-family:"Noto Sans TC",sans-serif;white-space:pre-wrap;
+  border:1px solid var(--border);border-radius:6px;
+  padding:10px 11px;font-size:13px;
+  background:var(--surface);color:var(--text);
+  line-height:1.5;overflow-y:auto;
+  transition:background .2s,color .2s;
 }
 
-/* ── 頁首 ── */
-.hdr {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 22px;
+.btn-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center;}
+button{
+  font-family:"Noto Sans TC",sans-serif;
+  border-radius:6px;border:1.5px solid var(--border2);
+  background:var(--card);color:var(--muted);
+  padding:6px 16px;font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
 }
-.hdr-title {
-  font-family: "Noto Serif TC", serif;
-  font-size: 19px; font-weight: 700;
-  color: var(--accent);
+button:hover{border-color:var(--accent2);color:var(--accent);background:var(--surface);}
+button:active{transform:scale(.97);}
+button.primary{
+  background:linear-gradient(135deg,#d4988a,#dfa89d);
+  color:#fff;border:none;font-weight:600;
 }
-.hdr-ver { font-size: 11px; color: var(--hint); }
+button.primary:hover{filter:brightness(1.08);}
+button.subtle{color:#c9949b;font-size:11px;padding:5px 13px;border-color:#dcc9d0;}
+.copy-wide{
+  display:block;width:100%;margin-top:8px;padding:8px;
+  border-radius:6px;border:none;
+  background:linear-gradient(135deg,#c4a9d4,#d4bad4);
+  color:#fff;font-weight:600;font-size:12px;
+  font-family:"Noto Sans TC",sans-serif;cursor:pointer;
+  text-align:center;transition:filter .15s;
+}
+.copy-wide:hover{filter:brightness(1.08);}
+.copy-wide.alt{background:linear-gradient(135deg,#d4c9a8,#ddd4b8);}
+#missing{font-size:12px;color:var(--danger);font-weight:600;margin-top:7px;min-height:16px;}
 
-/* ── 卡片 ── */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  box-shadow: 0 1px 6px rgba(140,118,92,.07);
-  padding: 14px 16px;
-}
+/* ══════════════════════════════════════════
+   班表管理 LAYOUT
+══════════════════════════════════════════ */
+.sch-wrap{max-width:1400px;margin:0 auto;}
 
-.lbl {
-  font-size: 14px; font-weight: 700;
-  color: var(--accent2); letter-spacing: .05em;
-  text-transform: uppercase; margin-bottom: 8px;
-}
-.hint { font-size: 12px; color: var(--hint); margin-bottom: 8px; }
+#inputA   {height:180px;}
+#weekInput{height:140px;}
+#db{height:1140px;max-height:250px;overflow-y:hidden;}
+#outputDiv{height:180px;border-left:3px solid var(--accent);}
+#pureOutput{height:120px;}
+#notepad{height:100%;min-height:200px;resize:none;}
 
-/* ── textarea ── */
-textarea {
-  font-family: "Noto Sans TC", sans-serif;
-  width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 10px 11px;
-  font-size: 13px;
-  background: var(--surface);
-  color: var(--text);
-  outline: none;
-  resize: none;
-  overflow-y: auto;
-  line-height: 1.5;
+.top-zone{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;
+  align-items:stretch;margin-bottom:12px;min-height:320px;
 }
-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(140,118,92,.1); }
+.top-left,.top-middle,.top-right{display:flex;flex-direction:column;}
+.top-left .card,.top-middle .card,.top-right .card{flex:1;display:flex;flex-direction:column;}
+.top-left textarea,.top-left .ro-box,
+.top-middle .ro-box,.top-right #notepad{flex:1;min-height:0;}
 
-/* 固定高度（緊湊尺寸） */
-#inputA    { height: 180px; }
-#weekInput { height: 140px; }
-#db        { height: 380px; }   /* 緊湊但可讀 */
+.week-zone{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
 
-/* 唯讀 div */
-.ro-box {
-  font-family: "Noto Sans TC", sans-serif;
-  white-space: pre-wrap;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 10px 11px;
-  font-size: 13px;
-  background: var(--surface);
-  color: var(--text);
-  line-height: 1.5;
-  overflow-y: auto;
+/* Weekly board */
+.day-panel{margin-bottom:12px;}
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:12px;}
+.day-box{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:6px;padding:10px 8px;
+  display:flex;flex-direction:column;min-height:180px;
 }
-#outputDiv { height: 180px; border-left: 3px solid var(--accent); }
-#pureOutput { height: 120px; }
-#notepad { height: 100%; min-height: 200px; resize: none; }
+.day-hdr{
+  display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;
+}
+.day-name{font-size:12px;font-weight:700;color:var(--accent);font-family:"Noto Serif TC",serif;}
+.day-count{font-size:10px;color:var(--hint);}
+.day-list{flex:1;font-size:11px;line-height:1.5;}
+.day-item{
+  margin-bottom:3px;padding-bottom:3px;
+  border-bottom:1px dashed var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.day-item-name{font-weight:700;color:var(--text);}
+.day-item-time{font-size:11px;color:var(--accent2);margin-left:6px;}
+.day-copy{
+  width:100%;margin-top:6px;padding:4px 0;font-size:11px;font-weight:600;
+  background:linear-gradient(135deg,#a8d4d4,#b8ddd9);border:none;
+  color:#fff;border-radius:4px;cursor:pointer;transition:filter .15s;
+  font-family:"Noto Sans TC",sans-serif;
+}
+.day-copy:hover{filter:brightness(1.08);}
 
-/* ── 按鈕 ── */
-.btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+/* DB section */
+.db-top-buttons button{font-size:12.5px;padding:8px 16px;}
+#dbStatus{margin-top:6px;font-size:12px;color:var(--green);}
+#toggleDbBtn{
+  width:100%;margin-top:10px;padding:8px;font-weight:600;
+  border-radius:6px;border:1.5px solid var(--border2);
+  background:var(--surface);color:var(--muted);
+  cursor:pointer;transition:all .15s;
+  font-family:"Noto Sans TC",sans-serif;font-size:12px;
+}
+#toggleDbBtn:hover{border-color:var(--accent);color:var(--accent);}
 
-button {
-  font-family: "Noto Sans TC", sans-serif;
-  border-radius: 4px;
-  border: 1.5px solid #b8a89d;
-  background: var(--card);
-  color: #8a7a6f;
-  padding: 6px 16px;
-  font-size: 12px; font-weight: 500;
-  cursor: pointer; transition: all .15s;
-  white-space: nowrap;
+/* ── PATCH MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(30,22,14,.62);backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;
 }
-button:hover  { border-color: #9a8b7f; color: #6a5a50; background: #faf5f0; }
-button:active { transform: scale(.97); }
+.modal-overlay.open{display:flex;}
+.modal-box{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:28px 30px 24px;
+  width:560px;max-width:94vw;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);
+  display:flex;flex-direction:column;gap:14px;
+}
+.modal-title{font-family:"Noto Serif TC",serif;font-size:16px;font-weight:700;color:var(--accent);}
+.modal-hint{font-size:12px;color:var(--hint);line-height:1.6;}
+.modal-box textarea{height:280px;resize:none;outline:none;font-size:13px;line-height:1.75;}
+.modal-footer{display:flex;justify-content:flex-end;gap:10px;}
+.modal-cancel{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  border-radius:20px;padding:8px 20px;font-size:12px;font-weight:500;
+  font-family:"Noto Sans TC",sans-serif;cursor:pointer;transition:all .15s;
+}
+.modal-cancel:hover{border-color:var(--accent);color:var(--accent);}
+.modal-confirm{
+  background:linear-gradient(135deg,#6a9e7a,#8fbc9e);
+  color:#fff;border:none;border-radius:20px;
+  padding:8px 22px;font-size:12px;font-weight:600;
+  font-family:"Noto Sans TC",sans-serif;cursor:pointer;transition:filter .15s;
+}
+.modal-confirm:hover{filter:brightness(1.08);}
+#patchResult{font-size:11px;color:var(--green);min-height:14px;}
 
-button.primary {
-  background: linear-gradient(135deg, #d4988a, #dfa89d);
-  color: #fff; border: none; font-weight: 600;
+/* ══════════════════════════════════════════
+   現走表 LAYOUT
+══════════════════════════════════════════ */
+#tab-walk{
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 10%,rgba(200,168,162,.15) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 50% at 85% 80%,rgba(138,170,138,.10) 0%,transparent 55%);
 }
-button.primary:hover { filter: brightness(1.08); }
+.walk-wrap{max-width:1180px;margin:0 auto;}
+.walk-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.walk-hdr-title{
+  font-family:"Cormorant Garamond",serif;
+  font-size:22px;font-weight:500;letter-spacing:.1em;color:var(--tan-dark);
+}
+.walk-hdr-title em{font-style:italic;color:var(--fog-pink);}
+.walk-hdr-sub{font-size:10px;letter-spacing:.2em;color:var(--text-soft);text-transform:uppercase;margin-top:1px;}
+.walk-save-btn{
+  padding:8px 20px;border-radius:20px;
+  border:1.5px solid var(--tan-btn);background:var(--tan-btn);color:#fff;
+  font-family:"Noto Sans TC",sans-serif;font-size:12.5px;font-weight:500;
+  cursor:pointer;transition:all .2s;
+}
+.walk-save-btn:hover{background:var(--tan-dark);border-color:var(--tan-dark);}
+#walkStatus{font-size:11.5px;color:var(--fog-green);font-weight:500;text-align:right;min-height:16px;margin-bottom:2px;}
 
-button.success {
-  background: linear-gradient(135deg, #a8c9a8, #b8d9b8);
-  color: #fff; border: none; font-weight: 600;
+.walk-grid{
+  display:grid;grid-template-columns:310px 1fr;gap:16px;align-items:start;
 }
-button.success:hover { filter: brightness(1.08); }
+.walk-panel-left{display:flex;flex-direction:column;gap:12px;}
+.walk-card{
+  background:var(--card-bg);backdrop-filter:blur(6px);
+  border:1.5px solid var(--border);border-radius:16px;
+  padding:16px 18px;box-shadow:0 2px 14px var(--shadow);
+}
+.walk-card-title{
+  font-family:"Cormorant Garamond",serif;
+  font-size:14px;font-weight:500;letter-spacing:.1em;color:var(--tan-dark);
+  margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:7px;
+}
+.card-dot{width:6px;height:6px;border-radius:50%;background:var(--fog-pink);flex-shrink:0;}
 
-button.subtle {
-  color: #c9949b; font-size: 11px;
-  padding: 5px 13px; border-color: #dcc9d0;
+/* Date */
+.date-row{display:flex;align-items:center;gap:8px;}
+.date-row input[type="date"]{
+  flex:1;padding:8px 10px;
+  border:1.5px solid var(--border);border-radius:10px;
+  background:var(--input-bg);color:var(--text);
+  font-family:"Noto Sans TC",sans-serif;font-size:13px;font-weight:500;
+  outline:none;cursor:pointer;transition:border-color .18s;
 }
-
-.copy-wide {
-  display: block; width: 100%;
-  margin-top: 8px; padding: 8px;
-  border-radius: 4px; border: none;
-  background: linear-gradient(135deg, #c4a9d4, #d4bad4);
-  color: #fff; font-weight: 600; font-size: 12px;
-  font-family: "Noto Sans TC", sans-serif;
-  cursor: pointer; text-align: center; transition: filter .15s;
-}
-.copy-wide:hover { filter: brightness(1.08); }
-.copy-wide.alt   { background: linear-gradient(135deg, #d4c9a8, #ddd4b8); }
-
-#missing { font-size: 12px; color: var(--danger); font-weight: 600; margin-top: 7px; min-height: 16px; }
-
-/* ════════════════════════════
-   上層  3 欄並排 (日班表 + 轉檔 + 自由編輯)
-   ════════════════════════════ */
-.top-zone {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  align-items: stretch;
-  margin-bottom: 12px;
-  min-height: 680px;
-}
-.top-left {
-  display: flex; flex-direction: column;
-}
-.top-left .card {
-  flex: 1; display: flex; flex-direction: column;
-}
-.top-left textarea,
-.top-left .ro-box {
-  flex: 1; min-height: 0;
-}
-.top-middle {
-  display: flex; flex-direction: column;
-}
-.top-middle .card {
-  flex: 1; display: flex; flex-direction: column;
-}
-.top-middle .ro-box {
-  flex: 1; min-height: 0;
-}
-.top-right {
-  display: flex; flex-direction: column;
-}
-.top-right .card {
-  flex: 1; display: flex; flex-direction: column;
-}
-.top-right #notepad {
-  flex: 1; min-height: 0;
-}
-
-/* ════════════════════════════
-   下層  50% : 50% 對齊
-   ════════════════════════════ */
-.week-zone {
-  display: grid;
-  grid-template-columns: 50fr 50fr;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-/* ── 週間看板 ── */
-.day-panel { margin-bottom: 12px; }
-.day-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  margin-top: 12px;
-}
-.day-box {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 10px 8px;
-  display: flex; flex-direction: column;
-  min-height: 320px;
-}
-.day-hdr {
-  display: flex; justify-content: space-between; align-items: center;
-  border-bottom: 1px solid #f0e5d5;
-  padding-bottom: 4px; margin-bottom: 6px;
-}
-.day-name { font-size: 12px; font-weight: 700; color: var(--accent); font-family: "Noto Serif TC", serif; }
-.day-count { font-size: 10px; color: var(--hint); }
-.day-list { flex: 1; overflow-y: visible; font-size: 11px; line-height: 1.5; }
-
-/* 壓緊距離感：名字與時間顯示在同一行 */
-.day-item {
-  margin-bottom: 3px;
-  padding-bottom: 3px;
-  border-bottom: 1px dashed #f0e5d5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.day-item-name { font-weight: 700; color: var(--text); }
-.day-item-time { font-size: 11px; color: var(--accent2); margin-left: 6px; }
-
-.day-copy {
-  width: 100%; margin-top: 6px; padding: 4px 0;
-  font-size: 11px; font-weight: 600;
-  background: linear-gradient(135deg, #a8d4d4, #b8ddd9); border: none;
-  color: #fff; border-radius: 4px; cursor: pointer; transition: all .15s;
-  font-family: "Noto Sans TC", sans-serif;
-}
-.day-copy:hover { filter: brightness(1.08); }
-.day-copy:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-/* ════════════════════════════
-   底層 — 母檔（全展開，無多餘大底層）
-   ════════════════════════════ */
-.db-zone { }
-
-.db-collapsible {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
-  margin-top: 8px;
-  overflow: hidden;
+.date-row input[type="date"]:focus{border-color:var(--tan);box-shadow:0 0 0 3px rgba(184,154,122,.18);}
+.date-weekday{
+  font-family:"Cormorant Garamond",serif;
+  font-size:18px;font-weight:500;color:var(--fog-pink);
+  white-space:nowrap;letter-spacing:.05em;
 }
 
-.db-collapsible summary {
-  cursor: pointer;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent2);
-  background: var(--cream);
-  border-bottom: 1px solid var(--border);
-  user-select: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background .15s;
+/* Quick edit */
+.quick-label{
+  font-size:11px;font-weight:500;color:var(--text-soft);
+  letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;
+}
+.quick-textarea{
+  width:100%;padding:10px 12px;
+  border:1.5px solid var(--border);border-radius:10px;
+  background:var(--input-bg);color:var(--text);
+  font-family:"Noto Sans TC",sans-serif;font-size:13px;
+  resize:vertical;outline:none;line-height:1.6;
+  transition:border-color .18s;
+}
+.quick-textarea:focus{border-color:var(--tan);box-shadow:0 0 0 3px rgba(184,154,122,.18);}
+.quick-gap{margin-bottom:10px;}
+
+/* Raw input */
+textarea.raw-input{
+  width:100%;min-height:200px;
+  padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;
+  background:var(--input-bg);color:var(--text);
+  font-family:"JetBrains Mono",monospace;font-size:12.5px;
+  resize:vertical;outline:none;line-height:1.7;margin-bottom:12px;
+}
+textarea.raw-input:focus{border-color:var(--tan);box-shadow:0 0 0 3px rgba(184,154,122,.18);}
+textarea.raw-input::placeholder{color:var(--hint);}
+.btn-convert{
+  width:100%;padding:13px;border:1.5px solid var(--tan-btn);border-radius:12px;
+  background:linear-gradient(135deg,var(--tan-btn) 0%,var(--tan-dark) 100%);color:#fdf8f0;
+  font-family:"Cormorant Garamond",serif;font-size:17px;font-weight:500;letter-spacing:.14em;
+  cursor:pointer;transition:all .22s;box-shadow:0 3px 14px rgba(138,106,74,.28);
+}
+.btn-convert:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.btn-convert:active{transform:translateY(0);}
+
+/* Advanced settings */
+.adv-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;
+  font-size:12px;color:var(--text-soft);font-weight:500;
+  letter-spacing:.06em;padding:10px 0 2px;
+}
+.adv-toggle:hover{color:var(--tan-dark);}
+.adv-arrow{font-size:10px;transition:transform .22s;}
+.adv-arrow.open{transform:rotate(180deg);}
+.adv-body{overflow:hidden;max-height:0;transition:max-height .35s,opacity .25s;opacity:0;}
+.adv-body.open{max-height:1200px;opacity:1;}
+.adv-inner{padding-top:12px;border-top:1px solid var(--border);margin-top:10px;}
+.adv-preset-tabs{display:flex;gap:6px;margin-bottom:12px;}
+.adv-tab{
+  flex:1;padding:5px 4px;text-align:center;
+  border:1.5px solid var(--border);border-radius:8px;
+  background:transparent;cursor:pointer;transition:all .18s;
+  font-size:11px;font-weight:500;color:var(--text-mid);
+  font-family:"Noto Sans TC",sans-serif;
+}
+.adv-tab:hover:not(.active){border-color:var(--tan);color:var(--tan-dark);}
+.adv-tab.active{background:linear-gradient(135deg,rgba(184,154,122,.2),rgba(138,106,74,.1));}
+.adv-tab:nth-child(1).active{border-color:var(--fog-pink);}
+.adv-tab:nth-child(2).active{border-color:var(--fog-green);}
+.adv-tab:nth-child(3).active{border-color:var(--fog-blue);}
+.adv-tab:nth-child(4).active{border-color:var(--fog-lavender);}
+.adv-tab-name{
+  border:none;background:transparent;font-size:11px;font-weight:500;
+  color:inherit;text-align:center;width:100%;cursor:text;
+  font-family:"Noto Sans TC",sans-serif;
+}
+.adv-tab-name:focus{outline:none;border-bottom:1px dashed var(--tan);}
+.adv-row{display:flex;align-items:flex-start;margin-bottom:8px;gap:8px;}
+.adv-row label{width:90px;font-size:11.5px;font-weight:500;color:var(--text-label);padding-top:7px;flex-shrink:0;}
+.adv-row input,.adv-row textarea{
+  flex:1;padding:6px 10px;border:1.5px solid var(--border);border-radius:8px;
+  background:var(--input-bg);color:var(--text);
+  font-family:"Noto Sans TC",sans-serif;font-size:12px;outline:none;
+  transition:border-color .18s;
+}
+.adv-row input:focus,.adv-row textarea:focus{
+  border-color:var(--tan);box-shadow:0 0 0 3px rgba(184,154,122,.18);
+}
+.btn-reset-adv{
+  margin-top:10px;padding:6px 14px;border-radius:16px;
+  border:1.5px solid var(--border);background:transparent;color:var(--text-soft);
+  font-size:11.5px;font-weight:500;cursor:pointer;transition:all .18s;
+  font-family:"Noto Sans TC",sans-serif;
+}
+.btn-reset-adv:hover{border-color:var(--tan);color:var(--tan-dark);}
+
+/* Walk right outputs */
+.walk-panel-right{display:flex;flex-direction:column;gap:14px;}
+.main-output-card{
+  background:var(--card-bg);backdrop-filter:blur(6px);
+  border:1.5px solid var(--fog-pink-pale);border-top:3px solid var(--fog-pink);
+  border-radius:16px;padding:18px;box-shadow:0 3px 18px var(--shadow);
+}
+.main-output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.main-output-title{
+  font-family:"Cormorant Garamond",serif;
+  font-size:16px;font-weight:500;letter-spacing:.1em;color:var(--tan-dark);
+  display:flex;align-items:center;gap:8px;
+}
+.main-badge{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  background:var(--fog-pink);color:#fff;
+  padding:2px 8px;border-radius:10px;font-family:"Noto Sans TC",sans-serif;
+}
+.btn-copy-main{
+  padding:8px 22px;border-radius:20px;
+  border:1.5px solid var(--fog-pink);background:var(--fog-pink);color:#fff;
+  font-family:"Noto Sans TC",sans-serif;font-size:13px;font-weight:500;
+  cursor:pointer;transition:filter .18s;
+}
+.btn-copy-main:hover{filter:brightness(1.08);}
+#walkMainOutput{
+  width:100%;min-height:480px;
+  background:var(--input-bg);border:1.5px solid var(--border);border-radius:10px;
+  font-family:"JetBrains Mono",monospace;font-size:13px;
+  white-space:pre;padding:14px 16px;color:var(--text);
+  resize:vertical;line-height:1.75;outline:none;
+}
+.sub-outputs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.sub-card{
+  background:var(--card-bg);backdrop-filter:blur(4px);
+  border:1.5px solid var(--border);border-radius:14px;
+  padding:13px;display:flex;flex-direction:column;
+  box-shadow:0 2px 10px var(--shadow);
+}
+.sub-card:nth-child(1){border-top:3px solid var(--fog-green);}
+.sub-card:nth-child(2){border-top:3px solid var(--fog-blue);}
+.sub-card:nth-child(3){border-top:3px solid var(--fog-lavender);}
+.sub-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.sub-card-label{
+  font-family:"Cormorant Garamond",serif;
+  font-size:13px;font-weight:500;letter-spacing:.08em;color:var(--tan-dark);
+}
+.btn-copy-sub{
+  padding:3px 11px;border-radius:16px;
+  border:1.5px solid var(--border);background:transparent;color:var(--muted);
+  font-size:11px;font-weight:500;cursor:pointer;transition:all .18s;
+  font-family:"Noto Sans TC",sans-serif;
+}
+.btn-copy-sub:hover{border-color:var(--tan-btn);background:var(--tan-btn);color:#fff;}
+.sub-output-box{
+  width:100%;min-height:340px;flex:1;
+  background:var(--input-bg);border:1.5px solid var(--border);border-radius:8px;
+  font-family:"JetBrains Mono",monospace;font-size:11.5px;
+  white-space:pre;padding:10px 12px;color:var(--text);
+  resize:vertical;line-height:1.7;outline:none;
 }
 
-.db-collapsible summary:hover {
-  background: #f5ead8;
-  color: var(--accent);
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  background:rgba(40,28,18,.92);color:#fff;
+  padding:9px 24px;border-radius:18px;
+  font-size:13px;z-index:2000;
+  opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;
 }
-
-.db-collapsible[open] summary {
-  border-bottom-color: var(--border2);
-  color: var(--accent);
-}
-
-.db-collapsible summary::marker,
-.db-collapsible summary::-webkit-details-marker {
-  display: none;
-}
-
-/* 自訂開合箭頭 */
-.db-collapsible summary::before {
-  content: "▶";
-  display: inline-block;
-  width: 18px;
-  text-align: center;
-  transition: transform .2s ease;
-  color: var(--accent);
-  font-size: 14px;
-}
-
-.db-collapsible[open] summary::before {
-  transform: rotate(90deg);
-  color: var(--accent);
-}
-
-.db-content {
-  padding: 14px 16px 10px;
-}
-
-.db-top-buttons button {
-  font-size: 12.5px;
-  padding: 8px 16px;
-}
-
-/* ── 燈箱 Modal（一鍵覆蓋） ── */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(30,22,14,.62);
-  backdrop-filter: blur(3px);
-  align-items: center; justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-
-.modal-box {
-  background: #2c251e;
-  border: 1px solid #4a3e32;
-  border-radius: 16px;
-  padding: 28px 30px 24px;
-  width: 560px; max-width: 94vw;
-  box-shadow: 0 20px 60px rgba(0,0,0,.45);
-  display: flex; flex-direction: column; gap: 14px;
-}
-.modal-title {
-  font-family: "Noto Serif TC", serif;
-  font-size: 16px; font-weight: 700;
-  color: #e8d9c5; letter-spacing: .04em;
-}
-.modal-hint { font-size: 12px; color: #9a8a78; line-height: 1.6; }
-.modal-box textarea {
-  height: 280px;
-  background: #1e1812;
-  border: 1px solid #4a3e32;
-  color: #e8d9c5;
-  font-size: 13px; line-height: 1.75;
-  border-radius: 8px; padding: 12px 14px;
-  resize: none; outline: none;
-}
-.modal-box textarea:focus { border-color: #8c765c; }
-.modal-footer {
-  display: flex; justify-content: flex-end; gap: 10px;
-}
-.modal-cancel {
-  background: transparent; border: 1px solid #4a3e32;
-  color: #9a8a78; border-radius: 20px; padding: 8px 20px;
-  font-size: 12px; font-weight: 500;
-  font-family: "Noto Sans TC", sans-serif; cursor: pointer; transition: all .15s;
-}
-.modal-cancel:hover { border-color: #8c765c; color: #c8b49a; }
-.modal-confirm {
-  background: linear-gradient(135deg, #6a9e7a, #8fbc9e);
-  color: #fff; border: none; border-radius: 20px;
-  padding: 8px 22px; font-size: 12px; font-weight: 600;
-  font-family: "Noto Sans TC", sans-serif; cursor: pointer; transition: filter .15s;
-}
-.modal-confirm:hover { filter: brightness(1.08); }
-#patchResult { font-size: 11px; color: var(--green); min-height: 14px; }
-
-/* ── Toast ── */
-#toast {
-  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-  background: rgba(40,28,18,.92); color: #fff;
-  padding: 9px 24px; border-radius: 18px;
-  font-size: 13px; z-index: 2000;
-  opacity: 0; transition: opacity .25s; pointer-events: none; white-space: nowrap;
-}
-#toast.show { opacity: 1; }
+#toast.show{opacity:1;}
 
 /* ── RWD ── */
-@media (max-width: 960px) {
-  .top-zone  { grid-template-columns: 1fr; min-height: auto; }
-  .week-zone { grid-template-columns: 1fr; }
-  .top-right { min-height: 250px; }
-  .day-grid  { grid-template-columns: repeat(4,1fr); }
+@media(max-width:1100px){.walk-grid{grid-template-columns:1fr;}}
+@media(max-width:960px){
+  .top-zone{grid-template-columns:1fr;min-height:auto;}
+  .week-zone{grid-template-columns:1fr;}
+  .day-grid{grid-template-columns:repeat(4,1fr);}
 }
-@media (max-width: 560px) {
-  .day-grid { grid-template-columns: repeat(2,1fr); }
+@media(max-width:600px){
+  .day-grid{grid-template-columns:repeat(2,1fr);}
+  .sub-outputs-grid{grid-template-columns:1fr;}
+  .page-hdr{flex-wrap:wrap;}
+  .walk-hdr{flex-direction:column;align-items:flex-start;gap:10px;}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <!-- 頁首 -->
-  <div class="hdr">
-    <div class="hdr-title">班表與週報管理系統</div>
-    <div class="hdr-ver" id="versionLabel">版本更新：2026/6/9</div>
+<!-- ═══════════════════════════════════
+     PAGE HEADER
+═══════════════════════════════════ -->
+<div class="page-hdr">
+  <div class="hdr-brand">
+    <div class="hdr-brand-title">班表管理系統</div>
+    <div class="hdr-brand-sub" id="verLabel">版本更新：2026/6/10</div>
   </div>
+  <nav class="tab-nav">
+    <button class="tab-btn active" id="tabBtnSchedule" onclick="switchTab('schedule')">📋 班表管理</button>
+    <button class="tab-btn" id="tabBtnWalk" onclick="switchTab('walk')">✦ 現走表</button>
+  </nav>
+  <div class="hdr-right">
+    <div class="save-status" id="globalStatus"></div>
+    <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="切換深淺色">🌙</button>
+  </div>
+</div>
 
-  <!-- ════ 上層（3 欄並排）════ -->
+<!-- ═══════════════════════════════════
+     LOADING OVERLAY
+═══════════════════════════════════ -->
+<div id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">連接 Google Sheets 中…</div>
+</div>
+
+<!-- ═══════════════════════════════════
+     TAB 1：班表管理
+═══════════════════════════════════ -->
+<div id="tab-schedule" class="tab-content active">
+<div class="sch-wrap">
+
+  <!-- 上層 3 欄 -->
   <div class="top-zone">
 
-    <!-- 左：日班表輸入 -->
+    <!-- 左：日班表 -->
     <div class="top-left">
       <div class="card">
         <div class="lbl">📋 當日班表輸入</div>
-        <textarea id="inputA" placeholder="在此貼上本日班表…" oninput="saveLS('sch-input-day',this.value)" spellcheck="false"></textarea>
-        <div class="btn-row" style="margin-top: 10px;">
+        <textarea id="inputA" placeholder="在此貼上本日班表…" spellcheck="false"
+          oninput="autoSave('day',this.value)"></textarea>
+        <div class="btn-row" style="margin-top:10px;">
           <button class="primary" onclick="convertDay()">執行轉檔</button>
           <button onclick="sortDayInput()">↕ 排序</button>
           <button class="subtle" onclick="clearDayInput()">清除</button>
@@ -424,18 +598,19 @@ button.subtle {
     <div class="top-middle">
       <div class="card">
         <div class="lbl">✨ 轉換結果</div>
-        <div id="outputDiv" class="ro-box"></div>
+        <div id="outputDiv" class="ro-box">（轉換結果將顯示於此）</div>
         <div id="missing"></div>
-        <button class="copy-wide" onclick="copyOutput()" style="margin-top: 10px;">📋 複製結果</button>
+        <button class="copy-wide" onclick="copyOutput()" style="margin-top:10px;">📋 複製結果</button>
       </div>
     </div>
 
-    <!-- 右：自由編輯區 -->
+    <!-- 右：自由編輯 -->
     <div class="top-right">
       <div class="card">
         <div class="lbl">📝 自由編輯區</div>
-        <textarea id="notepad" placeholder="在此自由輸入或整理內容…" oninput="saveLS('sch-notepad',this.value)" spellcheck="false"></textarea>
-        <div class="btn-row" style="margin-top: 10px;">
+        <textarea id="notepad" placeholder="在此自由輸入或整理內容…" spellcheck="false"
+          oninput="autoSave('note',this.value)"></textarea>
+        <div class="btn-row" style="margin-top:10px;">
           <button class="primary" onclick="copyNotepad()">📋 複製此欄</button>
           <button class="subtle" onclick="clearNotepad()">清除</button>
         </div>
@@ -444,81 +619,198 @@ button.subtle {
 
   </div><!-- /top-zone -->
 
+  <!-- 週報輸入 + 乾淨名單 -->
   <div class="week-zone">
-
-    <!-- 左 50%：週報輸入 -->
     <div class="card">
       <div class="lbl">本週預報輸入</div>
       <div class="hint">支援：30米莎➜㈣㈤ 或 18悅潔➜㈢㈣1300-2200㈤1200-1700</div>
-      <textarea id="weekInput" placeholder="在此貼上整週預報內容…" oninput="saveLS('sch-input-week',this.value)" spellcheck="false"></textarea>
+      <textarea id="weekInput" placeholder="在此貼上整週預報內容…" spellcheck="false"
+        oninput="autoSave('week',this.value)"></textarea>
       <div class="btn-row">
         <button class="primary" onclick="convertWeek()">⚡ 彙整週報</button>
         <button class="subtle" onclick="clearWeekInput()">清除</button>
       </div>
     </div>
-
-    <!-- 右 50%：乾淨名單 -->
     <div class="card">
       <div class="lbl">預報乾淨名單</div>
       <div class="hint">已去除時間，只顯示每人出班日期。</div>
-      <div id="pureOutput" class="ro-box">35莉多➜㈢㈣㈤㈥
-30莉可➜㈢
-25周潔➜㈢㈣
-25可白➜㈢
-24萌喬➜㈣㈦
-22尤安➜㈢㈣㈤
-22蘇芙➜㈢㈣
-20甜心➜㈢㈤㈥㈦
-20安啾➜㈢㈣㈥
-18潔希➜㈢㈤㈥
-18芯咩➜㈢㈣㈤
-18初二➜㈢㈤
-16瀅禾➜㈣㈤
-15妮可➜㈢㈤㈥㈦
-15貝貝➜㈣㈤</div>
+      <div id="pureOutput" class="ro-box">（彙整週報後顯示於此）</div>
       <button class="copy-wide alt" onclick="copyPure()">📋 複製乾淨名單</button>
     </div>
-
-  </div><!-- /week-zone -->
+  </div>
 
   <!-- 週間看板 -->
   <div class="day-panel card">
     <div class="lbl">📅 週間排程一覽</div>
-    <div class="day-grid" id="weekGrid"><div class="day-box"><div class="day-hdr"><span class="day-name">週一</span><span class="day-count">0 筆</span></div><div class="day-list"><div style="color:#ccc;font-size:11px;text-align:center;padding-top:14px;">暫無排班</div></div><button class="day-copy" onclick="copySingleDay(1)">📋 複製</button></div><div class="day-box"><div class="day-hdr"><span class="day-name">週二</span><span class="day-count">0 筆</span></div><div class="day-list"><div style="color:#ccc;font-size:11px;text-align:center;padding-top:14px;">暫無排班</div></div><button class="day-copy" onclick="copySingleDay(2)">📋 複製</button></div><div class="day-box"><div class="day-hdr"><span class="day-name">週三</span><span class="day-count">12 筆</span></div><div class="day-list"><div class="day-item"><span class="day-item-name">35 莉多</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">30 莉可</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">25 周潔</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">25 可白</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">22 尤安</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">22 蘇芙</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">20 甜心</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">20 安啾</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">18 潔希</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">18 芯咩</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">18 初二</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">15 妮可</span><span class="day-item-time">未定</span></div></div><button class="day-copy" onclick="copySingleDay(3)">📋 複製</button></div><div class="day-box"><div class="day-hdr"><span class="day-name">週四</span><span class="day-count">9 筆</span></div><div class="day-list"><div class="day-item"><span class="day-item-name">35 莉多</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">25 周潔</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">24 萌喬</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">22 尤安</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">22 蘇芙</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">20 安啾</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">18 芯咩</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">16 瀅禾</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">15 貝貝</span><span class="day-item-time">未定</span></div></div><button class="day-copy" onclick="copySingleDay(4)">📋 複製</button></div><div class="day-box"><div class="day-hdr"><span class="day-name">週五</span><span class="day-count">9 筆</span></div><div class="day-list"><div class="day-item"><span class="day-item-name">35 莉多</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">22 尤安</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">20 甜心</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">18 潔希</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">18 芯咩</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">18 初二</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">16 瀅禾</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">15 妮可</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">15 貝貝</span><span class="day-item-time">未定</span></div></div><button class="day-copy" onclick="copySingleDay(5)">📋 複製</button></div><div class="day-box"><div class="day-hdr"><span class="day-name">週六</span><span class="day-count">5 筆</span></div><div class="day-list"><div class="day-item"><span class="day-item-name">35 莉多</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">20 甜心</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">20 安啾</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">18 潔希</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">15 妮可</span><span class="day-item-time">未定</span></div></div><button class="day-copy" onclick="copySingleDay(6)">📋 複製</button></div><div class="day-box"><div class="day-hdr"><span class="day-name">週日</span><span class="day-count">3 筆</span></div><div class="day-list"><div class="day-item"><span class="day-item-name">24 萌喬</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">20 甜心</span><span class="day-item-time">未定</span></div><div class="day-item"><span class="day-item-name">15 妮可</span><span class="day-item-time">未定</span></div></div><button class="day-copy" onclick="copySingleDay(7)">📋 複製</button></div></div>
+    <div class="day-grid" id="weekGrid"></div>
   </div>
 
-  <!-- ════ 底層：母檔 ════ -->
+  <!-- 母檔資料庫 -->
   <div class="db-zone">
     <div class="card">
       <div class="lbl">🗂 母檔資料庫</div>
-      <div class="hint">點「整理並儲存」自動去重 + 降序排好。平常收合避免頁面過長跳動。<br>重要按鈕已移到上方，收合狀態也能直接使用，無需先展開。</div>
-
-      <!-- 永遠顯示在最上方的核心操作按鈕（即使母檔收合也能直接點） -->
-      <div class="btn-row db-top-buttons" style="margin: 10px 0 4px;">
+      <div class="hint">資料自動同步至 Sheet 4「母檔」。「整理並儲存」可去重 + 降序並立即上雲。</div>
+      <div class="btn-row db-top-buttons" style="margin:10px 0 4px;">
         <button class="primary" onclick="sortDB()">整理並儲存</button>
         <button onclick="openPatchModal()">🔄 一鍵覆蓋更新</button>
       </div>
-
-      <details id="dbCollapsible" class="db-collapsible">
-        <summary>▶ 點擊展開母檔內容（可編輯 200 筆資料）</summary>
-        <div class="db-content">
-          <textarea id="db" placeholder="請在此貼入母檔資料…" oninput="saveLS('sch-db',this.value)" spellcheck="false"></textarea>
-          <div class="btn-row">
-            <button class="primary" style="background: linear-gradient(135deg, #7a6650, #968169);" onclick="exportNewVersion()">產生最新版本</button>
-          </div>
-          <div id="dbStatus">✓ 去重 + 降序完成（共 200 筆）</div>
-        </div>
-      </details>
+      <div style="margin-top:12px;">
+        <textarea id="db" placeholder="請在此貼入母檔資料…" spellcheck="false"
+          oninput="autoSave('db',this.value)"></textarea>
+        <div id="dbStatus">（整理後顯示統計）</div>
+        <button id="toggleDbBtn" onclick="toggleDbCollapse()">▼ 展開完整母檔</button>
+      </div>
     </div>
   </div>
 
-</div><!-- /wrap -->
+</div><!-- /sch-wrap -->
+</div><!-- /tab-schedule -->
 
-<!-- ════ 燈箱：一鍵覆蓋 ════ -->
+<!-- ═══════════════════════════════════
+     TAB 2：現走表（老闆娘轉檔器）
+═══════════════════════════════════ -->
+<div id="tab-walk" class="tab-content">
+<div class="walk-wrap">
+
+  <!-- 現走表 header -->
+  <div class="walk-hdr">
+    <div>
+      <h1 class="walk-hdr-title">✦ 老闆娘 <em>現走表</em> ✦</h1>
+      <div class="walk-hdr-sub">Schedule Formatter · Morandi Edition</div>
+    </div>
+    <div style="text-align:right;">
+      <div id="walkStatus"></div>
+      <button class="walk-save-btn" onclick="saveWalkToSheet()">☁️ 儲存設定到 Sheets</button>
+    </div>
+  </div>
+
+  <div class="walk-grid">
+
+    <!-- 左側操作面板 -->
+    <div class="walk-panel-left">
+
+      <!-- 日期 -->
+      <div class="walk-card">
+        <div class="walk-card-title"><span class="card-dot"></span>今日日期</div>
+        <div class="date-row">
+          <input type="date" id="datePicker" onchange="onDateChange()">
+          <div class="date-weekday" id="weekdayDisplay">（一）</div>
+        </div>
+      </div>
+
+      <!-- 每日快速編輯 -->
+      <div class="walk-card">
+        <div class="walk-card-title"><span class="card-dot" style="background:var(--fog-green)"></span>每日快速編輯</div>
+        <div class="quick-label">今日改休內容</div>
+        <textarea class="quick-textarea quick-gap" id="quickRest" rows="3"
+          placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
+        <div class="quick-label">今日約滿內容</div>
+        <textarea class="quick-textarea" id="quickFull" rows="2"
+          placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
+      </div>
+
+      <!-- 貼廣告文案 -->
+      <div class="walk-card">
+        <div class="walk-card-title"><span class="card-dot" style="background:var(--fog-blue)"></span>貼上原始廣告文案</div>
+        <textarea id="walkInputText" class="raw-input" placeholder="將廣告原文貼在這裡 · · ·"></textarea>
+        <button class="btn-convert" onclick="processAll()">✦ &nbsp;四款同時轉檔&nbsp; ✦</button>
+      </div>
+
+      <!-- 進階符號設定 -->
+      <div class="walk-card">
+        <div class="adv-toggle" onclick="toggleAdv()">
+          <span>⚙ 進階符號設定</span>
+          <span class="adv-arrow" id="advArrow">▼</span>
+        </div>
+        <div class="adv-body" id="advBody">
+          <div class="adv-inner">
+            <div class="adv-preset-tabs">
+              <div class="adv-tab" onclick="switchPreset(0)">
+                <input class="adv-tab-name" id="tabName0" value="款式 A" onclick="event.stopPropagation()">
+              </div>
+              <div class="adv-tab" onclick="switchPreset(1)">
+                <input class="adv-tab-name" id="tabName1" value="款式 B" onclick="event.stopPropagation()">
+              </div>
+              <div class="adv-tab" onclick="switchPreset(2)">
+                <input class="adv-tab-name" id="tabName2" value="款式 C" onclick="event.stopPropagation()">
+              </div>
+              <div class="adv-tab active" onclick="switchPreset(3)">
+                <input class="adv-tab-name" id="tabName3" value="款式 D" onclick="event.stopPropagation()">
+              </div>
+            </div>
+            <div class="adv-row"><label>大抬頭樣式</label><input type="text" id="symTitle"></div>
+            <div class="adv-row"><label>名單前綴符號</label><input type="text" id="symDot"></div>
+            <div class="adv-row"><label>中間分隔點</label><input type="text" id="symMid"></div>
+            <div class="adv-row"><label>日韓分類抬頭</label><input type="text" id="symJp"></div>
+            <div class="adv-row"><label>本地分類抬頭</label><input type="text" id="symTw"></div>
+            <div class="adv-row"><label>時間前綴括號</label><input type="text" id="timePrefix"></div>
+            <div class="adv-row"><label>時間後綴括號</label><input type="text" id="timeSuffix"></div>
+            <div class="adv-row"><label>年齡組分隔線</label><input type="text" id="symGroupSep"></div>
+            <div class="adv-row"><label>異動分區線</label><input type="text" id="symStatusLine"></div>
+            <div class="adv-row"><label>即將登場線</label><input type="text" id="symComing"></div>
+            <button class="btn-reset-adv" onclick="resetWalkAll()">↺ 恢復所有預設</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /walk-panel-left -->
+
+    <!-- 右側輸出 -->
+    <div class="walk-panel-right">
+
+      <!-- A款主輸出 -->
+      <div class="main-output-card">
+        <div class="main-output-header">
+          <div class="main-output-title">
+            <span id="walkMainLabel">款式 A</span>
+            <span class="main-badge">主要</span>
+          </div>
+          <button class="btn-copy-main" onclick="copyWalkMain()">複製</button>
+        </div>
+        <textarea id="walkMainOutput" readonly placeholder="點擊「四款同時轉檔」後顯示 · · ·"></textarea>
+      </div>
+
+      <!-- B C D 副輸出 -->
+      <div class="sub-outputs-grid">
+        <div class="sub-card">
+          <div class="sub-card-header">
+            <span class="sub-card-label" id="walkSubLabel1">款式 B</span>
+            <button class="btn-copy-sub" onclick="copyWalkSub(1)">複製</button>
+          </div>
+          <textarea class="sub-output-box" id="walkSubOutput1" readonly placeholder="· · ·"></textarea>
+        </div>
+        <div class="sub-card">
+          <div class="sub-card-header">
+            <span class="sub-card-label" id="walkSubLabel2">款式 C</span>
+            <button class="btn-copy-sub" onclick="copyWalkSub(2)">複製</button>
+          </div>
+          <textarea class="sub-output-box" id="walkSubOutput2" readonly placeholder="· · ·"></textarea>
+        </div>
+        <div class="sub-card">
+          <div class="sub-card-header">
+            <span class="sub-card-label" id="walkSubLabel3">款式 D</span>
+            <button class="btn-copy-sub" onclick="copyWalkSub(3)">複製</button>
+          </div>
+          <textarea class="sub-output-box" id="walkSubOutput3" readonly placeholder="· · ·"></textarea>
+        </div>
+      </div>
+
+    </div><!-- /walk-panel-right -->
+
+  </div><!-- /walk-grid -->
+</div><!-- /walk-wrap -->
+</div><!-- /tab-walk -->
+
+<!-- ═══════════════════════════════════
+     PATCH MODAL
+═══════════════════════════════════ -->
 <div class="modal-overlay" id="patchModal" onclick="modalOverlayClick(event)">
   <div class="modal-box">
     <div class="modal-title">🔄 一鍵覆蓋更新</div>
-    <div class="modal-hint">貼入要新增或覆蓋的人員資料。<br>相同名字自動替換舊資料，全新名字直接新增，不影響其餘人員。</div>
+    <div class="modal-hint">
+      貼入要新增或覆蓋的人員資料。<br>
+      相同名字自動替換舊資料，全新名字直接新增，不影響其餘人員。
+    </div>
     <textarea id="dbPatch" placeholder="在此貼入要新增或覆蓋的資料…" spellcheck="false"></textarea>
     <div id="patchResult"></div>
     <div class="modal-footer">
@@ -528,1838 +820,90 @@ button.subtle {
   </div>
 </div>
 
-<div id="toast" class="">✓ 已複製筆記欄內容</div>
+<div id="toast"></div>
 
+<!-- ═══════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════ -->
 <script>
-const EMBEDDED_DB = `🔥甜美小仙女校花🔥
-🤍60『朵朵』168.47.D
-🕒歡迎提前2H預約
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️住家外帶須不槍
-◼️口爆+2000
-◼️入珠+2000
-◼️無套+10000
-◻️舌吻/無套吹/69/親胸
-
-🔥超大巨乳小網美🔥
-🤍55『暖暖』165.49.G
-🕒1300-2100
-◻️真奶 無刺青
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️無套內+6000
-◻️舌吻/無套吹/69/白虎
-
-🔥性感凱X小模特🔥
-🤍50『秋琳』167.47.E
-🕒1300-2300
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◼️口爆+1000
-◼️無套內+10000
-◻️舌吻/無套吹/69/親胸
-◻️奶推/雙飛/二王/白人
-
-🔥超Hot夜店Dancer🔥
-🤍50『范范』163.45.E
-◻️真奶
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️顏射+1000(尾工
-◼️口爆+1000
-◻️舌吻/無套吹/69/共浴
-
-🔥超正外拍小模特🔥
-🤍50『夏琳』165.44.E
-🕒1400-2200
-◻️無刺青
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◼️口爆+1000
-◻️舌吻/無套吹/69/親胸/白人
-◻️雙飛/二王/共浴/奶推/除毛
-
-🔥初兼混血小模特🔥
-🤍50『黛希』169.49.E
-🕒1300-2400
-◻️真奶 無刺青
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️無套+5000
-◻️舌吻/無套吹/69/親胸
-◻️情趣用品/雙飛/二王
-
-🔥高挑巨乳小網美🔥
-🤍50『妤妤』169.48.F
-◻️真奶
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️顏射+1000(尾工
-◼️無套內+8000
-◻️舌吻/無套吹/共浴/雙飛
-◻️親胸/69/情趣用品/二王
-
-🔥初兼現役華X空姐🔥
-🤍45『佳凌』170.47.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◼️制服黑絲高跟+1000
-◻️舌吻/無套吹/69/親胸
-
-🔥華X空姐妹雙飛組🔥
-🤍45『娜娜』166.47.F
-◻️無刺青
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️制服黑絲高跟+1000
-◼️雙飛搭檔限定與菲菲
-◻️舌吻/無套吹/69/包夜
-◻️情趣用品/二王/雙飛
-
-🔥初兼現役華X空姐🔥
-🤍45『菲菲』170.49.E
-◻️真奶 無刺青
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️雙飛搭檔限定與娜娜
-◼️制服黑絲高跟+1000
-◼️顏射+1000(尾工
-◼️口爆+1000
-◻️舌吻/無套吹/69/包夜
-◻️情趣用品/二王/雙飛
-
-🤍42『琳珊』167.46.C
-🕒1400-2200
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◼️口爆+2000
-◼️情趣用品+1000
-◻️舌吻/無套吹/69/親胸
-
-🔥超正小網美少女🔥
-🤍42『魚魚』158.44.E
-🕒1800-2400
-◻️真奶
-🆗住家 外帶 2+1
-◼️入珠+3000
-◼️無套外+5000
-◼️角色扮演+2000(客備
-◻️舌吻/無套吹/69/親胸
-
-🔥超正小網美少女🔥 
-🤍40『夢潔』160.45.D
-◻️真奶
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️顏射+1000
-◼️口爆+1000
-◼️無套內+5000
-◼️角色扮演+2000(客備
-◻️舌吻/無套吹/69/親胸
-
-✨✨獨家推薦✨✨
-🔥超激白網美少女🔥
-🤍40『林熙』162.42.D
-🕒1800-2300
-◻️真奶
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/親胸
-
-🔥超正平面小模特🔥
-🤍36『采兒』174.49.E
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️住家外帶須不槍
-◼️口爆+3000
-◼️雙飛+5000
-◼️無套外+5000
-◼️無套內+10000
-◻️舌吻/無套吹/69/親胸
-◻️車震/白人/包夜/二王
-
-🔥長腿鄰家小清新🔥
-🤍35『林凡凡』169.47.E
-🕒1300-2400
-🆗外帶 2+1 4+4🆖住家
-◼️外帶外縣須不槍
-◼️無套外+3000 
-◼️無套內+5000
-◻️舌吻/無套吹/69/親胸
-◻️小親/共浴/雙飛/二王
-
-🔥氣質仙女級嫩妹🔥
-🤍35『涵羽』158.42.D.19
-◻️真奶
-🆗住家 外帶 2+1
-◼️證件可供檢視
-◼️口爆+3000
-◻️舌吻/無套吹/69/親胸/雙飛
-
-🔥超氣質青春少女🔥
-🤍35『白亞臻』162.45.C.20
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+3000
-◼️後門+10000
-◻️舌吻/無套吹/親胸/雙飛
-
-🤍35『校花』170.49.F
-🕒1500-2100
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◼️口爆+1000
-◼️毒龍+1000
-◼️雙飛+1000
-◼️入珠+2000
-◻️舌吻/無套吹/共浴/69
-
-✨✨獨家新妹✨✨
-🔥超正小網美少女🔥
-🤍35『莉多』162.43.C
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◼️口爆+3000
-◼️入珠+2000
-◼️情趣用品+2000
-◻️舌吻/無套吹/69/白人/包夜
-◻️共浴/按摩/情趣 用品(客備
-
-🔥號稱明星影分身🔥
-🤍34『潤娥』164.41.D
-◻️真奶 無刺青
-🆗外帶 2+1🆖住家
-◼️英文 日文精通
-◻️親/無套吹/69/白人
-
-🔥鄰家高挑大E胸妹🔥
-🤍34『小雪』168.47.E
-◻️真奶 無刺青
-🆗可住家 外帶 2+1
-◼️無套+5000
-◻️舌吻/無套吹/69/共浴/白虎
-
-🔥超水小氣質網美🔥
-🤍32『凱恩』163.46.D
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/除毛
-
-🔥超甜激白粉紅妹🔥
-🤍30『有甜』164.46.E
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◻️舌吻/無套吹/69/親胸
-
-🔥超正車展小模特🔥
-🤍30『菲妮』172.49.E
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-
-🤍30『米莎』164.44.E
-🕒 1100-1900
-◻️真奶 
-🆗2+1 🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-◻️二王/白人/奶推/除毛
-
-🤍30『莫莉』168.47.F.20
-🕒歡迎提前預約時間
-◻️真奶 無刺青
-🆗外帶 2+1🆖住家
-◻️小親/無套吹/共浴/親胸
-
-🔥超激白巨乳女神🔥
-🤍30『Grace』163.42.F
-🆗住家 2+1🆖外帶
-◼️顏射+2000(尾工
-◼️口爆+1000
-◻️親/無套吹/共浴/親胸
-◻️奶泡/艷舞/車震/白虎
-
-✨超嫩新人初登場✨
-🔥超甜小網美少女🔥
-🤍30『仙妮』164.44.E.18
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-
-🔥超激白精緻正妹🔥
-🤍30『妮沫』170.48.F
-🕒1300-2100
-◻️真奶 無刺青
-🆗外帶 2+1🆖住家
-◻️舌吻/無套吹/69/除毛
-◻️毒龍/白人/雙飛/包夜
-◻️奶泡/角色扮&情趣品
-
-🔥超氣質網美少女🔥
-🤍30『芮芮』163.45.E
-◻️無刺青
-🆗外帶 2+1🆖住家
-◻️舌吻/無套吹/69/親胸
-
-✨龜蜜雙飛限定✨
-🔥超激白甜E奶妹🔥
-🤍30『莉可』162.43.E
-🕒1300-2400
-🆗2+1🆖住家 外帶
-◼️顏射+2000(尾工
-◼️口爆+2000
-◼️吞精+2000
-◼️入珠+2000
-◼️無套內+7000
-◼️限定可白雙飛
-◻️舌吻/無套吹/共浴/親胸
-◻️白人/角色扮演/情趣用品
-
-🔥超激白平面模特🔥
-🤍30『瑪豆』172.49.E
-🕒1330-2300
-◻️真奶 無刺青
-🆗外帶 2+1🆖住家
-
-🔥超激白平面模特🔥
-🤍30『蕾潔』168.48.E
-🕒1300-2400
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-
-🤍30『亮亮』158.43.E
-🕒1400-2400
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◼️顏射+1000(尾工
-◼️口爆+1000
-◼️拍攝+5000(不露臉
-◼️無套外+5000
-◼️無套內+8000
-◻️舌吻/無套吹/奶推/69
-◻️親胸/共浴/車震/白虎
-
-🤍30『賓利』167.46.D
-🕒1400-2100
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-
-🔥人氣雜誌J女郎🔥
-🤍30『洛莎』164.45.E
-🕒1400-2200
-◻️無刺青
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣需不槍
-◼️口爆+1000
-◼️無套外+5000
-◻️舌吻/無套吹/69/親胸
-◻️胸推/雙飛/二王/包夜
-
-🔥超激白甜美少女🔥
-🤍30『雪雪』163.45.C
-🕒1500-2000
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◼️無套外+3000
-◻️舌吻/無套吹/69/親胸
-
-🔥鄰家甜美小清新🔥
-🤍30『甜妹』165.46.E
-🕒1500-2000
-◻️真奶 無刺青
-🆖住家 2+1🆖外帶
-◻️舌吻/無套吹/69/親胸
-
-🔥小可愛超仙嫩逼🔥
-🤍30『千金』166.42.C.18
-🕒1300-2100
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◼️可供證件檢視
-◻️親/無套吹/親胸/除毛
-
-🔥超正海歸高材生🔥
-🤍30『林泱』170.49.D
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◼️英、義大利文精通
-◻️舌吻/無套吹/69/親胸
-◻️白人/除毛/情趣品&衣
-
-✨可愛甜年輕真奶✨
-🤍30『芊芸』163.46.D
-◻️真奶 無刺青
-🆗住家2+1 🆖外帶
-◼️顔射+2000(尾工
-◼️口爆+2000
-◻️舌吻/無套吹/品苞/69
-◻️按摩/角色扮演(客備新
-◻️白人/情趣用品(客自備
-
-✨超正氣質小清心✨
-🤍30『夏琴』163.42.D
-🕒1400-2100
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/親胸/69
-
-🔥超仙氣質美少女🔥
-🤍30『咪璐』161.45.E
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-
-🤍28『薇星』164.43.E
-◻️無刺青
-🆗住家 外帶 2+1
-◼️車震+1000
-◼️入珠+2000
-◼️白人+2000
-◼️後門+5000
-◼️無套+5000
-◼️雙飛+1000
-◼️二王+2000+節數x2
-◼️拍攝+8000(不露臉
-◼️角色扮演+1000
-◼️情趣用品+1000
-◼️收20含以下貼26
-◻️舌吻/無套吹/69/除毛
-
-✨✨獨家新妹✨✨
-🔥超逆天甜美少女🔥
-🤍28『雪球』157.40.E.19
-🕒1400-2200
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️車震+2000
-◼️入珠+2000
-◼️角色扮演+1000
-◼️情趣用品+2000
-◻️舌吻/無套吹/69/除毛
-◻️共浴/親胸/包夜/二王
-
-🤍28『水棠』165.48.F
-◻️無刺青
-🆗住家 外帶 2+1
-◼️口爆+3000
-◼️雙飛+2000
-◼️無套外+5000
-◼️無套內+10000
-◻️舌吻/無套吹/69/入珠
-◻️品苞/白人/車震/二王
-◻️角色扮/情趣品(客備新
-
-🤍28『邵比』170.48.E
-🕒1400-2200
-🆗住家 外帶 2+1
-◼️顏射+3000(尾工
-◼️口爆+3000
-◻️舌吻/無套吹/奶推/69
-◻️入珠/白人/車震/白虎
-◻️角色扮&情趣用(客備
-
-🤍28『初一』161.47.F
-🕒1300-2100
-🆗外帶 2+1🆖住家
-◼️口爆+2000
-◼️無套+6000
-◻️舌吻/無套吹/69/親胸
-
-🤍28『南西』162.45.E
-🕒1400-2100
-🆗住家 外帶 2+1
-◼️顏射+3000(尾工
-◼️口爆+2000
-◼️吞精+2000
-◼️拍攝+5000(不露臉
-◼️攝影+10000(不露臉
-◼️角色扮演+2000
-◼️情趣用品+2000
-◻️舌吻/無套吹/69/親胸
-◻️共浴/胸推/包夜/白人
-
-🤍28『沐妍』162.40.G
-◻️無刺青
-🆗住家 外帶 2+1
-◼️入珠+1000
-◼️雙飛+4000
-◼️角色扮演+500
-◼️情趣用品+500
-◻️舌吻/小親/無套吹/69/親胸
-
-🤍28『允鹿』165.45.D
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️吞精+2000
-◼️入珠+2000
-◼️無套+5000
-◻️舌吻/無套吹/69/二王
-◻️按摩/共浴/除毛/白人
-
-🤍28『若霓』163.43.C.19
-◻️真奶
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️吞精+2500
-◻️親/無套吹/親胸/白人
-
-🔥行走的人間胸器🔥
-🤍28『蔡瑞雪』157.48.E
-◻️真奶
-🆗住家 外帶 2+1 
-◻️舌吻/無套吹/69/奶推
-◻️角色扮演(客自備衣服
-
-🤍28『莉娜』162.45.F
-🕒1300-2300
-◻真奶 無刺青
-🆗住家 外帶 2+1
-◼口爆+3000
-◼入珠+3000
-◼無套內+5000
-◻舌吻/無套吹/69/親胸
-
-🔥超嫩妹初次登場🔥
-🤍26k『景心』160.41.D.18
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◻️舌吻/無套吹/親胸/共浴
-
-🤍26『詩晴』158.43.D
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️口爆+1000
-◼️清槍+2000
-◼️無套外+3000
-◼️無套內+6000
-◻️舌吻/無套吹/69/除毛
-◻️奶泡/車震/二王/雙飛
-
-🤍26『艾比』165.48.D
-🕒1300-2200
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/二王
-
-🔥新人初登場🔥
-🤍26『小沐』162.45.C
-🕒1600-2400
-◻️真奶 
-🆗住家 外帶 2+1
-◼️口爆+2000
-◻️舌吻/無套吹/共浴/親
-◻️親胸/包夜/白虎/雙飛
-
-🤍26『安亞』170.49.E
-◻️真奶
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/共浴/白人
-
-✨粉嫩白皙車頭燈✨
-🤍25『羽彤』171.49.F
-◻️真奶 無刺青
-🆗外帶 2+1 🆖住家
-◼️台北市不去
-◻️品苞/69/白人/入珠
-◻️共浴/胸推/滑壓/按摩
-
-✨龜蜜雙飛限定✨
-🔥超激白甜E奶妹🔥
-🤍25『可白』164.44.E
-🕒1300-2400
-◻️真奶
-🆗2+1🆖住家 外帶
-◼️顏射+2000(尾工
-◼️口爆+2000
-◼️吞精+2000
-◼️入珠+2000
-◼️無套內+7000
-◼️限定莉可雙飛
-◻️舌吻/無套吹/共浴/親胸
-◻️白人/角色扮演/情趣用品
-
-🤍25『妍娜』170.48.F
-🕒1500-0200
-◻️真奶 無刺青
-🆗住家 🆖外帶
-◼️後門+5000
-◼️毒龍+2000
-◼️口爆+2000
-◼️無套內+5000
-◼️冰火九重天+5000
-◼️外縣市需保不打槍
-◻️舌吻/無套吹/二王
-◻️69/白人/SM/奶推
-◻️情趣用品&衣(客備
-
-✨全新妹初登場✨
-🔥超激仙女小網美🔥
-🤍25『丹妮』167.45.D
-🕒1400-2100
-◻️真奶
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-
-🔥全新幼齒長腿妹🔥
-🤍25『芙樂』172.49.C.20
-◻️真奶
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◼️無套外+3000
-◻️舌吻/無套吹/69/親胸
-
-🤍25『恩熙』165.44.C
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/共浴/雙飛
-
-🔥超激白新妹登場🔥
-🤍25『金希』166.46.D
-🕒1300-2400
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️無套+5000
-◻️舌吻/無套吹/69/親胸
-
-🤍25『可綾』165.47.E
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+3000(尾工
-◼️口爆+3000
-◼️毒龍+3000
-◼️無套內+6000
-◻️舌吻/無套吹/69/白人
-◻️角色扮&情趣品(客備
-
-🤍25『晨曦』161.44.C
-🕒1300-2200
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◼️七折以下貼22
-◻️親/無套吹/69/親胸
-
-🤍25『甄熙』164.45.C
-🕒1400-2200
-◻️真奶 無刺青
-🆗住家 外帶 2+1 4+4
-🆖不接藥 酒 入珠客
-◼️住家外帶外縣須不槍
-◼️雙飛限定晨曦
-◼️顏射+1000(尾工
-◻️親/無套吹/親胸/雙飛
-
-🔥隱藏版長腿小仙女🔥
-🤍25『甄妮』168.45.D
-🕒僅接預約單 歡迎提前
-🕒1530-2200
-◻️真奶 無刺青
-🆗住家 外帶 4+4🆖2+1
-◼️住家外帶外縣須不槍
-◼️口爆+1000
-◻️舌吻/無套吹/69/親胸
-
-🔥超骨感玻璃萌妹🔥
-🤍25『奶油』152.35.C.19
-🕒1530-2200
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/親胸/共浴
-
-🤍25『橙琳』170.48.C
-🕒1600-2400
-◻️真奶 無刺青
-🆗住家 外帶 2+1 4+4
-◼️口爆+1000
-◼️無套+3000
-◼️七折以下貼22
-◼️住家外帶外縣須不槍
-◻️舌吻/無套吹/69/二王
-◻️情趣用品(客備)/雙飛
-
-🤍25『薇兒』164.48.D
-🕒1530-2200
-◻️無刺青A
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️口爆+1000
-◻️舌吻/無套吹/親胸/69/入珠
-◻️二王/雙飛/角色扮演(客備
-
-🔥超氣質新人女神🔥
-🤍25『Nina』170.48.D
-◻️無刺青
-🆗2+1🆖住家 外帶
-◼️住家外帶外縣須不槍
-◼️口爆+1000
-◻️舌吻/無套吹/親胸/69/共浴
-◻️胸推/按摩/雙飛/二王/除毛
-
-🤍25『芷妍』166.45.E
-🕒1800-2400
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️吞精+2000
-◼️無套內+5000
-◻️舌吻/無套吹/69/二王
-◻️按摩/共浴/除毛/白人
-
-✨白皙長腿大奶妹✨
-🤍25『恩菲』170.48.F
-🕒1400-1900
-◻️真奶 
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/品苞/69
-
-🤍25『溫晴』172.50.G
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️顏射+1000(尾工
-◼️無套內+3000
-◻️舌吻/無套吹/69/共浴
-
-🤍25『苡安』160.48.C
-◻️真奶 無刺青
-🆗住家 外帶2+1 
-◻️舌吻/無套吹/69/親胸 
-◻️按摩/共浴/車震/白人
-
-✨✨獨家新妹✨✨
-🔥超正小仙女校花🔥
-🤍25『周潔』167.45.D
-◻️無刺青
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+2000
-◼️吞精+2000
-◼️車震+1000
-◼️無套+6000
-◼️入珠+2000(限小顆
-◼️攝影+8000(不露臉
-◻️舌吻/無套吹/69/親胸
-◻️潮吹/二王/雙飛/白虎
-
-✨星國際交換學生✨
-🤍24『GINA』158.44.D
-🆗住家 外帶 2+1
-◼️精通流利英文
-◼️普通話加台語
-◻️舌吻/無套吹/69/白人
-
-🤍24『迪迪』165.48.F
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◼️顏射+2000(尾工
-◼️口爆+2000
-◻️舌吻/無套吹/69/白虎
-◻️白人/情趣用品/奶泡
-
-🔥走召 女束ㄆ 女未🔥
-🤍24『萌喬』157.40.D.18
-🆗住家 外帶 2+1
-◼️顏射+2000(尾班
-◼️口爆+2000
-◼️吞精+2000
-◼️新莊區不去
-◼️可供證件檢視
-◻️舌吻/無套吹/69/除毛
-◻️雙飛/白人/車震/包夜
-
-🤍23『紫然』161.45.D
-◻️真奶
-🆗住家 外帶🆖2+1
-◼️顏射+3000(尾工
-◼️口爆+2000
-◼️吞精+2000
-◻️舌吻/無套吹/69/親胸
-
-🤍23『熙奈』163.46.F
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️口爆+1000
-◼️清槍+2000
-◼️拍照+3000(露臉
-◼️攝影+5000(露臉
-◻️舌吻/無套吹/雙飛/二王
-◻️車震/69/白人/入珠/白虎
-◻️情趣用品&角色扮演(客備
-
-✨✨獨家新妹✨✨
-🔥超水滋滋美少女🔥
-🤍22『尤安』158.40.D.19
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️入珠+2000
-◼️自慰秀+3000
-◼️可提供證件檢視
-◻️舌吻/無套吹/69/除毛
-◻️雙飛/二王/車震/潮吹
-
-🤍22『可亞』168.48.D
-🕒 1400-2200
-◻️真奶
-🆗2+1🆖住家 外帶 南港
-◼️口爆+1000
-◼️無套+3000
-◻️舌吻/無套吹/親胸/共浴
-◻️品苞/包夜/角色扮/二王
-
-🤍22『大嫂』167.48.C
-🕒1300-2100
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️入珠+2000
-◻️舌吻/無套吹/共浴/親胸
-◻️奶泡/車震/角色扮(客備
-
-🤍22『溫暖』162.47.D
-🕒1300-2100
-◻️真奶
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️無套外+3000
-◼️無套內+5000
-◻️舌吻/無套吹/69/雙飛
-
-✨✨獨家推薦✨✨
-🔥超強甜美大學生🔥
-🤍22『季寧』161.43.C.20
-🕒1600-2300
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️無套+6000
-◻️舌吻/無套吹/69/親胸
-◻️二王/白虎/雙飛/共浴
-
-🤍22『陽光』167.46.C
-🕒1200-1900
-◻️真奶 無刺青
-🆗住家 外帶  2+1
-◼️顏射+3000(尾工
-◼️口爆+1000
-◻️舌吻/無套吹/共浴/69/親胸
-◻️情趣用品&角色扮演(需客備
-
-🤍22『晴嵐』165.49.E
-🕒1300-2100
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+3000
-◻️舌吻/無套吹/69/二王
-
-🔥大氣質精神小妹🔥
-🤍22『娜妍』165.47.C.19
-🕒1400-2100
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+3000
-◻️舌吻/無套吹/二王/除毛
-
-✨✨獨家推薦✨✨
-🔥超巨乳學生嫩妹🔥
-🤍22『壞壞』155.46.G.19
-🕒1300-2000
-🆗住家 2+1🆖外帶
-◼️無套+3000
-◼️後門+3000
-◻️舌吻/無套吹/69/親胸
-◻️共浴/二王/雙飛/除毛
-
-🤍22『思思』166.46.C
-🕒1500-2000
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️雙飛+3000
-◻️舌吻/無套吹/69/親胸
-
-🤍22『新奇』165.49.E
-🕒1400-2400
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️毒龍+2000
-◼️無套+3000
-◼️收16含以下貼20
-◻️舌吻/無套吹/親胸/除毛
-◻️水中蕭/共浴/角色扮演
-
-🔥超大奶長腿嫩妹🔥
-🤍22『Sana』174.49.F.18
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/白虎
-
-🤍22『Mita』170.49.D
-🕒1300-1700
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/親胸
-
-✨✨獨家推薦✨✨
-🔥超色工口小精靈🔥
-🤍22『蘇芙』162.42.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️清槍+2000
-◼️吞精+2000
-◼️入珠+2000
-◼️車震+2000
-◼️無套+私議
-◼️角色扮演+1000
-◼️情趣用品+2000
-◻️舌吻/無套吹/69/除毛
-◻️共浴/雙飛/二王/S(M)
-
-🤍22『芸昕』168.48.C
-🕒1300-2000
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-🆖汐止土城林口桃園淡水
-◼️口爆+3000
-◼️情趣用品+3000
-◻️舌吻/無套吹/品苞/雙飛
-◻️情趣衣/入珠/共浴/親胸
-
-✨✨獨家推薦✨✨
-🔥可愛系大奶學妹🔥
-🤍22『雪玫』163.43.E
-🕒1300-0100
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◻️舌吻/無套吹/69/親胸
-
-🤍22『芸琦』164.47.F
-🕒1500-0100
-◻️無刺青
-🆗住家 2+1🆖外帶
-◼️口爆+1000
-◼️入珠+1000
-◼️無套+3000
-◻️舌吻/無套吹/69/雙飛
-
-🤍22『皮皮』155.36.C
-🕒1400-2100
-◻️真奶
-🆗外帶 2+1🆖住家
-◼️口爆+3000
-◼️無套+3000
-◻️舌吻/無套吹/二王/雙飛
-
-🤍22『沐伊』170.48.C.19
-🕒1500-1900
-◻️真奶
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/親胸/白虎
-
-🔥甜美芝麻大學生🔥
-🤍22『阿吉』157.43.C.20
-🕒1600-2300
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️無套內+5000
-◻️舌吻/無套吹/69/親胸/共浴
-
-🤍22『冷月』162.42.E
-🕒1400-2200
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◼️口爆+1000
-◻️舌吻/無套吹/69/親胸/白人
-◻️雙飛/二王/共浴/奶推/除毛
-
-🔥新人長腿小嫩妹🔥
-🤍22『凱蒂』170.49.C.19
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️可供證件檢視
-◻️舌吻/無套吹/親胸/共浴
-
-🔥新人初登場🔥
-🤍22『允熙』160.43.C.19
-◻️真奶 無刺青
-🆗外帶 2+1🆖住家
-◻️舌吻/無套吹/共浴/69/親胸
-◻️白虎/車震/潮吹/按摩/白人
-◻️角色扮演&情趣用品(需客備
-
-🤍22『小鹿』161.42.E
-◻️真奶
-🆗住家 外帶 2+1
-◼️顏射+5000(尾工
-◼️口爆+3000
-◼️入珠+3000
-◻️舌吻/無套吹/69/除毛
-◻️角色扮演/情趣品/車震
-
-🔥超嫩18y美少女🔥
-🤍22『CC』160.45.C.18
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+3000
-◼️可供證件檢視
-◻️舌吻/無套吹/69/除毛
-
-🔥新妹妹初次登場🔥
-🤍22『芯晴』167.45.D.20
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️吞精+2000
-◼️入珠+1000
-◼️二王+節數x2
-◻️舌吻/無套吹/69/共浴/親胸
-
-✨清秀長腿美少女✨
-🤍22『佐佐』170.50.C.19
-◻️真奶
-🆗住家 2+1🆖外帶
-◻️舌吻/無套吹/品苞/包夜
-
-🔥骨感小氣質正妹🔥
-🤍22『江月』162.43.C
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️無套外+3000
-◼️無套內+6000
-◻️親/無套吹/共浴/親胸
-
-✨✨獨家新妹✨✨
-🔥超正激嫩美少女🔥
-🤍22『日潔』160.45.D.19
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️清槍+2000
-◼️吞精+2000
-◼️入珠+2000
-◼️無套+5000
-◼️證件可供檢視
-◻️舌吻/無套吹/69/親胸
-◻️共浴/包夜/二王/除毛
-
-✨✨獨家新妹✨✨
-🔥超Young小仙女🔥
-🤍22『柚慈』158.40.C.18
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️入珠+2000
-◼️無套+5000
-◻️舌吻/無套吹/雙飛/除毛
-
-🤍20『漾漾』162.45.D
-🆗住家 🆖外帶
-◼️入珠+3000
-◻️小親/無套吹/69/親胸
-◻️情趣品&角色扮演(客備
-
-🤍20『林薇』166.44.C.18
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+3000
-◼️證件可供檢視
-◻️舌吻/無套吹/69/白人
-◻️入珠/車震/胸推/按摩
-◻️角色扮&情趣品(客備
-
-🤍20『羽月』157.40.C
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◼️口爆+1000
-◼️清槍+1000
-◼️潮吹+2000
-◼️毒龍+3000
-◻️舌吻/無套吹/親胸/包
-◻️白人/雙飛/二王/白虎
-
-✨氣質陽光美少女✨
-🤍20『可娜』164.48.D
-🕒1300-2000
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️口爆+1000
-◻️舌吻/無套吹/共浴/69/洋人
-◻️按摩/二王/雙飛/入珠/白虎
-
-🤍20『巧熙』166.45.D
-🕒1400-2200
-◻️真奶
-🆗住家 外帶 2+1
-◻️舌吻/親胸/無套吹
-◻️角色扮演/車震/69
-
-🤍20『蜜亞』162.48.D
-🕒1530-2200
-◻️真奶
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/共浴
-
-🤍20『NN』165.49.C
-🕒1200-1930
-◻️真奶
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+1000
-◼️清槍+1000
-◼️無套外+3000
-◼️拍照+3000(不露臉
-◼️攝影+6000(不露臉
-◻️舌吻/無套吹/69/除毛
-◻️雙飛/白人/車震/包夜
-
-🤍20『音符』161.45.E
-🕒1400-2100
-◻️真奶
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/共浴/親胸
-◻️角色扮演/奶炮/包夜/69
-
-✨完全新妹初登場✨
-🔥超小芝麻學生妹🔥
-🤍20『璐米』148.39.D.19
-🕒1300-2100
-🆗住家 外帶 2+1
-◼️無套外+3000
-◼️無套內+5000
-◻️舌吻/無套吹/親胸/白虎
-
-🔥混血逆天歐美身材🔥
-🤍20『Alma艾瑪』165.48.E
-🕒1230-2400
-🆗2+1🆖住家 外帶
-◼️限中山區(以外需來回車
-◻️舌吻/無套吹/69/親胸/共浴
-
-✨✨獨家推薦✨✨
-🔥流行藝術美少女🔥
-🤍20『子奇』160.45.C
-🕒1330-1600(限2工
-◻️真奶
-🆗住家 外帶🆖2+1
-◻️舌吻/無套吹/品苞/親胸
-
-🤍20『陳湘』156.44.D
-◻️真奶 無刺青
-🆗住家 外帶🆖2+1
-◼️口爆+2000
-◼️無套+6000
-◻️舌吻/無套吹/親胸/69/雙飛
-
-🤍20『韶甜』163.46.C
-🕒1730-2200
-◻️真奶
-🆗住家 外帶 2+1
-◼️情趣用品+2000
-◻️舌吻/無套吹/69/二王/除毛
-
-🔥超激白皙小甜心🔥
-🤍20『蕭蕭』154.43.E
-🕒1430-2130
-◻️無刺青
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+2000
-◼️入珠+1000
-◼️車震+1000
-◼️角色扮演+1000
-◻️舌吻/無套吹/親胸/69/雙飛
-◻️共浴/按摩/白人/除毛/二王
-
-✨✨獨家妹妹✨✨
-🔥激白甜長X空姐🔥
-🤍20『蘇念』168.49.E
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️清槍+1000
-◼️入珠+1000
-◼️制服+2000
-◻️舌吻/無套吹/69/除毛
-◻️角色扮&情趣品(客備
-
-🔥TRE成人展女神🔥
-🤍20『可彤』165.48.C
-🕒1400-2100
-◻️真奶
-🆗住家 外帶 2+1
-◼️無套內+6000
-◻️舌吻/無套吹/69/白虎
-
-🤍20『咪醬』163.46.D
-🕒1330-2200
-◻️真奶
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/白人
-
-🤍20『妍希』161.44.E
-🕒1300-1800
-🆗住家 2+1🆖外帶
-◼️口爆+2000
-◼️雙飛+1000
-◼️角色扮演(客備指定服裝)
-◻️舌吻/無套吹/品苞/輕功/69
-◻️滑壓/胸推/舔蛋/共浴/白虎
-
-🤍20『小丸子』164.43.C.20
-🕒1500-2200
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️顏射+1000(尾工
-◼️口爆+1000
-◻️舌吻/無套吹/69/二王/雙飛
-◻️車震/白虎/角色扮&情趣品
-
-🤍20『小璇』158.45.F
-🕒1400-1800
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◼️口爆+1000
-◼️吞精+2000
-◼️後門+7000
-◻️舌吻/無套吹/共浴/69/白虎
-◻️二王/雙飛/角色扮演(客備新
-
-🤍20『以寧』158.47.D
-🕒1300-2100
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◼️口爆+2000
-◼️清槍+2000
-◼️拍攝+5000(不露臉
-◼️無套外+5000
-◼️無套內+8000
-◻️舌吻/無套吹/親胸/69/共浴
-◻️胸推/日文/角色扮&情趣品
-
-🤍20『汎妮』172.49.C
-🕒1300-2100
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/共浴/69
-◻️情趣蛋&角色扮(客備
-
-🤍20『琴瑤』173.49.C
-🕒1500-2300
-◻️真奶
-🆗住家 2+1🆖外帶
-◻️舌吻/無套吹/69/包夜
-◻️二王/雙飛/入珠/白人
-◻️角色扮演&情趣品(客備
-
-🤍20『赫莉』161.46.D
-🕒1900-0100
-◻️無刺青
-🆗住家 2+1🆖外帶
-◼️口爆+1000
-◼️清槍+1000
-◼️情趣用品+2000
-◻️舌吻/無套吹/69/親胸
-
-🤍20『關歆甜』158.46.D
-🕒1500-2300
-◻️無刺青
-🆗住家 2+1🆖外帶
-◻️舌吻/無套吹/共浴/雙飛
-◻️車震/69/按摩/奶推/品苞
-◻️情趣用品&角色扮演(客備
-
-🤍20『安啾』165.46.C.20
-🕒1500-2300
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◼️顏射+3000(尾工
-◼️口爆+4000
-◼️後門+5000
-◼️入珠+1000
-◼️無套+7000
-◻️舌吻/無套吹/二王/雙飛
-◻️共浴/車震/角色扮(客備
-
-🤍20『芭寶』163.42.C
-🕒1300-2200
-◻️真奶
-🆗住家 外帶 2+1
-◼️無套+5000 
-◻️親/無套吹/共浴/親胸
-
-🤍20『甜心』163.49.D
-🕒1300-2000
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+1000(尾工
-◼️口爆+2000
-◼️入珠+2000
-◼️無套+3000
-◻️舌吻/無套吹/69/二王/雙飛
-◻️共浴/情趣品&角色扮(客備
-◻️包夜/胸推/親胸/除毛/品苞
-
-🔥全新大學生小妹🔥
-🤍20『樂伊』158.43.C.19
-◻️真奶
-🆗外帶 2+1🆖住家
-◼️入珠+2000
-◼️可供證件檢視
-◻️舌吻/無套吹/69/親胸
-
-🤍20『芸兒』163.45.C
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◼️顔射+1000
-◼️口爆+1000
-◼️清槍+1000
-◼️吞精+2000
-◼️攝影+5000(不露臉
-◻️舌吻/無套吹/69/共浴
-◻️車震/按摩/奶推/品苞
-◻️白人/包夜/入珠/除毛
-
-🔥超可愛大學生妹🔥
-🤍20『小Q妹』160.42.E
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️入珠+1000
-◼️白人+2000
-◼️無套+5000
-◻️舌吻/無套吹/69/共浴
-◻️包夜/車震/雙飛/二王
-
-🔥小芝麻大女乃妹🔥
-🤍20『小不點』157.42.D
-◻️真奶
-🆗外帶 2+1 🆖住家
-◼️顔射+2000(尾工
-◻️舌吻/無套吹/品苞
-◻️情趣用品&衣(客備
-
-✨✨獨家新妹✨✨
-🔥小清新大學生妹🔥
-🤍18『悅潔』167.47.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+1000(尾工
-◼️口爆+2000
-◼️吞精+2000
-◼️毒龍+1000
-◼️入珠+1000
-◼️無套外+3000
-◼️情趣用品+1000
-◻️舌吻/無套吹/69/親胸
-◻️白人/雙飛/二王/包夜
-
-🔥鄰家可愛超嫩妹🔥
-🤍18『小貓』162.47.C.18
-◻️真奶
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+2000
-◼️拍攝+2000(不露臉
-◼️攝影+4000(不露臉
-◼️可供證件檢視
-◻️小親/無套吹/親胸/69/共浴
-◻️車震/角色扮&情趣用(客備
-
-🤍18『澄芯』162.47.D
-◻️無刺青
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️激情大禮包
-◼️口爆+1000
-◼️無套外+3000
-◼️無套內+5000
-◻️舌吻/無套吹/69/雙飛
-
-🤍18『潔希』168.49.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1 4+4
-◼️顏射+1000(尾工
-◼️口爆+2000
-◼️雙飛+1000
-◼️入珠+2000
-◼️白人+4000
-◼️無套內+3000
-◻️舌吻/無套吹/69/親胸
-◻️品苞/角色扮演(客備新
-
-🔥超青春長腿小妹🔥
-🤍18『沐晴』170.48.C.19
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️無套外+3000
-◼️無套內+6000
-◻️舌吻/無套吹/親胸/69/除毛
-
-🤍18『初二』158.43.D
-🕒1300-2100
-◻️無刺青
-🆗外帶 2+1🆖住家
-◻️舌吻/無套吹/69/親胸
-
-🔥超級巨大乳牛妹🔥
-🤍18『伊琳』165.49.G
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+1000
-◻️舌吻/無套吹/親胸/69
-◻️品苞/白人/入珠/車震
-◻️情趣用品/二王/雙飛
-
-🤍18『Coco』162.46.C
-🕒1300-2100
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️顏射+1000(尾工
-◼️口爆+1000
-◼️清槍+2000
-◼️吞精+3000
-◼️潮吹+3000
-◼️(S)M+4000
-◼️情趣用品+1000
-◻️舌吻/無套吹/69/親胸
-◻️白人/雙飛/二王/除毛
-◻️艷舞/車震/胸推/包夜
-
-🤍18『米米』162.43.C
-🕒1300-2100
-◻️真奶 無刺青
-🆗住家 2+1��外帶
-◼️潮吹+2000
-◻️舌吻/無套吹/69/親胸
-◻️按摩/雙飛/二王/白虎
-◻️角色扮&情趣品(客備
-
-🤍18『波露』167.49.G
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️顏射+1000(尾工
-◼️毒龍+1000
-◼️無套外+5000
-◼️無套內+8000
-◻️舌吻/無套吹/69/白人
-◻️入珠/胸推/情趣用品
-
-🤍18『黎兒』156.41.D
-🆗住家 2+1🆖外帶
-◼️口爆+2000
-◻️無套外+5000
-◻️舌吻/無套吹/奶推/二王
-◻️親胸/69/共浴/白虎/雙飛
-
-🤍18『芯咩』166.45.C
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️清槍+2000
-◼️吞精+2000
-◼️無套內+5000
-◼️角色扮演+1000
-◻️舌吻/無套吹/69/親胸
-
-🤍18『妮妮』160.47.F.19
-🕒1400-2400
-◻️真奶 無刺青
-🆗住家 外帶 2+1 4+4
-◼️住家外帶外縣須不槍
-◼️口爆+1000
-◼️無套外+3000
-◻️舌吻/無套吹/共浴/雙飛
-◻️親胸/69/情趣用品/二王
-
-🤍18『儒妹』 160.42.C.18
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顔射+2000(尾工
-◼️口爆+1000
-◼️可提供證件檢視
-◻️親/無套吹/69/親胸/白人
-
-🤍18『念妮』161.43.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️無套+6000
-◻️舌吻/無套吹/共浴/親胸
-
-🤍18『敏兒』157.44.D
-◻️真奶 無刺青
-🆗2+1 🆖住家 外帶
-◼️口爆+1000
-◼️無套外+3000
-◼️無套內+5000
-◻️舌吻/無套吹/入珠/雙飛
-◻️情趣用品&情趣衣(客備
-
-🤍17『紫晴』160.47.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+3000(尾工
-◼️口爆+2000
-◼️無套外+4000
-◼️無套內+5000
-◻️舌吻/無套吹/69/白人
-◻️車震/入珠/雙飛/二王
-
-🤍16『安琪』160.48.C.18
-◻️真奶
-🆗住家 外帶2+1 
-◼️入珠+2000
-◼️無套內+3000
-◻️舌吻/無套吹/親胸/共浴
-
-🤍16『雪寶』161.46.D
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+1000
-◻️舌吻/無套吹/69/奶推
-
-✨✨完全新人✨✨
-🔥紐西蘭混血辣妹🔥
-🤍16『羊妹』162.48.D
-🕒1200-2200
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+2000
-◼️吞精+2000
-◼️英文溝通流利
-◻️舌吻/無套吹/69/親胸
-◻️按摩/白人/潮吹/二王
-
-🔥超激骨感粉嫩妹🔥
-🤍16『莫凡』163.42.C.19
-◻️真奶 無刺青
-🆗外帶 2+1🆖住家
-◼️住家+1000
-◼️入珠+1000
-◼️無套內+6000
-◻️親/無套吹/親胸/白人
-◻️共浴/雙飛/車震/胸推
-
-🤍16『米奇』174.49.C
-🕒1900-2400
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+2000
-◼️清槍+2000
-◼️吞精+2000
-◼️入珠+1000
-◼️毒龍+1000
-◼️無套+4000
-◼️角色扮演+1000
-◼️情趣用品+1000
-◻️舌吻/無套吹/69/除毛
-◻️親胸/共浴/車震/二王
-
-✨✨獨家推薦✨✨
-🔥清秀鄰家小清新🔥
-🤍16『兔比』167.48.E
-🕒1300-2000
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+2000
-◻️舌吻/無套吹/共浴/二王
-◻️親胸/69/情趣用品(客備
-
-🤍16『黛比』166.48.C
-◻️真奶
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/白人
-◻️二王/包夜/角色扮(客備
-
-🔥高挑巨乳輕熟妹🔥
-🤍16『心靈』170.49.F
-🕒1800-2400
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+1000(尾工
-◼️口爆+2000
-◼️清槍+1000
-◼️入珠+3000
-◼️無套內+3000
-◻️舌吻/無套吹/親胸/69
-◻️雙飛/二王/潮吹/白人
-
-🤍16『瀅禾』172.50.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+1000(尾工
-◼️口爆+1000
-◼️清槍+1000
-◼️吞精+1000
-◼️無套外+3000
-◼️無套內+5000
-◼️情趣用品+1000
-◼️角色扮演+1000
-◻️舌吻/無套吹/69/共浴
-
-🤍16『伊瞳』163.48.D
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️口爆+2000
-◼️野戰+3000
-◼️公廁+3000
-◼️無套內+6000
-◻️舌吻/無套吹/69/親胸
-
-🤍16『歐美』160.47.C
-🕒1500-2000
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️雙飛+2000
-◼️無套外+2000
-◼️無套內+6000
-◻️舌吻/無套吹/69/除毛
-
-🤍16『琳達』168.49.E
-🕒1400-2200
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️住家外帶外縣須不槍
-◼️口爆+1000
-◼️無套+3000
-◻️舌吻/無套吹/69/親胸
-◻️情趣用品/雙飛/二王
-
-🤍16『前女友』166.47.D
-🕒1700-2400
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+3000
-◼️清槍+3000
-◻️小親/無套吹/69/二王
-◻️情趣衣&品/角色扮演
-
-🔥鄰家清秀長腿妹🔥
-🤍16『YUKI』170.49.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+1000(尾工
-◼️口爆+1000
-◼️吞精+2000
-◼️雙飛+4000
-◼️攝影+5000(不露臉
-◼️角色扮演+1000
-◼️提前預約送自慰秀
-◻️舌吻/無套吹/69/共浴
-
-✨台日混血交換生✨
-🤍16『星奈』160.42.C.19
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️白人+2000
-◼️車震+6000
-◼️雙飛+3000
-◼️攝影+5000(不露臉
-◼️情趣用品+2000
-◼️角色扮演+3000
-◼️中日文溝通皆可
-◻️親/無套吹/親胸/共浴
-
-🤍16『兔兔』162.46.C
-◻️真奶
-🆗住家 外帶2+1
-◼️口爆+3000
-◼️吞精+2000
-◻️舌吻/無套吹/69/親胸
-◻️情趣用品&衣(需客備
-
-🤍15『寶姍』162.42.D
-🕒1700-2400
-◻️真奶
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+1000
-◼️吞精+1000
-◼️入珠+2000
-◼️後門+5000
-◼️無套+5000
-◻️舌吻/無套吹/69/共浴
-◻️包夜/車震/雙飛/二王
-
-🤍15『妮可』166.47.E
-🕒1300-2000
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️吞精+1000
-◼️入珠+1000
-◼️毒龍+3000
-◼️無套+3000
-◻️舌吻/無套吹/親胸/雙飛
-◻️白人/共浴/角色扮/二王
-
-🤍15『玉兔』158.40.C
-🕒1300-2100
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️顏射+1000(尾工
-◼️口爆+1000
-◼️毒龍+2000
-◼️無套外+5000
-◼️無套內+8000
-◻️舌吻/無套吹/親胸/雙飛
-◻️車震/白人/足交/有除毛
-◻️角色扮&情趣品(客備新
-
-🤍15『蜜桃』162.49.D
-🕒1500-2300
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️無套外+2000
-◼️無套內+4000
-◻️舌吻/無套吹/親胸/親
-◻️共浴/包夜/白人/除毛
-
-🤍15『湘凌』156.46.E
-🕒1400-2200
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️無套內+8000
-◻️舌吻/無套吹/共浴/親胸
-◻️二王/包夜/角色扮(客備
-
-🤍15『書婷』164.48.C
-🕒1230-2300
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-
-🤍15『潘娜』160.47.E
-🕒1330-2100
-◻️真奶
-🆗住家 2+1🆖外帶
-◻️舌吻/無套吹/69/白人
-
-🤍15『KIKI』161.47.C
-🕒1600-2200
-◻️真奶 無刺青
-🆗住家 2+1🆖外帶
-◼️口爆+2000
-◼️雙飛+2000
-◻️舌吻/無套吹/親胸/69/包夜
-
-🤍15『冰冰』165.48.D
-🕒1300-1800
-◻️真奶 無刺青
-🆗2+1🆖住家 外帶
-◻️舌吻/無套吹/69/親胸
-◻️包夜/角色扮演(須客備
-
-🤍15『貝貝』158.45.C
-◻️真奶
-🆗住家 2+1🆖外帶
-◼️無套+4000
-◻️舌吻/無套吹/69/入珠
-
-🔥清秀鄰家乖乖女🔥
-🤍14『薇安』157.47.C
-◻️真奶
-🆗住家 外帶 2+1 4+4
-◼️口爆+1000
-◼️吞精+1000
-◼️毒龍+1000
-◼️入珠+2000
-◼️無套內+3000
-◻️舌吻/無套吹/雙飛/二王
-◻️共浴/包夜/69/白虎/白人
-◻️情趣用品&角色扮演(客備
-
-🤍14『苑子』160.49.D
-🕒1600-0200
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+2000
-◼️清槍+2000
-◼️公廁+2000
-◼️無套+2000
-◻️舌吻/無套吹/69/親胸
-◻️雙飛/二王/白人/車震
-◻️親/入珠/情趣衣(客備
-
-🤍14『子晴』167.47.E
-🕒1330-2100
-◻️真奶
-🆗住家 外帶 2+1
-◻️舌吻/無套吹/69/親胸
-
-🤍12『暖心』159.53.C
-◻️真奶
-🆗住家 外帶 2+1
-◼️顔射+1000(尾工
-◼️口爆+1000
-◼️清槍+1000
-◼️吞精+1000
-◼️無套內+3000
-◻️舌吻/無套吹/入珠/雙飛
-
-🤍12『悠悠』160.49.E.18
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️口爆+1000
-◼️顔射+1000(尾工
-◼️可提供證件檢視
-◻️小親/無套吹/品苞/69
-◻️車震/胸推/滑壓/按摩
-◻️包夜/雙飛/情趣用品
-
-🤍12『小棉』166.49.D
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+1000
-◻️舌吻/無套吹/69/雙飛
-◻️車震/洋人/情趣用品&衣
-
-🤍12『花卉』168.49.C
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️無套內+2000
-◻️舌吻/無套吹/白人/親胸
-
-✨可愛小棉花學生✨
-🤍12『天心』168.49.C.19
-◻️真奶 無刺青
-🆗住家 外帶 2+1
-◼️顏射+2000(尾工
-◼️口爆+1000
-◼️入珠+1000
-◼️毒龍+3000
-◼️無套外+3000
-◼️無套內+5000
-◼️拍照+3000(不露臉
-◼️攝影+3000(不露臉
-◻️舌吻/無套吹/親胸/雙飛
-
-🤍12『泱泱』153.46.D
-🕒1400-2200
-◻️真奶
-🆗住家 外帶 2+1
-◼️口爆+1000
-◻️舌吻/無套吹/親胸/白人
-
-🤍12『依娜』160.42.C
-🆗2+1 🆖住家 外帶
-◼️入珠+1000
-◻️舌吻/無套吹/69
-◻️車震/潮吹/奶推`;
-const EMBEDDED_DATE = `2026/6/10`;
-
-let weekData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
-
+/* ════════════════════════════════════════
+   UTILS
+════════════════════════════════════════ */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'show';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.className = '', 2400);
+}
+
+function copyText(text, msg) {
+  const fallback = () => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.cssText = 'position:fixed;opacity:0;top:0;left:0;width:1px;height:1px;';
+    document.body.appendChild(el); el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    toast(msg || '✓ 已複製');
+  };
+  try {
+    navigator.clipboard.writeText(text)
+      .then(() => toast(msg || '✓ 已複製'))
+      .catch(fallback);
+  } catch(e) { fallback(); }
+}
+
+function showGlobalStatus(msg, ms) {
+  const el = document.getElementById('globalStatus');
+  el.textContent = msg;
+  clearTimeout(showGlobalStatus._t);
+  if (ms !== 0) showGlobalStatus._t = setTimeout(() => el.textContent = '', ms ?? 3000);
+}
+function showWalkStatus(msg) {
+  const el = document.getElementById('walkStatus');
+  el.textContent = msg;
+  clearTimeout(showWalkStatus._t);
+  showWalkStatus._t = setTimeout(() => el.textContent = '', 3500);
+}
+
+/* ════════════════════════════════════════
+   DARK MODE
+════════════════════════════════════════ */
+function toggleDark() {
+  const on = document.documentElement.classList.toggle('dark');
+  document.getElementById('darkToggle').textContent = on ? '☀️' : '🌙';
+  try { localStorage.setItem('sys-dark', on ? '1' : '0'); } catch(e) {}
+}
+
+/* ════════════════════════════════════════
+   TAB SWITCH
+════════════════════════════════════════ */
+function switchTab(tab) {
+  ['schedule','walk'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    const id = 'tabBtn' + t.charAt(0).toUpperCase() + t.slice(1);
+    document.getElementById(id).classList.toggle('active', t === tab);
+  });
+}
+
+/* ════════════════════════════════════════
+   GAS AUTO-SAVE (1.5 s debounce)
+════════════════════════════════════════ */
+const _saveTimers = {};
+function autoSave(key, val) {
+  showGlobalStatus('✎ 儲存中…', 0);
+  clearTimeout(_saveTimers[key]);
+  _saveTimers[key] = setTimeout(() => {
+    google.script.run
+      .withSuccessHandler(() => showGlobalStatus('✓ 已同步至 Sheets'))
+      .withFailureHandler(e => showGlobalStatus('⚠ 儲存失敗：' + e.message))
+      .save(key, val);
+  }, 1500);
+}
+
+/* ════════════════════════════════════════
+   班表管理 — LOGIC
+════════════════════════════════════════ */
 const CIRCLE_MAP = {
   '㈠':'一','㈡':'二','㈢':'三','㈣':'四','㈤':'五','㈥':'六','㈦':'七',
   '①':'一','②':'二','③':'三','④':'四','⑤':'五','⑥':'六','⑦':'七'
@@ -2367,280 +911,465 @@ const CIRCLE_MAP = {
 const DAY_MAP   = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'日':7};
 const TO_CIRCLE = {1:'㈠',2:'㈡',3:'㈢',4:'㈣',5:'㈤',6:'㈥',7:'㈦'};
 const DAY_NAMES = {1:'週一',2:'週二',3:'週三',4:'週四',5:'週五',6:'週六',7:'週日'};
+let weekData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
 
-function saveLS(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
-function loadLS(k){ try{return localStorage.getItem(k)||'';}catch(e){return '';} }
-
-function normCircle(s){
-  for(const [k,v] of Object.entries(CIRCLE_MAP)) s=s.split(k).join('('+v+')');
+function normCircle(s) {
+  for (const [k,v] of Object.entries(CIRCLE_MAP)) s = s.split(k).join('('+v+')');
   return s;
 }
 
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.className='show';
-  setTimeout(function(){el.className='';},2400);
-}
-
-function parseToMap(raw){
-  const map=new Map();
-  if(!raw) return map;
-  raw.split(/\n\s*\n/).forEach(function(block){
-    const b=block.trim(); if(!b) return;
-    const nm=b.match(/『([^』]+)』/);
-    const pm=b.match(/🤍(\d+)/);
-    if(nm&&pm) map.set(nm[1].trim(),{price:parseInt(pm[1],10),content:b});
+function parseToMap(raw) {
+  const map = new Map();
+  if (!raw) return map;
+  raw.split(/\n\s*\n/).forEach(block => {
+    const b = block.trim(); if (!b) return;
+    const nm = b.match(/『([^』]+)』/);
+    const pm = b.match(/🤍(\d+)/);
+    if (nm && pm) map.set(nm[1].trim(), {price: parseInt(pm[1], 10), content: b});
   });
   return map;
 }
 
-function sortDB(){
-  const raw=document.getElementById('db').value.trim();
-  if(!raw){alert('資料庫是空的');return;}
-  const arr=Array.from(parseToMap(raw).values()).sort(function(a,b){return b.price-a.price;});
-  document.getElementById('db').value=arr.map(function(x){return x.content;}).join('\n\n');
-  saveLS('sch-db',document.getElementById('db').value);
-  document.getElementById('dbStatus').textContent='✓ 去重 + 降序完成（共 '+arr.length+' 筆）';
+function sortDB() {
+  const raw = document.getElementById('db').value.trim();
+  if (!raw) { alert('資料庫是空的'); return; }
+  const arr = Array.from(parseToMap(raw).values()).sort((a,b) => b.price - a.price);
+  const sorted = arr.map(x => x.content).join('\n\n');
+  document.getElementById('db').value = sorted;
+  document.getElementById('dbStatus').textContent = '✓ 去重 + 降序完成（共 '+arr.length+' 筆）';
+  autoSave('db', sorted);
+  toast('✓ 整理完成，共 '+arr.length+' 筆');
 }
 
-function openPatchModal(){
-  document.getElementById('dbPatch').value='';
-  document.getElementById('patchResult').textContent='';
+function openPatchModal() {
+  document.getElementById('dbPatch').value = '';
+  document.getElementById('patchResult').textContent = '';
   document.getElementById('patchModal').classList.add('open');
-  setTimeout(function(){document.getElementById('dbPatch').focus();},80);
+  setTimeout(() => document.getElementById('dbPatch').focus(), 80);
 }
-function closePatchModal(){
-  document.getElementById('patchModal').classList.remove('open');
+function closePatchModal() { document.getElementById('patchModal').classList.remove('open'); }
+function modalOverlayClick(e) {
+  if (e.target === document.getElementById('patchModal')) closePatchModal();
 }
-function modalOverlayClick(e){
-  if(e.target===document.getElementById('patchModal')) closePatchModal();
-}
-
-function patchDB(){
-  const patchRaw=document.getElementById('dbPatch').value.trim();
-  if(!patchRaw){document.getElementById('patchResult').textContent='⚠️ 請先貼入資料';return;}
-  const existMap=parseToMap(document.getElementById('db').value.trim());
-  const patchMap=parseToMap(patchRaw);
-  if(patchMap.size===0){
-    document.getElementById('patchResult').textContent='⚠️ 找不到有效格式（需有 『名字』 和 🤍價格）';
-    return;
+function patchDB() {
+  const patchRaw = document.getElementById('dbPatch').value.trim();
+  if (!patchRaw) { document.getElementById('patchResult').textContent = '⚠️ 請先貼入資料'; return; }
+  const existMap = parseToMap(document.getElementById('db').value.trim());
+  const patchMap = parseToMap(patchRaw);
+  if (!patchMap.size) {
+    document.getElementById('patchResult').textContent = '⚠️ 找不到有效格式（需有 『名字』 和 🤍價格）'; return;
   }
-  let ow=0,add=0;
-  patchMap.forEach(function(val,name){
-    if(existMap.has(name)) ow++; else add++;
-    existMap.set(name,val);
+  let ow = 0, add = 0;
+  patchMap.forEach((val, name) => {
+    if (existMap.has(name)) ow++; else add++;
+    existMap.set(name, val);
   });
-  const arr=Array.from(existMap.values()).sort(function(a,b){return b.price-a.price;});
-  document.getElementById('db').value=arr.map(function(x){return x.content;}).join('\n\n');
-  saveLS('sch-db',document.getElementById('db').value);
+  const arr = Array.from(existMap.values()).sort((a,b) => b.price - a.price);
+  const sorted = arr.map(x => x.content).join('\n\n');
+  document.getElementById('db').value = sorted;
+  autoSave('db', sorted);
   closePatchModal();
-  document.getElementById('dbStatus').textContent='✓ 覆蓋 '+ow+' 筆、新增 '+add+' 筆，共 '+existMap.size+' 筆';
+  document.getElementById('dbStatus').textContent = '✓ 覆蓋 '+ow+' 筆、新增 '+add+' 筆，共 '+existMap.size+' 筆';
   toast('✓ 覆蓋完成！覆蓋 '+ow+' 筆、新增 '+add+' 筆');
 }
 
-function sortDayInput(){
-  const ta=document.getElementById('inputA');
-  const lines=ta.value.split('\n').map(function(l){return l.trim();}).filter(Boolean);
-  const seen=new Map();
-  lines.forEach(function(line){
-    const m=line.match(/^(\d+)\s*([^\s\d→➜\-]+)/);
-    if(m) seen.set(m[2].trim(),{price:parseInt(m[1],10),line:line});
-    else seen.set('__r__'+line,{price:-1,line:line});
+function sortDayInput() {
+  const ta = document.getElementById('inputA');
+  const seen = new Map();
+  ta.value.split('\n').map(l => l.trim()).filter(Boolean).forEach(line => {
+    const m = line.match(/^(\d+)\s*([^\s\d→➜\-]+)/);
+    if (m) seen.set(m[2].trim(), {price: parseInt(m[1],10), line});
+    else seen.set('__'+line, {price:-1, line});
   });
-  ta.value=Array.from(seen.values()).sort(function(a,b){return b.price-a.price;}).map(function(x){return x.line;}).join('\n');
-  saveLS('sch-input-day',ta.value);
+  ta.value = Array.from(seen.values()).sort((a,b) => b.price - a.price).map(x => x.line).join('\n');
+  autoSave('day', ta.value);
   toast('✓ 已依牌價排序並去除重複');
 }
 
-function convertDay(){
-  const dbMap=parseToMap(document.getElementById('db').value.trim());
-  const lines=document.getElementById('inputA').value.trim().split('\n').filter(Boolean);
-  const resultMap=new Map();
-  const missing=[];
-  lines.forEach(function(line){
-    const m=line.match(/^(\d+)\s*([^\s\d→➜\-]+)\s*(\d{3,4}[^\d]+\d{3,4})/);
-    if(!m) return;
-    const price=parseInt(m[1],10),name=m[2].trim(),time=m[3].replace(/\s+/g,'');
-    const entry=dbMap.get(name);
-    if(entry){
-      let text=entry.content;
-      if(text.indexOf('🕒')!==-1) text=text.replace(/🕒[^\n]*/,'🕒'+time);
-      else{
-        const parts=text.split('\n');
-        const idx=parts.findIndex(function(p){return p.indexOf('『'+name+'』')!==-1;});
-        if(idx!==-1) parts.splice(idx+1,0,'🕒'+time); else parts.push('🕒'+time);
-        text=parts.join('\n');
+function convertDay() {
+  const dbMap = parseToMap(document.getElementById('db').value.trim());
+  const resultMap = new Map(), missing = [];
+  document.getElementById('inputA').value.trim().split('\n').filter(Boolean).forEach(line => {
+    const m = line.match(/^(\d+)\s*([^\s\d→➜\-]+)\s*(\d{3,4}[^\d]+\d{3,4})/);
+    if (!m) return;
+    const price = parseInt(m[1],10), name = m[2].trim(), time = m[3].replace(/\s+/g,'');
+    const entry = dbMap.get(name);
+    if (entry) {
+      let text = entry.content;
+      if (text.includes('🕒')) text = text.replace(/🕒[^\n]*/, '🕒'+time);
+      else {
+        const parts = text.split('\n');
+        const idx = parts.findIndex(p => p.includes('『'+name+'』'));
+        if (idx !== -1) parts.splice(idx+1, 0, '🕒'+time);
+        else parts.push('🕒'+time);
+        text = parts.join('\n');
       }
-      resultMap.set(name,{price:price,text:text});
-    } else {
-      if(missing.indexOf(name)===-1) missing.push(name);
-    }
+      resultMap.set(name, {price, text});
+    } else if (!missing.includes(name)) missing.push(name);
   });
-  const sorted=Array.from(resultMap.values()).sort(function(a,b){return b.price-a.price;});
-  document.getElementById('outputDiv').textContent=sorted.map(function(x){return x.text;}).join('\n\n')||'（格式不符或無資料）';
-  document.getElementById('outputDiv').scrollTop=0;
-  document.getElementById('missing').textContent=missing.length?'⚠️ 找不到母檔：'+missing.join('、'):'';
+  const sorted = Array.from(resultMap.values()).sort((a,b) => b.price - a.price);
+  document.getElementById('outputDiv').textContent = sorted.map(x => x.text).join('\n\n') || '（格式不符或無資料）';
+  document.getElementById('outputDiv').scrollTop = 0;
+  document.getElementById('missing').textContent = missing.length ? '⚠️ 找不到母檔：'+missing.join('、') : '';
 }
 
-function clearDayInput(){
-  if(!confirm('確定清除？')) return;
-  document.getElementById('inputA').value='';
-  localStorage.removeItem('sch-input-day');
-  document.getElementById('outputDiv').textContent='（轉換結果將顯示於此）';
-  document.getElementById('missing').textContent='';
+function clearDayInput() {
+  if (!confirm('確定清除？')) return;
+  document.getElementById('inputA').value = '';
+  document.getElementById('outputDiv').textContent = '（轉換結果將顯示於此）';
+  document.getElementById('missing').textContent = '';
+  autoSave('day', '');
+}
+function copyOutput() {
+  const text = document.getElementById('outputDiv').textContent;
+  if (!text || text.startsWith('（')) return;
+  copyText(text, '✓ 已複製轉換結果');
 }
 
-function copyOutput(){
-  const text=document.getElementById('outputDiv').textContent;
-  if(!text||text.startsWith('（')) return;
-  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製轉換結果');});
-}
-
-function convertWeek(){
-  const rawInput=document.getElementById('weekInput').value.trim();
-  if(!rawInput){alert('請先輸入週報內容');return;}
-  const raw=normCircle(rawInput);
-  weekData={1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
-  const pureList=[];
-  const lines=raw.split('\n').map(function(l){return l.trim();}).filter(function(l){
-    if(!l) return false;
-    if(/^[⏔➜→✦꒰꒱\s\-=*]+$/.test(l)) return false;
-    return /^\d/.test(l);
-  });
-  lines.forEach(function(line){
-    const mm=line.match(/^(\d+)\s*([^\s\d→➜\(\)]+)\s*[→➜]?\s*/);
-    if(!mm) return;
-    const price=parseInt(mm[1],10),name=mm[2].trim();
-    const sched=line.substring(mm[0].length).trim();
-    const active=new Set();
-    if(sched){
-      const re=/((?:\([一二三四五六七日]\))+)([^(]*)/g;
-      let m;
-      while((m=re.exec(sched))!==null){
-        const chars=m[1].match(/[一二三四五六七日]/g)||[];
-        const t=m[2].trim().replace(/\s+/g,'')||'未定';
-        chars.forEach(function(ch){
-          const dn=DAY_MAP[ch];
-          if(dn){weekData[dn].push({price:price,name:name,time:t});active.add(dn);}
-        });
+function convertWeek() {
+  const rawInput = document.getElementById('weekInput').value.trim();
+  if (!rawInput) { alert('請先輸入週報內容'); return; }
+  const raw = normCircle(rawInput);
+  weekData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
+  const pureList = [];
+  raw.split('\n').map(l => l.trim()).filter(l => l && !/^[⏔➜→✦꒰꒱\s\-=*]+$/.test(l) && /^\d/.test(l))
+    .forEach(line => {
+      const mm = line.match(/^(\d+)\s*([^\s\d→➜\(\)]+)\s*[→➜]?\s*/);
+      if (!mm) return;
+      const price = parseInt(mm[1],10), name = mm[2].trim();
+      const sched = line.substring(mm[0].length).trim();
+      const active = new Set();
+      if (sched) {
+        const re = /((?:\([一二三四五六七日]\))+)([^(]*)/g; let m;
+        while ((m = re.exec(sched)) !== null) {
+          const chars = m[1].match(/[一二三四五六七日]/g) || [];
+          const t = m[2].trim().replace(/\s+/g,'') || '未定';
+          chars.forEach(ch => { const dn = DAY_MAP[ch]; if (dn) { weekData[dn].push({price,name,time:t}); active.add(dn); } });
+        }
+        if (!active.size) {
+          (sched.match(/\([一二三四五六七日]\)/g)||[]).forEach(d => {
+            const ch = d.replace(/[()]/g,''), dn = DAY_MAP[ch];
+            if (dn) { weekData[dn].push({price,name,time:'未定'}); active.add(dn); }
+          });
+        }
       }
-      if(active.size===0){
-        (sched.match(/\([一二三四五六七日]\)/g)||[]).forEach(function(d){
-          const ch=d.replace(/[()]/g,''),dn=DAY_MAP[ch];
-          if(dn){weekData[dn].push({price:price,name:name,time:'未定'});active.add(dn);}
-        });
-      }
-    }
-    const days=Array.from(active).sort(function(a,b){return a-b;});
-    const circ=days.map(function(n){return TO_CIRCLE[n];}).join('');
-    pureList.push({price:price,text:price+name+(circ?'➜'+circ:'（待定）')});
-  });
-  pureList.sort(function(a,b){return b.price-a.price;});
-  document.getElementById('pureOutput').textContent=pureList.map(function(x){return x.text;}).join('\n')||'（無有效資料）';
-  document.getElementById('pureOutput').scrollTop=0;
-  for(let i=1;i<=7;i++) weekData[i].sort(function(a,b){return b.price-a.price;});
+      const days = Array.from(active).sort((a,b)=>a-b);
+      pureList.push({price, text: price+name+(days.length ? '➜'+days.map(n=>TO_CIRCLE[n]).join('') : '（待定）')});
+    });
+  pureList.sort((a,b) => b.price - a.price);
+  document.getElementById('pureOutput').textContent = pureList.map(x=>x.text).join('\n') || '（無有效資料）';
+  for (let i=1;i<=7;i++) weekData[i].sort((a,b)=>b.price-a.price);
   renderWeekGrid();
   toast('✓ 週報彙整完成，看板已更新');
 }
 
-function clearWeekInput(){
-  if(!confirm('確定清除？')) return;
-  document.getElementById('weekInput').value='';
-  localStorage.removeItem('sch-input-week');
-  document.getElementById('pureOutput').textContent='（彙整週報後顯示於此）';
+function clearWeekInput() {
+  if (!confirm('確定清除？')) return;
+  document.getElementById('weekInput').value = '';
+  document.getElementById('pureOutput').textContent = '（彙整週報後顯示於此）';
+  autoSave('week', '');
+}
+function copyPure() {
+  const text = document.getElementById('pureOutput').textContent;
+  if (!text || text.startsWith('（')) return;
+  copyText(text, '✓ 已複製乾淨名單');
 }
 
-function copyPure(){
-  const text=document.getElementById('pureOutput').textContent;
-  if(!text||text.startsWith('（')) return;
-  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製乾淨名單');});
-}
-
-/* 壓緊距離感：人名與時間/未定 完美的合併在同一行呈現 */
-function renderWeekGrid(){
-  const c=document.getElementById('weekGrid');
-  let html='';
-  for(let i=1;i<=7;i++){
-    const list=weekData[i];
-    const items=list.length>0
-      ?list.map(function(x){
-          return '<div class="day-item">'
-            +'<span class="day-item-name">'+x.price+' '+x.name+'</span>'
-            +'<span class="day-item-time">'+x.time+'</span>'
-            +'</div>';
-       }).join('')
-      :'<div style="color:#ccc;font-size:11px;text-align:center;padding-top:14px;">暫無排班</div>';
-    html+='<div class="day-box">'
-      +'<div class="day-hdr"><span class="day-name">'+DAY_NAMES[i]+'</span><span class="day-count">'+list.length+' 筆</span></div>'
-      +'<div class="day-list">'+items+'</div>'
-      +'<button class="day-copy" onclick="copySingleDay('+i+')">📋 複製</button>'
-      +'</div>';
+function renderWeekGrid() {
+  let html = '';
+  for (let i = 1; i <= 7; i++) {
+    const list = weekData[i];
+    const items = list.length
+      ? list.map(x => `<div class="day-item"><span class="day-item-name">${x.price} ${x.name}</span><span class="day-item-time">${x.time}</span></div>`).join('')
+      : '<div style="color:var(--hint);font-size:11px;text-align:center;padding-top:14px;">暫無排班</div>';
+    html += `<div class="day-box"><div class="day-hdr"><span class="day-name">${DAY_NAMES[i]}</span><span class="day-count">${list.length} 筆</span></div><div class="day-list">${items}</div><button class="day-copy" onclick="copySingleDay(${i})">📋 複製</button></div>`;
   }
-  c.innerHTML=html;
+  document.getElementById('weekGrid').innerHTML = html;
 }
 
-function copySingleDay(d){
-  const list=weekData[d];
-  if(!list||!list.length){alert('當天沒有資料');return;}
-  list.sort(function(a,b){return b.price-a.price;});
-  const text=list.map(function(x){return x.price+x.name+(x.time&&x.time!=='未定'?' '+x.time:'');}).join('\n');
-  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製 '+DAY_NAMES[d]+' 班表');});
+function copySingleDay(d) {
+  const list = weekData[d];
+  if (!list?.length) { alert('當天沒有資料'); return; }
+  copyText(list.map(x => x.price+x.name+(x.time&&x.time!=='未定'?' '+x.time:'')).join('\n'), '✓ 已複製 '+DAY_NAMES[d]+' 班表');
 }
 
-function copyNotepad(){
-  const text=document.getElementById('notepad').value;
-  if(!text) return;
-  navigator.clipboard.writeText(text).then(function(){toast('✓ 已複製筆記欄內容');});
+function copyNotepad() {
+  const text = document.getElementById('notepad').value;
+  if (!text) return;
+  copyText(text, '✓ 已複製筆記欄內容');
 }
-function clearNotepad(){
-  if(!confirm('確定清除筆記欄？')) return;
-  document.getElementById('notepad').value='';
-  localStorage.removeItem('sch-notepad');
-}
-
-function exportNewVersion(){
-  const dbContent=document.getElementById('db').value.trim();
-  if(!dbContent){alert('母檔是空的');return;}
-  const date=new Date().toLocaleDateString('zh-TW');
-  const escaped=dbContent.replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$/g,'\\$');
-  let html=document.documentElement.outerHTML;
-  html=html.replace(/const EMBEDDED_DB\s*=\s*`[\s\S]*?`;/,'const EMBEDDED_DB = `'+escaped+'`;');
-  html=html.replace(/const EMBEDDED_DATE\s*=\s*`[\s\S]*?`;/,'const EMBEDDED_DATE = `'+date+'`;');
-  const blob=new Blob([html],{type:'text/html'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='班表系統_'+new Date().toISOString().slice(0,10)+'.html';
-  a.click();
+function clearNotepad() {
+  if (!confirm('確定清除筆記欄？')) return;
+  document.getElementById('notepad').value = '';
+  autoSave('note', '');
 }
 
-window.onload=function(){
-  const sDB=loadLS('sch-db');
-  if(sDB) document.getElementById('db').value=sDB;
-  else if(EMBEDDED_DB&&EMBEDDED_DB!=='__DB_CONTENT__') document.getElementById('db').value=EMBEDDED_DB;
+function toggleDbCollapse() {
+  const box = document.getElementById('db'), btn = document.getElementById('toggleDbBtn');
+  const collapsed = box.style.maxHeight !== 'none' && box.style.maxHeight !== '';
+  if (collapsed || box.style.maxHeight === '') {
+    box.style.maxHeight = 'none'; box.style.overflowY = 'auto';
+    btn.textContent = '▲ 收起母檔';
+    try { localStorage.setItem('db-exp','1'); } catch(e) {}
+  } else {
+    box.style.maxHeight = '250px'; box.style.overflowY = 'hidden';
+    btn.textContent = '▼ 展開完整母檔'; box.scrollTop = 0;
+    try { localStorage.setItem('db-exp','0'); } catch(e) {}
+  }
+}
 
-  if(EMBEDDED_DATE&&EMBEDDED_DATE!=='__EMBED_DATE__')
-    document.getElementById('versionLabel').textContent='版本更新：'+EMBEDDED_DATE;
+/* ════════════════════════════════════════
+   現走表 — DEFAULTS & STATE
+════════════════════════════════════════ */
+const WALK_DEFAULTS = [
+  {name:"款式 A",symTitle:"✦ {DATE} 當日名單 ✦",symDot:"▫️ ",symMid:"．",symJp:"═══【 🇯🇵 日韓 】═══",symTw:"═══【 🇹🇼 本地 】═══",timePrefix:"[ ",timeSuffix:" ]",symGroupSep:"· · · · ·",symStatusLine:"════꒰ 💡 異動 ꒱════",symComing:"✦── 即將登場 ──✦"},
+  {name:"款式 B",symTitle:"🌸 {DATE} 在席名單 🌸",symDot:"◦ ",symMid:"·",symJp:"〔 🇯🇵 日韓系 〕",symTw:"〔 🇹🇼 本地系 〕",timePrefix:"⏰",timeSuffix:"",symGroupSep:"- - - - -",symStatusLine:"──── 💬 異動通知 ────",symComing:"🌟 即將登場 🌟"},
+  {name:"款式 C",symTitle:"📋 {DATE} 當日出席表",symDot:"• ",symMid:"｜",symJp:"— 日韓 —",symTw:"— 本地 —",timePrefix:"",timeSuffix:" 到",symGroupSep:"──────",symStatusLine:"· · · 異動 · · ·",symComing:"＊ 即將登場 ＊"},
+  {name:"款式 D",symTitle:"💎 {DATE} 名單 💎",symDot:"❖ ",symMid:"✦",symJp:"【 日韓精選 】",symTw:"【 本地精選 】",timePrefix:"（",timeSuffix:"）",symGroupSep:"∙ ∙ ∙ ∙ ∙",symStatusLine:"══ ✧ 異動資訊 ✧ ══",symComing:"✨ 即將登場 ✨"}
+];
+const WALK_FIELDS = ['symTitle','symDot','symMid','symJp','symTw','timePrefix','timeSuffix','symGroupSep','symStatusLine','symComing'];
+const WD = ['日','一','二','三','四','五','六'];
 
-  document.getElementById('inputA').value    =loadLS('sch-input-day');
-  document.getElementById('weekInput').value  =loadLS('sch-input-week');
-  document.getElementById('notepad').value    =loadLS('sch-notepad');
+let walkPresets = JSON.parse(JSON.stringify(WALK_DEFAULTS));
+let walkCurrentPreset = 0;
+let walkAdvOpen = false;
 
+/* ════════════════════════════════════════
+   現走表 — DATE
+════════════════════════════════════════ */
+function initDate() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('datePicker').value = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  updateWeekday(now);
+}
+function onDateChange() {
+  const val = document.getElementById('datePicker').value;
+  if (val) updateWeekday(new Date(val + 'T00:00:00'));
+}
+function updateWeekday(d) {
+  document.getElementById('weekdayDisplay').textContent = '（' + WD[d.getDay()] + '）';
+}
+function getDateString() {
+  const val = document.getElementById('datePicker').value;
+  if (!val) return '';
+  const d = new Date(val + 'T00:00:00');
+  return (d.getMonth()+1) + '/' + d.getDate() + ' (' + WD[d.getDay()] + ')';
+}
+
+/* ════════════════════════════════════════
+   現走表 — ADVANCED SETTINGS
+════════════════════════════════════════ */
+function toggleAdv() {
+  walkAdvOpen = !walkAdvOpen;
+  document.getElementById('advBody').classList.toggle('open', walkAdvOpen);
+  document.getElementById('advArrow').classList.toggle('open', walkAdvOpen);
+}
+
+function syncWalkTabNames() {
+  for (let i = 0; i < 4; i++) document.getElementById('tabName'+i).value = walkPresets[i].name;
+}
+function renderWalkPresetSettings() {
+  const p = walkPresets[walkCurrentPreset];
+  WALK_FIELDS.forEach(k => document.getElementById(k).value = p[k] ?? '');
+}
+function saveWalkCurrentToState() {
+  const p = walkPresets[walkCurrentPreset];
+  WALK_FIELDS.forEach(k => p[k] = document.getElementById(k).value);
+  p.name = document.getElementById('tabName'+walkCurrentPreset).value;
+}
+function switchPreset(idx) {
+  saveWalkCurrentToState();
+  walkCurrentPreset = idx;
+  document.querySelectorAll('.adv-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  renderWalkPresetSettings();
+}
+
+/* ════════════════════════════════════════
+   現走表 — SAVE TO SHEET
+════════════════════════════════════════ */
+function saveWalkToSheet() {
+  saveWalkCurrentToState();
+  for (let i=0;i<4;i++) walkPresets[i].name = document.getElementById('tabName'+i).value;
+  const json = JSON.stringify({
+    presets:   walkPresets,
+    quickRest: document.getElementById('quickRest').value,
+    quickFull: document.getElementById('quickFull').value
+  });
+  google.script.run
+    .withSuccessHandler(() => showWalkStatus('☁️ 已儲存至 Sheets Sheet 5'))
+    .withFailureHandler(e => showWalkStatus('⚠ 儲存失敗：' + e.message))
+    .save('walk', json);
+}
+
+function resetWalkAll() {
+  if (!confirm('確定要恢復所有預設值嗎？')) return;
+  walkPresets = JSON.parse(JSON.stringify(WALK_DEFAULTS));
+  syncWalkTabNames(); renderWalkPresetSettings();
+  showWalkStatus('↺ 已恢復預設值');
+}
+
+/* ════════════════════════════════════════
+   現走表 — PARSE & BUILD
+════════════════════════════════════════ */
+function parseWalkInput(input) {
+  const lines = input.split('\n');
+  let region = '', comingGirls = [], jpHkGirls = [], taiwanGirls = [], cur = null;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim(); if (!line) continue;
+    const clean = line.replace(/\s+/g,'');
+    if (clean.includes('即將登場')) { region='coming'; continue; }
+    if (clean.includes('日韓推薦')) { region='jphk';   continue; }
+    if (clean.includes('台妹推薦')) { region='taiwan';  continue; }
+    if (line.includes('本週預報')||line.includes('注意事項')) { region='end'; continue; }
+    const m = line.match(/🤍\s*(\d+)\s*『([^』]+)』/);
+    if (m) {
+      cur = {age: m[1], name: m[2], time: '1300'};
+      for (let j = i+1; j < Math.min(i+15, lines.length); j++) {
+        const nl = lines[j].trim();
+        if (nl.includes('🤍')||nl.includes('✤')||nl.includes('━━')) break;
+        if (nl.includes('🕒')) {
+          if (region==='coming') comingGirls.push({age:cur.age, name:cur.name, detail:nl.replace('🕒','').replace('➜',' ').trim()});
+          else { const tm = nl.match(/🕒\s*(\d{4})/); if (tm) cur.time = tm[1]; }
+          break;
+        }
+      }
+      if (region==='jphk')   jpHkGirls.push(cur);
+      if (region==='taiwan') taiwanGirls.push(cur);
+    }
+  }
+  return {comingGirls, jpHkGirls, taiwanGirls};
+}
+
+function buildWalkOutput(p, data, dateStr, txtRest, txtFull) {
+  const {comingGirls, jpHkGirls, taiwanGirls} = data;
+  const mid = p.symMid ? ` ${p.symMid} ` : ' ';
+  const sep = p.symGroupSep || '';
+  let r = `${p.symTitle.replace('{DATE}', dateStr)}\n\n${p.symJp}\n`;
+  jpHkGirls.forEach(g => r += `${p.symDot}${g.age} ${g.name}${mid}${p.timePrefix}${g.time}${p.timeSuffix}\n`);
+  if (!jpHkGirls.length) r += '｜無｜\n';
+  r += `\n${p.symTw}\n`;
+  const t1 = taiwanGirls.filter(g => +g.age > 25);
+  const t2 = taiwanGirls.filter(g => +g.age >= 21 && +g.age <= 25);
+  const t3 = taiwanGirls.filter(g => +g.age >= 18 && +g.age <= 20);
+  const t4 = taiwanGirls.filter(g => +g.age < 18);
+  let has = false;
+  const og = arr => arr.forEach(g => r += `${p.symDot}${g.age} ${g.name}${mid}${p.timePrefix}${g.time}${p.timeSuffix}\n`);
+  if (t1.length) { og(t1); has=true; }
+  if (t2.length) { if(has&&sep) r+=`${sep}\n`; og(t2); has=true; }
+  if (t3.length) { if(has&&sep) r+=`${sep}\n`; og(t3); has=true; }
+  if (t4.length) { if(has&&sep) r+=`${sep}\n`; og(t4); }
+  if (!taiwanGirls.length) r += '｜無｜\n';
+  r += '\n';
+  if (p.symStatusLine.trim()) r += `${p.symStatusLine}\n`;
+  if (txtRest.trim()) r += `${txtRest}\n\n`;
+  if (txtFull.trim()) r += `${txtFull}\n`;
+  if (comingGirls.length) { r += `\n${p.symComing}\n`; comingGirls.forEach(g => r += `${g.age} ${g.name}\n${g.detail}\n`); }
+  return r;
+}
+
+function processAll() {
+  const input = document.getElementById('walkInputText').value;
+  if (!input.trim()) { alert('請先貼上文案再點轉檔。'); return; }
+  saveWalkCurrentToState();
+  const dateStr = getDateString();
+  const txtRest = document.getElementById('quickRest').value;
+  const txtFull = document.getElementById('quickFull').value;
+  const data = parseWalkInput(input);
+  document.getElementById('walkMainOutput').value = buildWalkOutput(walkPresets[0], data, dateStr, txtRest, txtFull);
+  document.getElementById('walkMainLabel').textContent = walkPresets[0].name;
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('walkSubOutput'+i).value = buildWalkOutput(walkPresets[i], data, dateStr, txtRest, txtFull);
+    document.getElementById('walkSubLabel'+i).textContent = walkPresets[i].name;
+  }
+  showWalkStatus('✦ 四款轉檔完成');
+}
+
+function copyWalkMain() {
+  const v = document.getElementById('walkMainOutput').value;
+  if (!v.trim()) { alert('請先點擊轉檔。'); return; }
+  copyText(v, '✅ 已複製「'+walkPresets[0].name+'」');
+}
+function copyWalkSub(i) {
+  const v = document.getElementById('walkSubOutput'+i).value;
+  if (!v.trim()) { alert('請先點擊轉檔。'); return; }
+  copyText(v, '✅ 已複製「'+walkPresets[i].name+'」');
+}
+
+/* ════════════════════════════════════════
+   INIT — DOMContentLoaded
+════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+
+  // Dark mode restore
+  try {
+    if (localStorage.getItem('sys-dark') === '1') {
+      document.documentElement.classList.add('dark');
+      document.getElementById('darkToggle').textContent = '☀️';
+    }
+  } catch(e) {}
+
+  // DB expand state restore
+  try {
+    if (localStorage.getItem('db-exp') === '1') {
+      document.getElementById('db').style.maxHeight = 'none';
+      document.getElementById('db').style.overflowY = 'auto';
+      document.getElementById('toggleDbBtn').textContent = '▲ 收起母檔';
+    }
+  } catch(e) {}
+
+  // Init empty week grid
   renderWeekGrid();
 
-  // === 母檔資料庫開合箭持久化 ===
-  const dbDetails = document.getElementById('dbCollapsible');
-  if (dbDetails) {
-    const saved = loadLS('sch-db-open');
-    if (saved === 'true') {
-      dbDetails.setAttribute('open', '');
-    } else {
-      dbDetails.removeAttribute('open');
-    }
-    dbDetails.addEventListener('toggle', function () {
-      saveLS('sch-db-open', dbDetails.hasAttribute('open') ? 'true' : 'false');
-    });
-  }
-};
-</script>
+  // Init 現走表 date + presets
+  initDate();
+  syncWalkTabNames();
+  renderWalkPresetSettings();
 
-</body></html>
+  // ── Load all data from Google Sheets ──
+  google.script.run
+    .withSuccessHandler(data => {
+      // 班表管理
+      if (data.day)  document.getElementById('inputA').value    = data.day;
+      if (data.week) document.getElementById('weekInput').value  = data.week;
+      if (data.note) document.getElementById('notepad').value    = data.note;
+      if (data.db)   document.getElementById('db').value         = data.db;
+
+      // 現走表 presets & quick edit
+      if (data.walk) {
+        try {
+          const w = JSON.parse(data.walk);
+          if (Array.isArray(w.presets) && w.presets.length === 4) {
+            walkPresets = w.presets;
+            syncWalkTabNames();
+            renderWalkPresetSettings();
+          }
+          if (w.quickRest != null) document.getElementById('quickRest').value = w.quickRest;
+          if (w.quickFull != null) document.getElementById('quickFull').value = w.quickFull;
+        } catch(e) {}
+      } else {
+        // First-run defaults
+        document.getElementById('quickRest').value = '▫️ 今日改休 ➜\n35 妹妹名字';
+        document.getElementById('quickFull').value = '▫️ 今日約滿 ➜\n｜無｜';
+      }
+
+      // Hide loading
+      const ol = document.getElementById('loadingOverlay');
+      ol.classList.add('hidden');
+      setTimeout(() => ol.style.display = 'none', 300);
+      showGlobalStatus('✓ 已從 Sheets 載入資料');
+    })
+    .withFailureHandler(e => {
+      const ol = document.getElementById('loadingOverlay');
+      ol.classList.add('hidden');
+      setTimeout(() => ol.style.display = 'none', 300);
+      showGlobalStatus('⚠ Sheets 載入失敗：' + e.message);
+      // First-run defaults even on failure
+      document.getElementById('quickRest').value = '▫️ 今日改休 ➜\n35 妹妹名字';
+      document.getElementById('quickFull').value = '▫️ 今日約滿 ➜\n｜無｜';
+    })
+    .loadAll();
+});
+</script>
+</body>
+</html>
