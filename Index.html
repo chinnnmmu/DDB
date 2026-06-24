@@ -86,14 +86,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:0.
 .btn-sm{min-height:30px;padding:0.25rem 0.5rem;font-size:0.8125rem}
 input,select,textarea{font-family:var(--font);font-size:0.9375rem;background:var(--card);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);padding:0.3rem 0.5rem;width:100%;transition:.1s;}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,99,122,.1)}
-.cal-nav-row{display:flex;align-items:center;padding:4px 0 16px 0;background:transparent;border-bottom:none;flex-wrap:wrap;gap:4px;}
+.cal-nav-row{display:flex;align-items:center;padding:4px 0 8px 0;background:transparent;border-bottom:none;flex-wrap:wrap;gap:4px;}
 .cal-month{font-size:22px;font-weight:600;color:var(--text);letter-spacing:.03em;font-style:italic;}
 .cal-arrow{background:var(--card2);border:1px solid var(--border);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2);cursor:pointer;transition:.2s;}
 .cal-arrow:hover{background:var(--border);color:var(--text);}
 .cal-wd{display:grid;grid-template-columns:repeat(7,1fr);background:transparent;border-bottom:none;padding-bottom:10px;}
 .cal-wd span{text-align:center;font-size:11px;font-weight:600;color:var(--text3);padding:0.25rem 0}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0;gap:6px;}
-.cal-day{display:flex;flex-direction:column;align-items:center;padding:0;cursor:pointer;border-radius:12px;min-height:42px;justify-content:center;background:var(--card2);border:1.5px solid var(--border);transition:all .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.03);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);padding:0;gap:3px;}
+.cal-day{display:flex;flex-direction:column;align-items:center;padding:0;cursor:pointer;border-radius:10px;min-height:34px;justify-content:center;background:var(--card2);border:1.5px solid var(--border);transition:all .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.03);}
 .cal-day:hover:not(.other){transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.07);border-color:var(--border2);}
 .dn{font-size:0.8125rem;font-weight:600;color:var(--text);width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:12px;}
 .cal-day.other{background:transparent;border-color:transparent;box-shadow:none;opacity:.3;}
@@ -290,7 +290,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
   <div class="sidebar-logo">✦ DDB | WORKSPACE</div>
   <div class="sidebar-label">WORKSPACE</div>
   <div class="sidebar-menu">
-    <button class="snav-item active" onclick="ST('wo')"><span class="snav-icon">📋</span> 我的工單</button>
+    <button class="snav-item" onclick="ST('note')"><span class="snav-icon">📝</span> 便簽</button>
+    <button class="snav-item active" onclick="ST('cal')"><span class="snav-icon">📅</span> 每日工單</button>
+    <button class="snav-item" onclick="ST('all')"><span class="snav-icon">🗂</span> 所有工單</button>
     <button class="snav-item" onclick="ST('bb')"><span class="snav-icon">🔍</span> 探索搜尋</button>
     <button class="snav-item" onclick="ST('stat')"><span class="snav-icon">📊</span> 數據紀錄</button>
   </div>
@@ -322,78 +324,63 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 
 <div class="app">
 
-<div id="tab-wo" class="panel active">
-  <div class="sub-nav">
-    <button class="sub-tab" onclick="SST('note')">📝 便簽</button>
-    <button class="sub-tab active" onclick="SST('cal')">📅 每日訂單</button>
-    <button class="sub-tab" onclick="SST('all')">🔍 所有工單</button>
-  </div>
-
-  <div id="sub-note" class="sub-panel">
-    <div style="padding: 0.6rem 0.4rem;">
-      <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap;">
-        <div style="font-size:1rem; font-weight:600; color:var(--accent);">📝 多行程便簽（5區）</div>
-        <div style="flex:1"></div>
-<button class="btn btn-sage btn-sm" onclick="addMultiNote()" style="height:32px;">＋ 新增</button>
-      </div>
-
-      <div style="display:flex; gap:10px; height: calc(100vh - 170px);">
-        
-        <!-- 左側清單 -->
-        <div style="width: 280px; background: var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(0,0,0,.04);">
-          <div style="padding:10px; background:#E8F0F8; border-bottom:1px solid var(--border);">
-            <input type="text" id="multi-note-search" placeholder="搜尋行程或人名..." 
-                   style="width:100%; padding:7px; font-size:14px; border:1px solid var(--border); border-radius:6px;" 
-                   onkeyup="filterMultiNoteList()">
-          </div>
-          <div id="multi-note-list" style="flex:1; overflow-y:auto; padding:8px; font-size:13px;"></div>
+<div id="tab-note" class="panel">
+  <div style="padding: 0.4rem;">
+    <div style="display:flex; gap:0.5rem; align-items:center; margin-bottom:0.4rem; flex-wrap:wrap;">
+      <div style="font-size:1rem; font-weight:600; color:var(--accent);">📝 多行程便簽</div>
+      <div style="flex:1"></div>
+      <button class="btn btn-sage btn-sm" onclick="addMultiNote()" style="height:32px;">＋ 新增</button>
+    </div>
+    <div style="display:flex; gap:10px; height: calc(100vh - 110px);">
+      <!-- 左側清單 -->
+      <div style="width: 240px; background: var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(0,0,0,.04); flex-shrink:0;">
+        <div style="padding:8px; background:#E8F0F8; border-bottom:1px solid var(--border);">
+          <input type="text" id="multi-note-search" placeholder="搜尋行程或人名..."
+                 style="width:100%; padding:6px; font-size:13px; border:1px solid var(--border); border-radius:6px;"
+                 onkeyup="filterMultiNoteList()">
         </div>
-
-        <!-- 右側 4 個彩色編輯區 -->
-        <div style="flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; overflow-x:auto; padding-bottom:10px;">
-
-          <!-- 1. Lavender -->
-          <div style="min-width:200px; background:var(--card); border:2px solid #c8c0d8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
-            <div style="padding:8px 12px; background:#e8e2f4; color:#4a3a6a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; border-radius:10px 10px 0 0;">
-              <span id="multi-time1">💜 Lavender</span>
-              <button onclick="saveMultiNote(1)" style="padding:2px 10px; background:white; border:1px solid #c8c0d8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
-            </div>
-            <textarea id="multi-editor1" style="flex:1; min-height:200px; padding:12px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第1個行程..."></textarea>
+        <div id="multi-note-list" style="flex:1; overflow-y:auto; padding:6px; font-size:13px;"></div>
+      </div>
+      <!-- 右側 4 個彩色編輯區 -->
+      <div style="flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; overflow-x:auto; padding-bottom:4px;">
+        <!-- 1. Lavender -->
+        <div style="min-width:180px; background:var(--card); border:2px solid #c8c0d8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="padding:7px 10px; background:#e8e2f4; color:#4a3a6a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600;">
+            <span id="multi-time1">💜 Lavender</span>
+            <button onclick="saveMultiNote(1)" style="padding:2px 8px; background:white; border:1px solid #c8c0d8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
           </div>
-
-          <!-- 2. Rose -->
-          <div style="min-width:200px; background:var(--card); border:2px solid #e8b8c4; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
-            <div style="padding:8px 12px; background:#fce4ec; color:#6a2a3a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; border-radius:10px 10px 0 0;">
-              <span id="multi-time2">🌹 Rose</span>
-              <button onclick="saveMultiNote(2)" style="padding:2px 10px; background:white; border:1px solid #e8b8c4; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
-            </div>
-            <textarea id="multi-editor2" style="flex:1; min-height:200px; padding:12px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第2個行程..."></textarea>
+          <textarea id="multi-editor1" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第1個行程..."></textarea>
+        </div>
+        <!-- 2. Rose -->
+        <div style="min-width:180px; background:var(--card); border:2px solid #e8b8c4; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="padding:7px 10px; background:#fce4ec; color:#6a2a3a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600;">
+            <span id="multi-time2">🌹 Rose</span>
+            <button onclick="saveMultiNote(2)" style="padding:2px 8px; background:white; border:1px solid #e8b8c4; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
           </div>
-
-          <!-- 3. Mint -->
-          <div style="min-width:200px; background:var(--card); border:2px solid #a8d4b8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
-            <div style="padding:8px 12px; background:#d8f0e4; color:#2a5a40; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; border-radius:10px 10px 0 0;">
-              <span id="multi-time3">🌿 Mint</span>
-              <button onclick="saveMultiNote(3)" style="padding:2px 10px; background:white; border:1px solid #a8d4b8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
-            </div>
-            <textarea id="multi-editor3" style="flex:1; min-height:200px; padding:12px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第3個行程..."></textarea>
+          <textarea id="multi-editor2" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第2個行程..."></textarea>
+        </div>
+        <!-- 3. Mint -->
+        <div style="min-width:180px; background:var(--card); border:2px solid #a8d4b8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="padding:7px 10px; background:#d8f0e4; color:#2a5a40; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600;">
+            <span id="multi-time3">🌿 Mint</span>
+            <button onclick="saveMultiNote(3)" style="padding:2px 8px; background:white; border:1px solid #a8d4b8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
           </div>
-
-          <!-- 4. Peach -->
-          <div style="min-width:200px; background:var(--card); border:2px solid #e8c8a8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
-            <div style="padding:8px 12px; background:#faebd8; color:#6a3a1a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; border-radius:10px 10px 0 0;">
-              <span id="multi-time4">🍑 Peach</span>
-              <button onclick="saveMultiNote(4)" style="padding:2px 10px; background:white; border:1px solid #e8c8a8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
-            </div>
-            <textarea id="multi-editor4" style="flex:1; min-height:200px; padding:12px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第4個行程..."></textarea>
+          <textarea id="multi-editor3" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第3個行程..."></textarea>
+        </div>
+        <!-- 4. Peach -->
+        <div style="min-width:180px; background:var(--card); border:2px solid #e8c8a8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="padding:7px 10px; background:#faebd8; color:#6a3a1a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600;">
+            <span id="multi-time4">🍑 Peach</span>
+            <button onclick="saveMultiNote(4)" style="padding:2px 8px; background:white; border:1px solid #e8c8a8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
           </div>
-
+          <textarea id="multi-editor4" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第4個行程..."></textarea>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div id="sub-cal" class="sub-panel active">
+<div id="tab-cal" class="panel active">
     <div class="wo-desktop">
       <div class="cal-col">
         <div class="card" id="cal-card-el">
@@ -414,7 +401,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
           <div class="card-head"><span class="card-title">⚡ 快速輸入</span></div>
           <div style="padding:0.5rem">
             <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.4rem;">第1行可輸入日期（如 6/24），之後每行一筆工單。括號內容自動放備記。</div>
-            <textarea id="imp-raw" style="height:15rem;font-size:0.9375rem;font-family:var(--mono)" placeholder="6/24&#10;16莫凡 2200香格里拉2+1 加藤(V)320 128&#10;22江月 2200敦北住家2+1 H巨人(~)400 146"></textarea>
+            <textarea id="imp-raw" style="height:20rem;font-size:0.9375rem;font-family:var(--mono)" placeholder="6/24&#10;16莫凡 2200香格里拉2+1 加藤(V)320 128&#10;22江月 2200敦北住家2+1 H巨人(~)400 146"></textarea>
             <div class="row-gap" style="margin-top:6px;">
               <button class="btn btn-sage" id="imp-btn">⚡ 匯入</button>
               <button class="btn btn-plain btn-sm" onclick="document.getElementById('imp-raw').value=''">清除</button>
@@ -538,31 +525,33 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
     </div>
   </div>
 
-  <div id="sub-all" class="sub-panel">
-    <div class="card">
-      <div class="card-head" style="display:flex; gap:8px;">
-        <input id="search-all-input" placeholder="輸入妹妹名字、阿姨、地點或日期 (例如 6/19) 來搜尋歷史工單..." oninput="renderAllOrders()" style="flex:1;">
-      </div>
-      <div class="tbl-wrap" style="max-height: calc(100vh - 200px); overflow-y: auto;">
-        <table class="etbl" style="min-width:650px">
-          <thead>
-            <tr>
-              <th class="sortable" onclick="sortAllOrders('date')" style="width:5.5rem; text-align:center;">日期</th>
-              <th style="width:3rem; text-align:center;">牌</th>
-              <th class="sortable" onclick="sortAllOrders('name')" style="width:5rem; text-align:center;">人名</th>
-              <th class="sortable" onclick="sortAllOrders('place')" style="width:7.5rem; text-align:center;">時間地點</th>
-              <th style="width:4.5rem;">阿姨</th>
-              <th style="width:3.5rem; text-align:center;">實收</th>
-              <th style="width:3.5rem; text-align:center;">EE</th>
-              <th style="width:3rem; text-align:center;">退</th>
-              <th style="width:5.5rem;">備記</th>
-              <th style="width:4rem; text-align:center;">狀態</th>
-              <th style="width:3rem; text-align:center;">刪除</th>
-            </tr>
-          </thead>
-          <tbody id="all-orders-body"></tbody>
-        </table>
-      </div>
+</div>
+
+<div id="tab-all" class="panel">
+  <div class="card">
+    <div class="card-head" style="flex-wrap:wrap; gap:6px;">
+      <input id="search-all-input" placeholder="搜尋妹妹名字、阿姨、地點或日期 (例如 6/19)..." oninput="renderAllOrders()" style="flex:1; min-width:200px;">
+      <div id="month-filter-btns" style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;"></div>
+    </div>
+    <div class="tbl-wrap" style="max-height: calc(100vh - 180px); overflow-y: auto;">
+      <table class="etbl" style="min-width:650px">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="sortAllOrders('date')" style="width:5.5rem; text-align:center;">日期</th>
+            <th style="width:3rem; text-align:center;">牌</th>
+            <th class="sortable" onclick="sortAllOrders('name')" style="width:5rem; text-align:center;">人名</th>
+            <th class="sortable" onclick="sortAllOrders('place')" style="width:7.5rem; text-align:center;">時間地點</th>
+            <th style="width:4.5rem;">阿姨</th>
+            <th style="width:3.5rem; text-align:center;">實收</th>
+            <th style="width:3.5rem; text-align:center;">EE</th>
+            <th style="width:3rem; text-align:center;">退</th>
+            <th style="width:5.5rem;">備記</th>
+            <th style="width:4rem; text-align:center;">狀態</th>
+            <th style="width:3rem; text-align:center;">刪除</th>
+          </tr>
+        </thead>
+        <tbody id="all-orders-body"></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -638,7 +627,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 </div>
 
 <nav class="bottom-nav">
-  <button class="bnav-item active" onclick="ST('wo')"><span class="bnav-icon">📋</span>工單</button>
+  <button class="bnav-item" onclick="ST('note')"><span class="bnav-icon">📝</span>便簽</button>
+  <button class="bnav-item active" onclick="ST('cal')"><span class="bnav-icon">📅</span>工單</button>
+  <button class="bnav-item" onclick="ST('all')"><span class="bnav-icon">🗂</span>所有</button>
   <button class="bnav-item" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
   <button class="bnav-item" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
 </nav>
@@ -1004,12 +995,23 @@ function renderDailyAuntieStats() {
     var border = isPay ? 'var(--rose-border)' : 'var(--sage-border)';
     var label = isPay ? '🔴 我要付' : '🟢 阿姨給我';
     var amtColor = isPay ? 'var(--rose)' : 'var(--sage)';
-    return `<div style="background:${color}; border:1px solid ${border}; border-radius:6px; padding:8px; font-size:0.75rem; box-shadow:0 1px 3px rgba(0,0,0,.04);">
-      <div style="font-weight:700; color:var(--text);">${a.name}</div>
-      <div style="color:var(--text2); font-size:0.6875rem;">${a.count}筆未結</div>
-      <div style="font-weight:700; color:${amtColor}; font-family:var(--mono); margin:4px 0; font-size:0.9375rem;">$${Math.abs(Math.round(a.eeSum))}</div>
-      <div style="font-size:0.6875rem; color:${amtColor};">${label}</div>
-    </div>`;
+    var itemsHtml = a.items.map(function(r){
+      var timePlace = (r.place||'').trim();
+      return '<div style="border-top:1px dashed var(--border2);margin-top:4px;padding-top:4px;font-size:0.6875rem;display:flex;justify-content:space-between;align-items:flex-start;gap:4px;">' +
+        '<div><span style="font-weight:700;color:var(--text);">' + (r.name||'—') + '</span>' +
+        (timePlace ? '<div style="color:var(--text3);font-size:0.625rem;margin-top:1px;">' + timePlace + '</div>' : '') +
+        '</div>' +
+        '<div style="text-align:right;white-space:nowrap;"><div style="color:var(--rose);font-weight:700;">收$' + (r.shi||'0') + '</div>' +
+        '<div style="color:'+amtColor+';font-size:0.625rem;">EE$' + (r.ee||'0') + '</div></div>' +
+        '</div>';
+    }).join('');
+    return '<div style="background:'+color+'; border:1px solid '+border+'; border-radius:6px; padding:8px; font-size:0.75rem; box-shadow:0 1px 3px rgba(0,0,0,.04);">' +
+      '<div style="font-weight:700; color:var(--text);">' + a.name + '</div>' +
+      '<div style="color:var(--text2); font-size:0.6875rem;">' + a.count + '筆未結</div>' +
+      itemsHtml +
+      '<div style="font-weight:700; color:'+amtColor+'; font-family:var(--mono); margin:6px 0 2px; font-size:0.9375rem;">合計 $' + Math.abs(Math.round(a.eeSum)) + '</div>' +
+      '<div style="font-size:0.6875rem; color:'+amtColor+';">' + label + '</div>' +
+      '</div>';
   }).join('');
 }
 
@@ -1069,98 +1071,109 @@ function updateWeekStats(days) {
 function updateWeeklyAuntieSummary(days) {
   var wrap = document.getElementById('week-auntie-summary');
   if (!wrap) return;
+
+  // 收集本週所有工單，按阿姨分組
   var auntieMap = {};
-  var hasData = false;
   days.forEach(function(d) {
     var k = DK(d.getFullYear(), d.getMonth(), d.getDate());
-    var rows = notes[k] || [];
-    rows.forEach(function(r) {
-      var name = (r.auntie || '').trim();
-      if (!name) return; 
-      hasData = true;
-      if (!auntieMap[name]) {
-        auntieMap[name] = { count: 0, unsettledAmount: 0, hasUnsettled: false };
-      }
-      auntieMap[name].count++;
-      if (r.settled !== true) {
-        auntieMap[name].hasUnsettled = true;
-        var ee = parseFloat(r.ee);
-        if (!isNaN(ee) && ee > 0) {
-          auntieMap[name].unsettledAmount += ee;
-        }
-      }
+    (notes[k] || []).forEach(function(r, ri) {
+      var name = (r.auntie || '未填').trim();
+      if (!auntieMap[name]) auntieMap[name] = { items: [], eeTotal: 0, unsettledEE: 0 };
+      auntieMap[name].items.push({ dk: k, ri: ri, row: r });
+      var ee = parseFloat(r.ee) || 0;
+      auntieMap[name].eeTotal += ee;
+      if (!r.settled) auntieMap[name].unsettledEE += ee;
     });
   });
 
-  if (!hasData || Object.keys(auntieMap).length === 0) {
-    wrap.style.display = 'none';
-    return;
-  }
+  if (Object.keys(auntieMap).length === 0) { wrap.style.display = 'none'; return; }
 
-  var allAunties = Object.keys(auntieMap).map(function(name) {
-    return { name: name, count: auntieMap[name].count, unsettledAmount: auntieMap[name].unsettledAmount, hasUnsettled: auntieMap[name].hasUnsettled };
+  var aunties = Object.keys(auntieMap).sort(function(a, b) {
+    return auntieMap[b].unsettledEE - auntieMap[a].unsettledEE;
   });
 
-  allAunties.sort(function(a, b) {
-    if (a.hasUnsettled !== b.hasUnsettled) return a.hasUnsettled ? -1 : 1;
-    if (b.unsettledAmount !== a.unsettledAmount) return b.unsettledAmount - a.unsettledAmount;
-    return b.count - a.count;
-  });
+  var now = new Date();
+  var dateStr = now.getFullYear() + '/' + (now.getMonth() + 1) + '/' + now.getDate();
 
-  var unsettledAunties = allAunties.filter(function(a) { return a.hasUnsettled; });
-  var totalAunties = allAunties.length;
-  var topUnsettled = unsettledAunties.slice(0, 6); 
-  var remainingCount = unsettledAunties.length - topUnsettled.length;
+  var html = '<div style="padding:0.6rem 0.5rem;">';
+  html += '<div style="font-size:0.875rem; font-weight:600; color:var(--accent); margin-bottom:0.6rem;">👩‍🦰 本週阿姨工單明細</div>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px;">';
 
-  var html = '<div style="background:var(--cream); border:1px solid var(--border); border-radius:var(--r-sm); padding:0.8rem; margin-top:0.8rem;">';
-  html += '<div style="font-size:0.875rem; font-weight:600; color:var(--text); margin-bottom:0.6rem; display:flex; justify-content:space-between; align-items:center;">';
-  html += '<span>👩‍🦰 本週阿姨結算摘要</span>';
-  html += '<span style="color:var(--text3); font-size:0.8125rem;">共 ' + totalAunties + ' 位阿姨｜未結清 ' + unsettledAunties.length + ' 位</span>';
-  html += '</div>';
-  html += '<div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">';
-  if (unsettledAunties.length === 0) {
-    html += '<div style="font-size:0.8125rem; color:var(--text3); padding:0.2rem 0;">本週所有阿姨皆已結清 🎉</div>';
-  } else {
-    topUnsettled.forEach(function(a) {
-      html += '<div style="background:var(--card); border:1px solid var(--sage-border); padding:0.3rem 0.6rem; border-radius:4px; font-size:0.8125rem; display:flex; align-items:center; gap:4px; box-shadow: 0 1px 2px rgba(0,0,0,.02);">';
-      html += '<span style="font-weight:600;">' + a.name + '</span>';
-      html += '<span style="color:var(--text3);">(' + a.count + '筆)</span>';
-      html += '<span style="color:var(--sage); font-weight:700; margin-left:4px;">$' + a.unsettledAmount + '</span>';
+  aunties.forEach(function(name, ui) {
+    var data = auntieMap[name];
+    var hasUnsettled = data.items.some(function(it){ return !it.row.settled; });
+    var cardColor = hasUnsettled ? 'var(--rose-light)' : 'var(--sage-light)';
+    var borderColor = hasUnsettled ? 'var(--rose-border)' : 'var(--sage-border)';
+    var eeColor = data.unsettledEE > 0 ? 'var(--rose)' : (data.unsettledEE < 0 ? 'var(--sage)' : 'var(--text3)');
+
+    html += '<div style="background:'+cardColor+'; border:1px solid '+borderColor+'; border-radius:8px; padding:10px;">';
+    html += '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">';
+    html += '<span style="font-weight:700; font-size:0.9375rem; color:var(--text);">'+name+'</span>';
+    html += '<span style="font-weight:700; color:'+eeColor+'; font-family:var(--mono); font-size:0.9375rem;">未結 $'+Math.abs(Math.round(data.unsettledEE))+'</span>';
+    html += '</div>';
+
+    // 每筆工單
+    data.items.forEach(function(it) {
+      var r = it.row;
+      var settled = r.settled === true;
+      var dispDate = it.dk.substring(5);
+      var eeN = parseFloat(r.ee)||0;
+      var eeColor2 = eeN >= 0 ? 'var(--rose)' : 'var(--sage)';
+      html += '<div style="background:var(--card); border:1px solid var(--border); border-radius:5px; padding:6px 8px; margin-bottom:4px; '+(settled?'opacity:0.55;':'')+'">';
+      html += '<div style="display:flex; justify-content:space-between; align-items:center; font-size:0.8125rem;">';
+      html += '<span style="font-weight:600; color:var(--text2);">'+dispDate+'</span>';
+      html += '<span style="font-weight:700; color:var(--text);">'+(r.name||'—')+'</span>';
+      html += '<div style="text-align:right; font-family:var(--mono); font-size:0.75rem;">';
+      html += '<span style="color:var(--text2);">收$'+(r.shi||'0')+'</span> ';
+      html += '<span style="color:'+eeColor2+'; font-weight:700;">EE$'+(r.ee||'0')+'</span>';
+      html += '</div></div>';
+      if (r.place) html += '<div style="font-size:0.6875rem; color:var(--text3); margin-top:2px;">'+r.place+'</div>';
+      html += '<div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">';
+      if (settled) {
+        html += '<span style="font-size:0.75rem; color:var(--sage); font-weight:600;">✓ 已結清</span>';
+      } else {
+        html += '<span style="font-size:0.75rem; color:var(--text3);">未結</span>';
+        html += '<button class="btn btn-sage btn-sm" style="min-height:22px;padding:0 8px;font-size:0.75rem;" onclick="weekSettleOne(\''+it.dk+'\','+it.ri+')">⚡ 結清</button>';
+      }
+      html += '</div>';
       html += '</div>';
     });
-  }
-  html += '</div>';
 
-  if (remainingCount > 0) {
-    html += '<div style="font-size:0.75rem; color:var(--text2); margin-bottom:0.6rem; padding-left:0.2rem;">還有 ' + remainingCount + ' 位未結清... 點擊下方查看完整列表。</div>';
-  }
-
-  html += '<details style="border-top:1px dashed var(--border2); padding-top:0.6rem; margin-top:0.6rem;">';
-  html += '<summary style="font-size:0.8125rem; color:var(--sky); cursor:pointer; font-weight:600; user-select:none; outline:none;">查看完整阿姨結算列表</summary>';
-  html += '<div style="margin-top:0.6rem; background:var(--card); border:1px solid var(--border); border-radius:4px; overflow:hidden;">';
-  html += '<table style="width:100%; border-collapse:collapse; font-size:0.8125rem; text-align:center;">';
-  html += '<thead style="background:var(--card2); border-bottom:1px solid var(--border); color:var(--text2); font-weight:600;">';
-  html += '<tr><th style="padding:0.4rem; text-align:left; padding-left:1rem;">阿姨名字</th><th style="padding:0.4rem;">本週筆數</th><th style="padding:0.4rem; text-align:right;">未結金額 (EE)</th><th style="padding:0.4rem; padding-right:1rem;">狀態</th></tr>';
-  html += '</thead><tbody>';
-
-  allAunties.forEach(function(a) {
-    var isSettled = !a.hasUnsettled;
-    var amountText = isSettled ? '-' : '$' + a.unsettledAmount;
-    var statusHtml = isSettled 
-        ? '<span style="color:var(--rose); font-weight:600;">✓ 已結清</span>' 
-        : '<span style="color:var(--sage); font-weight:600;">尚有未結</span>';
-    var amountStyle = isSettled ? 'color:var(--text3);' : 'color:var(--sage); font-weight:700;';
-
-    html += '<tr style="border-bottom:1px solid var(--border);">';
-    html += '<td style="padding:0.4rem; text-align:left; padding-left:1rem; font-weight:600;">' + a.name + '</td>';
-    html += '<td style="padding:0.4rem; color:var(--text2);">' + a.count + '</td>';
-    html += '<td style="padding:0.4rem; text-align:right; ' + amountStyle + '">' + amountText + '</td>';
-    html += '<td style="padding:0.4rem; padding-right:1rem;">' + statusHtml + '</td>';
-    html += '</tr>';
+    // 批次結清按鈕
+    if (hasUnsettled) {
+      html += '<button class="btn btn-rose-outline btn-sm" style="width:100%;margin-top:4px;font-size:0.8125rem;" onclick="weekSettleAll(\''+name+'\')">✓ 全部結清 '+name+'</button>';
+    }
+    html += '</div>';
   });
-  html += '</tbody></table></div></details></div>';
+
+  html += '</div></div>';
   wrap.innerHTML = html;
   wrap.style.display = 'block';
+}
+
+function weekSettleOne(dk, ri) {
+  if (!notes[dk] || !notes[dk][ri]) return;
+  var row = notes[dk][ri];
+  var now = new Date();
+  row.settled = true;
+  row.settledDate = now.getFullYear() + '/' + (now.getMonth()+1) + '/' + now.getDate();
+  row.settledAmount = row.ee;
+  save(); RW(); toast('✓ 已結清');
+}
+
+function weekSettleAll(auntieName) {
+  var now = new Date();
+  var dateStr = now.getFullYear() + '/' + (now.getMonth()+1) + '/' + now.getDate();
+  Object.keys(notes).forEach(function(dk) {
+    (notes[dk] || []).forEach(function(row) {
+      if ((row.auntie||'未填').trim() === auntieName && !row.settled) {
+        row.settled = true;
+        row.settledDate = dateStr;
+        row.settledAmount = row.ee;
+      }
+    });
+  });
+  save(); RW(); RR(); toast('✓ ' + auntieName + ' 全部結清');
 }
 
 function renderUnpaidDashboard() {
@@ -1359,32 +1372,32 @@ function submitStatPartPayment(ui, auntieName) {
 }
 
 function ST(id){
-  ['wo','bb','stat'].forEach(function(t,i){
+  var allTabs=['note','cal','all','bb','stat'];
+  allTabs.forEach(function(t,i){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
-    var elBNav = document.querySelectorAll('.bnav-item')[i];
-    if(elBNav) elBNav.classList.toggle('active',t===id);
     var elSNav = document.querySelectorAll('.snav-item')[i];
     if(elSNav) elSNav.classList.toggle('active',t===id);
   });
-  if(id==='wo') updImpDates();
+  // bottom nav: note,cal,all,bb,stat → indices 0-4
+  ['note','cal','all','bb','stat'].forEach(function(t,i){
+    var elBNav = document.querySelectorAll('.bnav-item')[i];
+    if(elBNav) elBNav.classList.toggle('active',t===id);
+  });
+  if(id==='cal') updImpDates();
+  if(id==='note') { RSG(); renderMultiNoteList(); }
+  if(id==='all') renderAllOrders();
   if(id==='stat') renderUnpaidDashboard();
 }
 
-function SST(id){
-  ['note','cal','all'].forEach(function(t,i){
-    var el = document.getElementById('sub-'+t);
-    if(el) el.classList.toggle('active',t===id);
-    var tab = document.querySelectorAll('.sub-tab')[i];
-    if(tab) tab.classList.toggle('active',t===id);
-  });
-  if(id==='note') RSG();
-  if(id==='all') renderAllOrders();
-}
+function SST(id){ ST(id); }
 
 // 「所有工單」頁籤排序狀態
 var allOrdersSortBy = 'date';
 var allOrdersSortDir = -1;
+var allOrdersMonthFilter = '';
+
+function setMonthFilter(m) { allOrdersMonthFilter = m; renderAllOrders(); }
 
 function sortAllOrders(sortBy) {
   if (allOrdersSortBy === sortBy) {
@@ -1427,10 +1440,25 @@ function updateAllOrdersHeaders() {
 function renderAllOrders() {
   var tbody = document.getElementById('all-orders-body');
   if(!tbody) return;
-  var q = (document.getElementById('search-all-input').value || '').trim().toLowerCase();
-  
+  var q = (document.getElementById('search-all-input') ? document.getElementById('search-all-input').value || '' : '').trim().toLowerCase();
+
+  // 更新月份篩選按鈕
+  var monthsSet = {};
+  Object.keys(notes).forEach(function(dk) { var m = dk.substring(0,7); monthsSet[m] = true; });
+  var months = Object.keys(monthsSet).sort().reverse();
+  var btnWrap = document.getElementById('month-filter-btns');
+  if (btnWrap) {
+    var btnHtml = '<button class="btn btn-sm '+(allOrdersMonthFilter===''?'btn-rose':'btn-plain')+'" onclick="setMonthFilter(\'\')" style="min-height:26px;padding:0 8px;font-size:0.8125rem;">全部</button>';
+    months.forEach(function(m) {
+      var label = m.replace(/^(\d{4})\/(\d{1,2})$/, function(_,y,mo){ return y+'年'+parseInt(mo)+'月'; });
+      btnHtml += '<button class="btn btn-sm '+(allOrdersMonthFilter===m?'btn-rose':'btn-plain')+'" onclick="setMonthFilter(\''+m+'\')" style="min-height:26px;padding:0 8px;font-size:0.8125rem;">'+label+'</button>';
+    });
+    btnWrap.innerHTML = btnHtml;
+  }
+
   var allRows = [];
   Object.keys(notes).forEach(function(dateKey) {
+    if (allOrdersMonthFilter && dateKey.substring(0,7) !== allOrdersMonthFilter) return;
     var rows = notes[dateKey] || [];
     rows.forEach(function(r, rowIdx) {
       var textToSearch = [dateKey, r.name, r.place, r.auntie, r.note, r.pai].join(' ').toLowerCase();
@@ -2226,6 +2254,7 @@ window.onload=function(){
 
   var impBtn = document.getElementById('imp-btn');
   if(impBtn) impBtn.onclick=doImport;
+  ST('cal'); // 預設顯示每日工單
 
   // 先用 localStorage 快取填畫面（讓畫面不空白），雲端回來後會覆蓋
   load();
