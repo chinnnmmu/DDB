@@ -335,15 +335,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
             <textarea id="multi-editor4" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第4個行程..."></textarea>
           </div>
 
-          <!-- 5. Peach -->
-          <div style="flex:1; min-width:210px; background:white; border:2px solid #F5E6D4; border-radius:10px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.05);">
-            <div style="padding:6px 10px; background:#F5E6D4; color:#5a4a35; font-size:12px; display:flex; justify-content:space-between; align-items:center; font-weight:500;">
-              <span id="multi-time5">Peach</span>
-              <button onclick="saveMultiNote(5)" style="padding:1px 8px; background:white; border:1px solid #F5E6D4; border-radius:4px; font-size:11px; cursor:pointer;">儲存</button>
-            </div>
-            <textarea id="multi-editor5" style="flex:1; padding:10px; border:none; font-size:13px; line-height:1.5; resize:none; outline:none;" placeholder="第5個行程..."></textarea>
-          </div>
-
         </div>
       </div>
     </div>
@@ -428,11 +419,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
             <div class="tbl-wrap">
               <table class="etbl" id="etbl" style="display: table; min-width: 600px;">
                 <thead><tr>
-                  <th style="width:3rem">刪除</th><th style="width:3.5rem">牌</th><th style="width:5.5rem; text-align:left; padding-left:0.4rem;">人名</th>
+                  <th style="width:3.5rem">牌</th><th style="width:5.5rem; text-align:left; padding-left:0.4rem;">人名</th>
                   <th style="width:8.5rem; text-align:left; padding-left:0.4rem; cursor:pointer;" onclick="SR('time')">時間地點</th>
                   <th style="width:5rem; text-align:left; padding-left:0.4rem;">阿姨</th><th style="width:3.5rem">實收</th>
                   <th style="width:3.5rem">EE</th><th style="width:3rem">退</th>
                   <th style="width:6.5rem; text-align:left; padding-left:0.4rem;">備記</th><th style="width:5.5rem">狀態</th>
+                  <th style="width:3rem">刪除</th>
                 </tr></thead>
                 <tbody id="etbody"></tbody>
               </table>
@@ -492,7 +484,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
         <table class="etbl" style="min-width:650px">
           <thead>
             <tr>
-              <th style="width:3rem; text-align:center;">刪除</th>
               <th class="sortable" onclick="sortAllOrders('date')" style="width:5.5rem; text-align:center;">日期</th>
               <th style="width:3rem; text-align:center;">牌</th>
               <th class="sortable" onclick="sortAllOrders('name')" style="width:5rem; text-align:center;">人名</th>
@@ -503,6 +494,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
               <th style="width:3rem; text-align:center;">退</th>
               <th style="width:5.5rem;">備記</th>
               <th style="width:4rem; text-align:center;">狀態</th>
+              <th style="width:3rem; text-align:center;">刪除</th>
             </tr>
           </thead>
           <tbody id="all-orders-body"></tbody>
@@ -622,6 +614,11 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
           <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="bm" value="and" checked onchange="RBB()"> AND</label>
           <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="bm" value="or" onchange="RBB()"> OR</label>
         </div>
+        <select id="bb-sort" onchange="RBB()" style="width:auto;height:30px;padding:0 0.4rem;font-size:0.8125rem;border-radius:var(--r-sm);">
+          <option value="price-asc">牌價 低➜高</option>
+          <option value="price-desc">牌價 高➜低</option>
+          <option value="name">按名字</option>
+        </select>
         <button class="btn btn-rose-outline btn-sm" onclick="resetBB()">清除</button>
       </div>
       <div class="bb-stats" id="bb-stats">共 0 位｜顯示 0 位</div>
@@ -632,7 +629,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
     <button class="btn btn-plain btn-sm" id="paste-btn" onclick="togglePaste()">▲ 貼入班表</button>
   </div>
   <div class="paste-area" id="bb-paste">
-    <textarea style="height:4.5rem;font-size:0.9375rem" id="bb-raw" placeholder="貼上班表原始文字..."></textarea>
+    <textarea style="height:4.5rem;font-size:0.9375rem" id="bb-raw" placeholder="貼上班表原始文字..." oninput="saveLS('bb-raw-cache',this.value)"></textarea>
     <div style="display:flex;gap:0.4rem;margin-top:0.4rem;flex-wrap:wrap;align-items:center">
       <button class="btn btn-sage btn-sm" onclick="parseBB()">⚡ 解析班表</button>
       <button class="btn btn-rose-outline btn-sm" onclick="clearBB()">清除</button>
@@ -723,8 +720,13 @@ function load(){
   try{stickies=JSON.parse(localStorage.getItem(SNK)||'[]');}catch(e){stickies=[];}
   try{multiNotes=JSON.parse(localStorage.getItem('ddb-multi-notes')||'[]');}catch(e){multiNotes=[];}
 }
+var _cloudSaveTimer = null;
 function save(){
   try{localStorage.setItem(SK,JSON.stringify(notes));}catch(e){}
+  clearTimeout(_cloudSaveTimer);
+  _cloudSaveTimer = setTimeout(function(){
+    if(typeof google!='undefined'&&google.script&&google.script.run) saveAllDataToCloud();
+  }, 2000);
 }
 function saveS(){try{localStorage.setItem(SNK,JSON.stringify(stickies));}catch(e){}}
 function saveMultiNotes(){try{localStorage.setItem('ddb-multi-notes',JSON.stringify(multiNotes));}catch(e){}}
@@ -777,43 +779,21 @@ function loadAllDataFromCloud() {
 }
 
 // ==================== 全自動同步（debounce） ====================
-let autoSyncTimer = null;
+var autoSyncTimer = null;
 
 function autoSyncToSheet() {
   clearTimeout(autoSyncTimer);
-  autoSyncTimer = setTimeout(() => {
-    // 收集目前 5 個編輯區的內容
-    const editors = [];
-    for (let i = 1; i <= 5; i++) {
-      const editor = document.getElementById('multi-editor' + i);
-      if (editor) {
-        editors.push({
-          slot: i,
-          text: editor.value.trim(),
-          time: new Date().toLocaleString('zh-TW', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})
-        });
-      }
+  autoSyncTimer = setTimeout(function() {
+    if(typeof google!='undefined'&&google.script&&google.script.run){
+      saveAllDataToCloud();
     }
-
-    // 更新 multiNotes（簡單覆蓋邏輯）
-    multiNotes = editors.filter(e => e.text.length > 0).map(e => ({
-      id: Date.now() + e.slot,
-      text: e.text,
-      time: e.time
-    }));
-
-    saveMultiNotes();
-    renderMultiNoteList();
-
-    // 自動上傳到試算表
-    saveAllDataToCloud();
-  }, 1500); // 停止輸入 1.5 秒後才同步
+  }, 1500);
 }
 
-// 給 5 個編輯區加上自動同步監聽
+// 給 4 個編輯區加上自動同步監聽
 function initAutoSync() {
-  for (let i = 1; i <= 5; i++) {
-    const editor = document.getElementById('multi-editor' + i);
+  for (var i = 1; i <= 4; i++) {
+    var editor = document.getElementById('multi-editor' + i);
     if (editor) {
       editor.addEventListener('input', autoSyncToSheet);
     }
@@ -857,7 +837,7 @@ function loadMultiNoteToFirstEmpty(noteIndex) {
   const note = multiNotes[noteIndex];
   if (!note) return;
 
-  for (let i = 1; i <= 5; i++) {
+  for (var i = 1; i <= 4; i++) {
     const editor = document.getElementById('multi-editor' + i);
     if (editor && !editor.value.trim()) {
       editor.value = note.text || '';
@@ -880,8 +860,8 @@ function addMultiNote() {
   renderMultiNoteList();
   
   setTimeout(() => {
-    for (let i = 1; i <= 5; i++) {
-      const editor = document.getElementById('multi-editor' + i);
+    for (var i = 1; i <= 4; i++) {
+      var editor = document.getElementById('multi-editor' + i);
       if (editor && !editor.value.trim()) {
         editor.focus();
         return;
@@ -942,15 +922,13 @@ function deleteWorkorder(rowIndex) {
   toast('工單已刪除');
 }
 
-function calculateEE(pai, shi, rebate = 0) {
+function calculateEE(pai, shi, rebate) {
   var p = parseFloat(pai);
   if (isNaN(p) || p <= 0) return '';
   var base = Math.round(p * 6);
   var r = parseFloat(rebate) || 0;
-  if (shi === '' || shi == null || typeof shi === 'undefined') return '';
   var s = parseFloat(shi);
-  if (isNaN(s)) return '';
-  if (s === 0) return String(Math.round(-base + r));
+  if (isNaN(s) || s === 0) return String(Math.round(-base + r));
   return String(Math.round(s - base + r));
 }
 
@@ -1486,7 +1464,6 @@ function renderAllOrders() {
     var rowClass = isSettled ? 'settled-row' : '';
     
     html += '<tr class="'+rowClass+'">';
-    html += '<td style="text-align:center"><button class="btn btn-rose-outline btn-sm" style="min-height:26px;padding:0 0.4rem;font-size:0.8125rem;" onclick="deleteWorkorderFromAll(\''+item.date+'\','+item.rowIndex+')">✕</button></td>';
     html += '<td><div class="wc" style="font-weight:600; color:var(--text2);">'+displayDate+'</div></td>';
     html += '<td><div class="wc mono">'+(r.pai||'')+'</div></td>';
     html += '<td><div class="wc bold">'+(r.name||'')+'</div></td>';
@@ -1497,6 +1474,7 @@ function renderAllOrders() {
     html += '<td><div class="wc mono">'+(r.rebate||'')+'</div></td>';
     html += '<td><div class="wc">'+(r.note||'')+'</div></td>';
     html += '<td style="text-align:center">'+settleMark+'</td>';
+    html += '<td style="text-align:center"><button class="btn btn-rose-outline btn-sm" style="min-height:26px;padding:0 0.4rem;font-size:0.8125rem;" onclick="deleteWorkorderFromAll(\''+item.date+'\','+item.rowIndex+')">✕</button></td>';
     html += '</tr>';
   });
   tbody.innerHTML = html;
@@ -1526,7 +1504,14 @@ function setWoView(view) {
 function toggleCalMode(){ calMode = calMode === 'month' ? 'week' : 'month'; RC(); }
 function filterNotes(type) { noteFilter = type; RSG(); }
 function DK(y,m,d){return y+'/'+(m+1<10?'0':'')+(m+1)+'/'+(d<10?'0':'')+d;}
-function normDate(s){s=s.trim();var m=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);if(!m)return s;return m[1]+'/'+(m[2].length<2?'0':'')+m[2]+'/'+(m[3].length<2?'0':'')+m[3];}
+function normDate(s){
+  s=s.trim();
+  var m=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  if(m)return m[1]+'/'+(m[2].length<2?'0':'')+m[2]+'/'+(m[3].length<2?'0':'')+m[3];
+  var m2=s.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
+  if(m2){var y=today.getFullYear();return y+'/'+(m2[1].length<2?'0':'')+m2[1]+'/'+(m2[2].length<2?'0':'')+m2[2];}
+  return s;
+}
 function selKey(){return selDate?DK(selDate.y,selDate.m,selDate.d):null;}
 function MM(dir){vm+=dir;if(vm>11){vm=0;vy++;}if(vm<0){vm=11;vy--;}RC();}
 
@@ -1670,10 +1655,7 @@ function RR(){
     var isSettled = row.settled === true;
     var rowStyle = isSettled ? 'opacity:0.55; background:#f5f5f5;' : '';
     html+='<tr style="'+rowStyle+'">';
-    
-    // 刪除按鈕
-    html+='<td style="padding:4px;text-align:center;border-right:none"><button class="btn btn-rose-outline btn-sm" style="min-height:26px;padding:0 0.4rem;font-size:0.8125rem;" onclick="deleteWorkorder('+ri+')">✕ 刪</button></td>';
-    
+
     COLS.forEach(function(col,ci){
       var val=row[col]||'';
       var isSel=(ri===selR&&ci===selC);
@@ -1689,7 +1671,8 @@ function RR(){
       }
     });
     html+='<td style="display:flex;align-items:center;justify-content:center;gap:4px;padding:4px;border-right:none">';
-    html+='<label style="display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer;color:var(--text2);font-weight:600;flex:1;"><input type="checkbox" '+(isSettled?'checked':'')+' onchange="toggleSettled('+ri+', this.checked)" style="width:1.1rem;height:1.1rem;margin-right:4px;">'+(isSettled?'已結':'')+'</label></td></tr>';
+    html+='<label style="display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer;color:var(--text2);font-weight:600;flex:1;"><input type="checkbox" '+(isSettled?'checked':'')+' onchange="toggleSettled('+ri+', this.checked)" style="width:1.1rem;height:1.1rem;margin-right:4px;">'+(isSettled?'已結':'')+'</label></td>';
+    html+='<td style="padding:4px;text-align:center"><button class="btn btn-rose-outline btn-sm" style="min-height:26px;padding:0 0.4rem;font-size:0.8125rem;" onclick="deleteWorkorder('+ri+')">✕</button></td></tr>';
   });
   
   var etbody = document.getElementById('etbody');
@@ -1940,7 +1923,7 @@ function TC(el){el.classList.toggle('on');RBB();}
 function resetBB(){document.querySelectorAll('.chip.on').forEach(function(c){c.classList.remove('on');});document.getElementById('bbq').value='';RBB();}
 function togglePaste(){var el=document.getElementById('bb-paste');var o=el.classList.toggle('open');document.getElementById('paste-btn').textContent=o?'▼ 收起':'▲ 貼入班表';}
 function parseBB(){var raw=document.getElementById('bb-raw').value.trim();if(!raw)return;bbData=parseSched(raw);document.getElementById('bb-msg').textContent='✓ 解析 '+bbData.length+' 位';RBB();}
-function clearBB(){bbData=[];document.getElementById('bb-raw').value='';document.getElementById('bb-msg').textContent='';RBB();}
+function clearBB(){bbData=[];document.getElementById('bb-raw').value='';localStorage.removeItem('bb-raw-cache');document.getElementById('bb-msg').textContent='';RBB();}
 
 function parseSched(raw){
   var lines=raw.split('\n').map(function(l){return l.trim();}),girls=[],cur=null,sec='jp';
@@ -1978,7 +1961,10 @@ function RBB(){
     if(!fs.length)return true;
     return andM?fs.every(function(f){return gmatch(g,f);}):fs.some(function(f){return gmatch(g,f);});
   });
-  rows.sort(function(a,b){return a.price-b.price;});
+  var sortMode = document.getElementById('bb-sort') ? document.getElementById('bb-sort').value : 'price-asc';
+  if(sortMode==='price-desc') rows.sort(function(a,b){return b.price-a.price;});
+  else if(sortMode==='name') rows.sort(function(a,b){return a.name<b.name?-1:a.name>b.name?1:0;});
+  else rows.sort(function(a,b){return a.price-b.price;});
   var statEl=document.getElementById('bb-stats');
   if(statEl) statEl.textContent='共 '+bbData.length+' 位｜顯示 '+rows.length+' 位'+(fs.length?' ｜ '+fs.join(' + '):'');
   var el=document.getElementById('bb-list');
@@ -2303,22 +2289,24 @@ window.onload=function(){
   load();
   var impBtn = document.getElementById('imp-btn');
   if(impBtn) impBtn.onclick=doImport;
-  
-  RC(); 
-  
-  selDate = { y: today.getFullYear(), m: today.getMonth(), d: today.getDate() };
-  RR(); 
-  RW(); 
-  RBB(); 
+
+  RC();
+  SD(today.getFullYear(), today.getMonth(), today.getDate());
+  RBB();
   RSG();
   renderUnpaidDashboard();
   renderAllOrders();
-  
+
   // 初始化多便簽
   renderMultiNoteList();
 
-  // 嘗試從雲端載入最新便簽
+  // 從雲端載入最新資料（覆蓋 localStorage）
   loadAllDataFromCloud();
+
+  // 班表原始暫存恢復
+  var bbRawCache = loadLS('bb-raw-cache');
+  var bbRawEl = document.getElementById('bb-raw');
+  if(bbRawEl && bbRawCache){ bbRawEl.value = bbRawCache; parseBB(); }
 
   const sDB=loadLS('sch-db');
   var dbEl = document.getElementById('db');
