@@ -57,6 +57,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:0.
 .snav-item:hover{background:var(--card2);color:var(--text);}
 .snav-item.active{color:var(--gold);font-weight:600;background:var(--gold-light);}
 .snav-icon{font-size:15px;opacity:.85;}
+.sidebar-collapse-btn{position:absolute;top:8px;right:-12px;width:24px;height:24px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1001;line-height:1;transition:all .2s;}
+.sidebar-collapse-btn:hover{background:var(--gold);color:#fff;border-color:var(--gold);}
+/* collapsed sidebar */
+.sidebar.collapsed{width:44px;padding:16px 4px;}
+.sidebar.collapsed .sidebar-expand-only{display:none;}
+.sidebar.collapsed .snav-item{padding:8px;justify-content:center;gap:0;font-size:0;}
+.sidebar.collapsed .snav-icon{font-size:18px;opacity:1;}
+.sidebar.collapsed .sidebar-avatar{margin:0 auto;}
+.sidebar.collapsed .sidebar-collapse-btn{transform:rotate(180deg);}
 .sidebar-footer{margin-top:auto;border-top:1px solid var(--border);padding-top:10px;display:flex;flex-direction:column;gap:8px;}
 .theme-toggle-inline{display:flex;gap:3px;}
 .theme-toggle-inline button{flex:1;padding:4px 0;font-size:11px;border:1px solid var(--border2);background:var(--card2);border-radius:6px;cursor:pointer;transition:.18s;}
@@ -264,6 +273,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
   :root{--sidebar-w:160px;}
   .sidebar{width:160px;}
 }
+/* collapsed state shifts content */
+body.sidebar-collapsed .app{margin-left:44px;max-width:calc(100% - 44px);}
+body.sidebar-collapsed .sidebar{width:44px;padding:16px 4px;}
 @media(max-width:1023px){
   .bottom-nav{display:flex}
   .top-nav{display:none}
@@ -403,9 +415,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 </head>
 <body>
 
-<aside class="sidebar">
-  <div class="sidebar-logo">✦ DDB | WORKSPACE</div>
-  <div class="sidebar-label">WORKSPACE</div>
+<aside class="sidebar" id="mainSidebar">
+  <button class="sidebar-collapse-btn" id="sidebarToggle" onclick="toggleSidebar()" title="收合側邊欄">‹</button>
+  <div class="sidebar-logo sidebar-expand-only">✦ DDB</div>
+  <div class="sidebar-label sidebar-expand-only">WORKSPACE</div>
   <div class="sidebar-menu">
     <button class="snav-item" data-tab="note" onclick="ST('note')"><span class="snav-icon">📝</span> 便簽</button>
     <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📅</span> 每日工單</button>
@@ -416,7 +429,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
     <button class="snav-item" data-tab="walk" onclick="ST('walk')"><span class="snav-icon">✦</span> 現走表</button>
   </div>
   <div class="sidebar-footer">
-    <div class="theme-toggle-inline" id="themeToggle">
+    <div class="theme-toggle-inline sidebar-expand-only" id="themeToggle">
       <button onclick="setTheme('default')" class="active">🌞</button>
       <button onclick="setTheme('warm-theme')">🌸</button>
       <button onclick="setTheme('dark-theme')">🌙</button>
@@ -424,7 +437,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
     </div>
     <div class="sidebar-user">
       <div class="sidebar-avatar">D</div>
-      <div>
+      <div class="sidebar-expand-only">
         <div class="sidebar-user-name">DDB Admin</div>
         <div class="sidebar-user-role">管理者 · 日常營運</div>
       </div>
@@ -2569,9 +2582,23 @@ function copyLastQa(){
   previewQaEE();
 }
 
+function toggleSidebar(){
+  var collapsed = document.body.classList.toggle('sidebar-collapsed');
+  var sidebar = document.getElementById('mainSidebar');
+  if(sidebar) sidebar.classList.toggle('collapsed', collapsed);
+  try{ localStorage.setItem('ddb-sidebar-collapsed', collapsed?'1':'0'); }catch(e){}
+}
+
 window.onload=function(){
   // 主題恢復
   try { setTheme(localStorage.getItem('ddb-theme') || 'default'); } catch(e){}
+  // 側邊欄收合狀態恢復
+  try {
+    if(localStorage.getItem('ddb-sidebar-collapsed')==='1'){
+      document.body.classList.add('sidebar-collapsed');
+      var sb=document.getElementById('mainSidebar'); if(sb) sb.classList.add('collapsed');
+    }
+  } catch(e){}
 
   var impBtn = document.getElementById('imp-btn');
   if(impBtn) impBtn.onclick=doImport;
