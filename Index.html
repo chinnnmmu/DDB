@@ -323,14 +323,18 @@ body.sidebar-collapsed .sidebar{width:44px;padding:16px 4px;}
 #tab-admin #toggleDbBtn{display:block;width:100%;margin-top:8px;padding:4px;border-radius:4px;background:var(--card2);border:1px solid var(--border);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);text-align:center;}
 #tab-admin .copy-wide-a{display:block;width:100%;margin-top:8px;padding:5px;border-radius:5px;border:none;background:var(--rose);color:#fff;font-weight:600;font-size:12px;font-family:var(--font);cursor:pointer;text-align:center;}
 #tab-admin .copy-wide-b{display:block;width:100%;margin-top:8px;padding:5px;border-radius:5px;border:none;background:var(--gold);color:#fff;font-weight:600;font-size:12px;font-family:var(--font);cursor:pointer;text-align:center;}
-#tab-admin .top-zone{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:stretch;margin-bottom:12px;min-height:clamp(380px,50vh,800px);}
-#tab-admin .top-left,#tab-admin .top-middle,#tab-admin .top-right{display:flex;flex-direction:column;}
-#tab-admin .top-left .card,#tab-admin .top-middle .card,#tab-admin .top-right .card{flex:1;display:flex;flex-direction:column;}
-#tab-admin .top-left textarea,#tab-admin .top-left .ro-box,#tab-admin .top-middle .ro-box,#tab-admin .top-right #admin-notepad{flex:1;min-height:0;}
-#tab-admin .week-zone{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+#tab-admin .top-zone{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:stretch;margin-bottom:12px;height:clamp(380px,50vh,820px);}
+#tab-admin .top-left,#tab-admin .top-middle,#tab-admin .top-right{display:flex;flex-direction:column;height:100%;}
+#tab-admin .top-left .card,#tab-admin .top-middle .card,#tab-admin .top-right .card{flex:1;display:flex;flex-direction:column;min-height:0;}
+#tab-admin .top-left textarea,#tab-admin .top-left .ro-box,#tab-admin .top-middle .ro-box,#tab-admin .top-right #admin-notepad{flex:1;min-height:0;overflow-y:auto;}
+#tab-admin .week-zone{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:stretch;height:clamp(260px,32vh,560px);}
+#tab-admin .week-zone>.card{display:flex;flex-direction:column;min-height:0;}
+#tab-admin .week-zone>.card #admin-weekInput,#tab-admin .week-zone>.card #admin-pureOutput{flex:1;min-height:0;overflow-y:auto;}
+#tab-admin .db-zone>.card{display:flex;flex-direction:column;}
+#tab-admin #admin-db{height:clamp(280px,34vh,600px);max-height:none;overflow-y:auto;flex-shrink:0;}
 #tab-admin .day-panel.card{padding:14px;}
 #tab-admin .admin-day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:10px;}
-#tab-admin .admin-day-box{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:8px;display:flex;flex-direction:column;min-height:180px;}
+#tab-admin .admin-day-box{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:8px;display:flex;flex-direction:column;min-height:0;}
 #tab-admin .admin-day-hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:6px;}
 #tab-admin .admin-day-name{font-size:12px;font-weight:700;color:var(--accent);}
 #tab-admin .admin-day-count{font-size:10px;color:var(--text3);}
@@ -400,12 +404,15 @@ body.sidebar-collapsed .sidebar{width:44px;padding:16px 4px;}
   #tab-admin .admin-day-grid{grid-template-columns:repeat(4,1fr);}
   #tab-walk .walk-grid{grid-template-columns:1fr;}
   #tab-walk .sub-outputs-grid{grid-template-columns:1fr;}
-  #tab-admin #admin-inputA{height:280px;}
-  #tab-admin #admin-outputDiv{height:280px;}
-  #tab-admin #admin-weekInput{height:220px;}
-  #tab-admin #admin-pureOutput{height:180px;}
-  #tab-admin #admin-db{height:360px;max-height:none;}
-  #tab-admin #admin-notepad{min-height:280px;}
+  #tab-admin .top-zone{height:auto;min-height:0;}
+  #tab-admin .top-left,#tab-admin .top-middle,#tab-admin .top-right{height:auto;}
+  #tab-admin #admin-inputA{height:280px;flex:none;}
+  #tab-admin #admin-outputDiv{height:280px;flex:none;}
+  #tab-admin .week-zone{height:auto;}
+  #tab-admin #admin-weekInput{height:220px;flex:none;}
+  #tab-admin #admin-pureOutput{height:180px;flex:none;}
+  #tab-admin #admin-db{height:360px;}
+  #tab-admin #admin-notepad{height:280px;flex:none;}
 }
 @media(max-width:600px){
   #tab-admin .admin-day-grid{grid-template-columns:repeat(2,1fr);}
