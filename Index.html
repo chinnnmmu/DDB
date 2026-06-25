@@ -1130,13 +1130,34 @@ var autoSyncTimer = null;
 function autoSyncToSheet() {
   clearTimeout(autoSyncTimer);
   autoSyncTimer = setTimeout(function() {
+    syncEditorsToNotes();
     saveAllDataToCloud();
   }, 800);
 }
 
-// 給 4 個編輯區加上自動同步監聽
+function syncEditorsToNotes() {
+  for (var i = 1; i <= 3; i++) {
+    var editor = document.getElementById('multi-editor' + i);
+    if (!editor || !editor.value.trim()) continue;
+    var noteId = editor.dataset.noteId;
+    var existing = noteId ? multiNotes.find(function(n){ return String(n.id)===noteId; }) : null;
+    if (existing) {
+      existing.text = editor.value;
+    } else {
+      var newNote = {
+        id: Date.now() + i,
+        text: editor.value,
+        time: new Date().toLocaleString('zh-TW', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})
+      };
+      multiNotes.unshift(newNote);
+      editor.dataset.noteId = String(newNote.id);
+    }
+  }
+}
+
+// 給 3 個編輯區加上自動同步監聽
 function initAutoSync() {
-  for (var i = 1; i <= 4; i++) {
+  for (var i = 1; i <= 3; i++) {
     var editor = document.getElementById('multi-editor' + i);
     if (editor) {
       editor.addEventListener('input', autoSyncToSheet);
@@ -1181,15 +1202,18 @@ function loadMultiNoteToFirstEmpty(noteIndex) {
   const note = multiNotes[noteIndex];
   if (!note) return;
 
-  for (var i = 1; i <= 4; i++) {
+  for (var i = 1; i <= 3; i++) {
     const editor = document.getElementById('multi-editor' + i);
     if (editor && !editor.value.trim()) {
       editor.value = note.text || '';
+      editor.dataset.noteId = String(note.id);
       document.getElementById('multi-time' + i).innerText = note.time || '';
       return;
     }
   }
-  document.getElementById('multi-editor1').value = note.text || '';
+  const editor1 = document.getElementById('multi-editor1');
+  editor1.value = note.text || '';
+  editor1.dataset.noteId = String(note.id);
   document.getElementById('multi-time1').innerText = note.time || '';
 }
 
@@ -1204,9 +1228,10 @@ function addMultiNote() {
   renderMultiNoteList();
   
   setTimeout(() => {
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 3; i++) {
       var editor = document.getElementById('multi-editor' + i);
       if (editor && !editor.value.trim()) {
+        editor.dataset.noteId = String(newNote.id);
         editor.focus();
         return;
       }
@@ -1222,20 +1247,26 @@ function saveMultiNote(num) {
     return;
   }
 
-  let existing = multiNotes.find(n => n.text.trim() === text);
+  const noteId = editor.dataset.noteId;
+  let existing = noteId ? multiNotes.find(n => String(n.id) === noteId) : null;
+  if (!existing) existing = multiNotes.find(n => n.text.trim() === text);
+
   if (existing) {
     existing.text = text;
+    existing.time = new Date().toLocaleString('zh-TW', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'});
   } else {
-    multiNotes.unshift({
+    const newNote = {
       id: Date.now(),
       text: text,
       time: new Date().toLocaleString('zh-TW', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})
-    });
+    };
+    multiNotes.unshift(newNote);
+    editor.dataset.noteId = String(newNote.id);
   }
-  
+
   saveMultiNotes();
   renderMultiNoteList();
-  toast('第 ' + num + ' 個已儲存！');
+  toast('✓ 第 ' + num + ' 個已儲存！');
 }
 
 // ===== 工單篩選和刪除功能 =====
