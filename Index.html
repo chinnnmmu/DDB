@@ -2680,9 +2680,7 @@ function adminNormCircle(s) {
 function adminParseToMap(raw) {
   var map = new Map();
   if (!raw) return map;
-  raw.split(/
-\s*
-/).forEach(function(block) {
+  raw.split(/\n\s*\n/).forEach(function(block) {
     var b = block.trim(); if (!b) return;
     var nm = b.match(/『([^』]+)』/);
     var pm = b.match(/🤍(\d+)/);
@@ -2695,9 +2693,7 @@ function adminSortDB() {
   var raw = document.getElementById('admin-db').value.trim();
   if (!raw) { alert('資料庫是空的'); return; }
   var arr = Array.from(adminParseToMap(raw).values()).sort(function(a,b){ return b.price - a.price; });
-  var sorted = arr.map(function(x){ return x.content; }).join('
-
-');
+  var sorted = arr.map(function(x){ return x.content; }).join('\n\n');
   document.getElementById('admin-db').value = sorted;
   document.getElementById('admin-dbStatus').textContent = '✓ 去重 + 降序完成（共 '+arr.length+' 筆）';
   adminAutoSave('db', sorted);
@@ -2724,9 +2720,7 @@ function adminPatchDB() {
     existMap.set(name, val);
   });
   var arr = Array.from(existMap.values()).sort(function(a,b){ return b.price - a.price; });
-  var sorted = arr.map(function(x){ return x.content; }).join('
-
-');
+  var sorted = arr.map(function(x){ return x.content; }).join('\n\n');
   document.getElementById('admin-db').value = sorted;
   adminAutoSave('db', sorted);
   syncDbToBbRaw();
@@ -2738,14 +2732,12 @@ function adminPatchDB() {
 function adminSortDayInput() {
   var ta = document.getElementById('admin-inputA');
   var seen = new Map();
-  ta.value.split('
-').map(function(l){ return l.trim(); }).filter(Boolean).forEach(function(line) {
+  ta.value.split('\n').map(function(l){ return l.trim(); }).filter(Boolean).forEach(function(line) {
     var m = line.match(/^(\d+)\s*([^\s\d→➜\-]+)/);
     if (m) seen.set(m[2].trim(), {price: parseInt(m[1],10), line: line});
     else seen.set('__'+line, {price:-1, line: line});
   });
-  ta.value = Array.from(seen.values()).sort(function(a,b){ return b.price - a.price; }).map(function(x){ return x.line; }).join('
-');
+  ta.value = Array.from(seen.values()).sort(function(a,b){ return b.price - a.price; }).map(function(x){ return x.line; }).join('\n');
   adminAutoSave('day', ta.value);
   toast('✓ 已依牌價排序並去除重複');
 }
@@ -2753,32 +2745,26 @@ function adminSortDayInput() {
 function adminConvertDay() {
   var dbMap = adminParseToMap(document.getElementById('admin-db').value.trim());
   var resultMap = new Map(), missing = [];
-  document.getElementById('admin-inputA').value.trim().split('
-').filter(Boolean).forEach(function(line) {
+  document.getElementById('admin-inputA').value.trim().split('\n').filter(Boolean).forEach(function(line) {
     var m = line.match(/^(\d+)\s*([^\s\d→➜\-]+)\s*(\d{3,4}[^\d]+\d{3,4})/);
     if (!m) return;
     var price = parseInt(m[1],10), name = m[2].trim(), time = m[3].replace(/\s+/g,'');
     var entry = dbMap.get(name);
     if (entry) {
       var text = entry.content;
-      if (text.includes('🕒')) text = text.replace(/🕒[^
-]*/, '🕒'+time);
+      if (text.includes('🕒')) text = text.replace(/🕒[^\n]*/, '🕒'+time);
       else {
-        var parts = text.split('
-');
+        var parts = text.split('\n');
         var idx = parts.findIndex(function(p){ return p.includes('『'+name+'』'); });
         if (idx !== -1) parts.splice(idx+1, 0, '🕒'+time);
         else parts.push('🕒'+time);
-        text = parts.join('
-');
+        text = parts.join('\n');
       }
       resultMap.set(name, {price: price, text: text});
     } else if (!missing.includes(name)) missing.push(name);
   });
   var sorted = Array.from(resultMap.values()).sort(function(a,b){ return b.price - a.price; });
-  document.getElementById('admin-outputDiv').textContent = sorted.map(function(x){ return x.text; }).join('
-
-') || '（格式不符或無資料）';
+  document.getElementById('admin-outputDiv').textContent = sorted.map(function(x){ return x.text; }).join('\n\n\n') || '（格式不符或無資料）';
   document.getElementById('admin-outputDiv').scrollTop = 0;
   document.getElementById('admin-missing').textContent = missing.length ? '⚠️ 找不到母檔：'+missing.join('、') : '';
 }
@@ -2802,8 +2788,7 @@ function adminConvertWeek() {
   var raw = adminNormCircle(rawInput);
   adminWeekData = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
   var pureList = [];
-  raw.split('
-').map(function(l){ return l.trim(); }).filter(function(l){ return l && !/^[⏔➜→✦꒰꒱\s\-=*]+$/.test(l) && /^\d/.test(l); })
+  raw.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l && !/^[⏔➜→✦꒰꒱\s\-=*]+$/.test(l) && /^\d/.test(l); })
     .forEach(function(line) {
       var mm = line.match(/^(\d+)\s*([^\s\d→➜\(\)]+)\s*[→➜]?\s*/);
       if (!mm) return;
@@ -2828,8 +2813,7 @@ function adminConvertWeek() {
       pureList.push({price:price, text:price+name+(days.length ? '➜'+days.map(function(n){ return ADMIN_TO_CIRCLE[n]; }).join('') : '（待定）')});
     });
   pureList.sort(function(a,b){ return b.price - a.price; });
-  document.getElementById('admin-pureOutput').textContent = pureList.map(function(x){ return x.text; }).join('
-') || '（無有效資料）';
+  document.getElementById('admin-pureOutput').textContent = pureList.map(function(x){ return x.text; }).join('\n') || '（無有效資料）';
   for (var i=1;i<=7;i++) adminWeekData[i].sort(function(a,b){ return b.price - a.price; });
   adminRenderWeekGrid();
   toast('✓ 週報彙整完成，看板已更新');
@@ -2862,8 +2846,7 @@ function adminRenderWeekGrid() {
 function adminCopySingleDay(d) {
   var list = adminWeekData[d];
   if (!list || !list.length) { alert('當天沒有資料'); return; }
-  copyText(list.map(function(x){ return x.price+x.name+(x.time&&x.time!=='未定'?' '+x.time:''); }).join('
-'), '✓ 已複製 '+ADMIN_DAY_NAMES[d]+' 班表');
+  copyText(list.map(function(x){ return x.price+x.name+(x.time&&x.time!=='未定'?' '+x.time:''); }).join('\n'), '✓ 已複製 '+ADMIN_DAY_NAMES[d]+' 班表');
 }
 
 function adminCopyNotepad() {
@@ -2972,8 +2955,7 @@ function walkResetAll() {
 }
 
 function walkParseInput(input) {
-  var lines = input.split('
-');
+  var lines = input.split('\n');
   var region='', comingGirls=[], jpHkGirls=[], taiwanGirls=[], cur=null;
   for (var i=0;i<lines.length;i++) {
     var line = lines[i].trim(); if (!line) continue;
@@ -3005,47 +2987,26 @@ function walkBuildOutput(p, data, dateStr, txtRest, txtFull) {
   var comingGirls=data.comingGirls, jpHkGirls=data.jpHkGirls, taiwanGirls=data.taiwanGirls;
   var mid = p.symMid ? ' '+p.symMid+' ' : ' ';
   var sep = p.symGroupSep || '';
-  var r = p.symTitle.replace('{DATE}', dateStr)+'
-
-'+p.symJp+'
-';
-  jpHkGirls.forEach(function(g){ r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'
-'; });
-  if (!jpHkGirls.length) r+='｜無｜
-';
-  r+='
-'+p.symTw+'
-';
+  var r = p.symTitle.replace('{DATE}', dateStr)+'\n\n'+p.symJp+'\n';
+  jpHkGirls.forEach(function(g){ r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'\n'; });
+  if (!jpHkGirls.length) r+='｜無｜\n';
+  r+='\n'+p.symTw+'\n';
   var t1=taiwanGirls.filter(function(g){return +g.age>25;});
   var t2=taiwanGirls.filter(function(g){return +g.age>=21&&+g.age<=25;});
   var t3=taiwanGirls.filter(function(g){return +g.age>=18&&+g.age<=20;});
   var t4=taiwanGirls.filter(function(g){return +g.age<18;});
   var has=false;
-  var og=function(arr){ arr.forEach(function(g){ r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'
-'; }); };
+  var og=function(arr){ arr.forEach(function(g){ r+=p.symDot+g.age+' '+g.name+mid+p.timePrefix+g.time+p.timeSuffix+'\n'; }); };
   if(t1.length){og(t1);has=true;}
-  if(t2.length){if(has&&sep)r+=sep+'
-';og(t2);has=true;}
-  if(t3.length){if(has&&sep)r+=sep+'
-';og(t3);has=true;}
-  if(t4.length){if(has&&sep)r+=sep+'
-';og(t4);}
-  if(!taiwanGirls.length) r+='｜無｜
-';
-  r+='
-';
-  if(p.symStatusLine.trim()) r+=p.symStatusLine+'
-';
-  if(txtRest.trim()) r+=txtRest+'
-
-';
-  if(txtFull.trim()) r+=txtFull+'
-';
-  if(comingGirls.length){ r+='
-'+p.symComing+'
-'; comingGirls.forEach(function(g){ r+=g.age+' '+g.name+'
-'+g.detail+'
-'; }); }
+  if(t2.length){if(has&&sep)r+=sep+'\n';og(t2);has=true;}
+  if(t3.length){if(has&&sep)r+=sep+'\n';og(t3);has=true;}
+  if(t4.length){if(has&&sep)r+=sep+'\n';og(t4);}
+  if(!taiwanGirls.length) r+='｜無｜\n';
+  r+='\n';
+  if(p.symStatusLine.trim()) r+=p.symStatusLine+'\n';
+  if(txtRest.trim()) r+=txtRest+'\n\n';
+  if(txtFull.trim()) r+=txtFull+'\n';
+  if(comingGirls.length){ r+='\n'+p.symComing+'\n'; comingGirls.forEach(function(g){ r+=g.age+' '+g.name+'\n'+g.detail+'\n'; }); }
   return r;
 }
 
