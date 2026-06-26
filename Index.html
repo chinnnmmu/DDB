@@ -1553,22 +1553,27 @@ function filterMultiNoteList() {
   renderMultiNoteList(document.getElementById('multi-note-search').value);
 }
 
+var _lastNoteSlot = 0;
 function loadNoteToSlot(idx) {
   var n = multiNotes[idx]; if(!n) return;
+  // 找沒有 noteId 的空格
   for(var i=1;i<=3;i++){
     var ed=document.getElementById('multi-editor'+i);
-    if(ed&&!ed.value.trim()){
-      ed.value=n.text||''; ed.dataset.noteId=String(n.id); ed.dataset.color=n.color||'lavender';
-      document.getElementById('multi-time'+i).textContent=n.time||'';
-      _applySlotColor(i, n.color||'lavender');
-      return;
+    if(ed && !ed.dataset.noteId){
+      _loadIntoSlot(i, n); return;
     }
   }
-  // 全滿就放第一格
-  var ed1=document.getElementById('multi-editor1');
-  ed1.value=n.text||''; ed1.dataset.noteId=String(n.id); ed1.dataset.color=n.color||'lavender';
-  document.getElementById('multi-time1').textContent=n.time||'';
-  _applySlotColor(1, n.color||'lavender');
+  // 全滿：依序循環放下一格
+  _lastNoteSlot = (_lastNoteSlot % 3) + 1;
+  _loadIntoSlot(_lastNoteSlot, n);
+}
+function _loadIntoSlot(i, n) {
+  var ed=document.getElementById('multi-editor'+i);
+  if(!ed) return;
+  ed.value=n.text||''; ed.dataset.noteId=String(n.id); ed.dataset.color=n.color||'lavender';
+  document.getElementById('multi-time'+i).textContent=n.time||'';
+  _applySlotColor(i, n.color||'lavender');
+  _lastNoteSlot = i;
 }
 
 function addMultiNote() {
