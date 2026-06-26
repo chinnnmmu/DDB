@@ -2610,11 +2610,11 @@ function parseImpLine(line){
     var place2=(parts[2]||'').trim();
     var auntie2=(parts[3]||'').trim();
     var moneyStr=(parts[4]||'').trim();
-    var shi2='',ee2='';
-    var mm=moneyStr.match(/^(\d+)[\/／](\d+)$/);
-    if(mm){shi2=mm[1];ee2=mm[2];}else if(moneyStr){shi2=moneyStr;}
+    var shi2='',rebate2='';
+    var mm=moneyStr.match(/^(-?\d+)[\/／](-?\d+)$/);
+    if(mm){shi2=mm[1];rebate2=mm[2];}else if(moneyStr){shi2=moneyStr;}
     var placeStr=time2?(time2+' '+place2).trim():place2;
-    return {id:'r'+Date.now()+Math.random(),pai:pai2,name:name2,place:placeStr,auntie:auntie2,shi:shi2,rebate:'',ee:ee2,note:note2,settled:false,settledDate:'',settledAmount:''};
+    return {id:'r'+Date.now()+Math.random(),pai:pai2,name:name2,place:placeStr,auntie:auntie2,shi:shi2,rebate:rebate2,ee:'',note:note2,settled:false,settledDate:'',settledAmount:''};
   }
 
   // 空格格式：{牌}{姓名} {時間}{地點} {阿姨}({備記}){實收} {EE}
@@ -2645,16 +2645,25 @@ function doImport(){
   if(!raw){msg.textContent='請先輸入工單內容';return;}
 
   var lines=raw.split('\n').map(function(l){return l.trim();}).filter(Boolean);
-  var dateVal='', orderLines=lines;
+  var dateVal='';
+  var orderLines=[];
 
-  // 第1行如果是日期格式（M/D 或 M-D）就自動讀取
-  if(lines.length && /^(\d{1,2})[\/\-](\d{1,2})$/.test(lines[0])){
-    dateVal=normDate(lines[0]);
-    orderLines=lines.slice(1);
-  } else {
-    // 否則用目前選取的日期
-    var k=selKey(); if(k) dateVal=k;
-  }
+  lines.forEach(function(l){
+    // 純日期行：6/24 或 6-24
+    if(/^(\d{1,2})[\/\-](\d{1,2})$/.test(l)){
+      dateVal=normDate(l); return;
+    }
+    // 日期頭行：📌6/26 五📅 / 6/26 五 / 【6/26】 等
+    var dm=l.match(/(\d{1,2}\/\d{1,2})/);
+    if(dm && !/[｜|]/.test(l)){
+      var stripped=l.replace(dm[0],'').replace(/[📌📅【】一二三四五六日（週周）\s]/g,'').trim();
+      if(stripped.length<4){ dateVal=normDate(dm[0]); return; }
+    }
+    // 其他行當作工單
+    orderLines.push(l);
+  });
+
+  if(!dateVal){ var k=selKey(); if(k) dateVal=k; }
 
   if(!dateVal){msg.textContent='請在第1行輸入日期（如 6/24），或先在行事曆點選日期';return;}
 
