@@ -865,7 +865,7 @@ input:focus {
   </div>
 </aside>
 
-<div id="cloud-loading-overlay" class="hidden" style="display:none;">
+<div id="cloud-loading-overlay" class="hidden" style="display:none">
   <div class="cloud-spinner"></div>
   <div class="cloud-loading-text" id="cloud-loading-text">☁ 正在從雲端載入最新資料…</div>
 </div>
@@ -1729,15 +1729,15 @@ function hideLoadingOverlay() {
 }
 
 function loadAllDataFromCloud(silent) {
-  if(typeof google==='undefined'||!google.script||!google.script.run){
-    hideLoadingOverlay();
-    setSyncStatus('','');
-    return;
-  }
   if(!silent) {
     var el = document.getElementById('cloud-loading-overlay');
     if(el) { el.style.display=''; el.classList.remove('hidden'); }
     setSyncStatus('syncing','載入中…');
+  }
+  if(typeof google==='undefined'||!google.script||!google.script.run){
+    hideLoadingOverlay();
+    setSyncStatus('','');
+    return;
   }
   // 10 秒超時保護，避免一直轉
   var cloudTimeout = setTimeout(function(){
@@ -3013,108 +3013,7 @@ function exportDay(){
   if(!selDate)return;
   var k=selKey(),rows=notes[k]||[],ds=selDate.y+'/'+(selDate.m+1)+'/'+selDate.d;
   var tb=rows.map(function(r){var ec=parseFloat(r.ee)||0;return '<tr><td>'+r.pai+'</td><td>'+r.name+'</td><td>'+r.place+'</td><td>'+r.auntie+'</td><td>'+r.shi+'</td><td style="color:'+(ec>=0?'#e8637a':'#5a9068')+';font-weight:600">'+r.ee+'</td><td>'+(r.rebate||'')+'</td><td>'+r.note+'</td></tr>';}).join('');
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>工單 '+ds+'</title><style>body{font-family:sans-serif;padding:24px;background:#f7f3ef;color:#2d2118}table{border-collapse:collapse;width:100%}th{background:#fdf9f6;padding:8px 12px;text-align:left;border-bottom:2px solid #ede5dc;font-size:12px}td{padding:8px 12px;border-bottom:1px solid #ede5dc;font-size:13px}h2{margin-bottom:16px;color:#7a6254}</style></head><body><h2>工單 '+ds+'（共'+rows.length+'筆）</h2><table><thead><tr><th>牌價</th><th>人名</th><th>時間地點</th><th>阿姨</th><th>實收</th><th>EE</th><th>退</th><th>備記</th></tr></thead><tbody>'+tb+'</tbody></table>
-<!-- ══ Financial Modals ══ -->
-<div class="fin-modal-overlay" id="fin-paste-modal">
-  <div class="fin-modal">
-    <div class="fin-modal-header"><h3>貼入原始數據 (Tab 分隔)</h3><button class="fin-btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finClosePasteModal()">✕</button></div>
-    <div class="fin-modal-body"><textarea id="fin-paste-area" placeholder="請將 Excel 17 個欄位數據貼至此處..."></textarea></div>
-    <div class="fin-modal-footer"><button class="fin-btn-secondary" onclick="finClosePasteModal()">取消</button><button class="fin-btn-primary" onclick="finProcessPasteData()">確認解析</button></div>
-  </div>
-</div>
-
-<div class="fin-modal-overlay" id="fin-payment-modal">
-  <div class="fin-modal" style="max-width:440px;">
-    <div class="fin-modal-header"><h3 id="fin-pay-modal-title">記帳</h3><button class="fin-btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finClosePaymentModal()">✕</button></div>
-    <div class="fin-modal-body">
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div><label style="font-size:11px;font-weight:700;color:var(--text2);">對象</label><input type="text" id="fin-pay-name" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:14px;font-weight:700;background:var(--surface2);margin-top:6px;"></div>
-        
-        <!-- 自動計算目前尚欠金額提示區塊 -->
-        <div id="fin-pay-balance-hint" style="display:none; padding:10px 14px; background:var(--surface2); border-radius:10px; border:1px dashed var(--border); font-size:12px; font-weight:700;">
-          結算餘額提示：目前尚欠 <span id="fin-pay-balance-amount" style="font-size:16px; font-weight:800; margin-left:6px;"></span>
-        </div>
-
-        <div id="fin-pay-dir-toggle" style="display:none;">
-          <label style="font-size:11px;font-weight:700;color:var(--text2);">方向</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
-            <button id="fin-pdt-in" onclick="finSetManualPayDir('in')" style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;color:var(--text2);font-family:inherit;">📥 收進來</button>
-            <button id="fin-pdt-out" onclick="finSetManualPayDir('out')" style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;color:var(--text2);font-family:inherit;">📤 付出去</button>
-          </div>
-        </div>
-        <div id="fin-pay-account-hint" style="display:none;background:var(--blue-bg);border:1px solid var(--color-blue);border-radius:12px;padding:12px 16px;">
-          <div style="font-size:11px;font-weight:800;color:var(--blue-theme);margin-bottom:4px;">💳 存款帳號</div>
-          <div id="fin-pay-account-text" style="font-weight:700;color:var(--text);font-family:monospace;font-size:16px;letter-spacing:1px;"></div>
-          <div id="fin-pay-account-note" style="font-size:11px;color:var(--text3);margin-top:4px;"></div>
-        </div>
-        <div><label style="font-size:11px;font-weight:700;color:var(--text2);">日期</label><input type="date" id="fin-pay-date" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:6px;font-size:14px;font-weight:600;"></div>
-        <div><label style="font-size:11px;font-weight:700;color:var(--text2);">金額</label><input type="number" id="fin-pay-amount" placeholder="0" inputmode="numeric" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:6px;font-size:20px;font-weight:800;text-align:right;"></div>
-        <div>
-          <label style="font-size:11px;font-weight:700;color:var(--text2);">付款方式</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
-            <button id="fin-pm-cash"   onclick="finSetPayMethod('現金')"    style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">💵 現金</button>
-            <button id="fin-pm-jkopay" onclick="finSetPayMethod('街口')"    style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">📱 街口</button>
-            <button id="fin-pm-bank"   onclick="finSetPayMethod('轉帳')"    style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">🏦 轉帳</button>
-            <button id="fin-pm-cash2"  onclick="finSetPayMethod('現金存款')" style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">🏧 無卡存</button>
-          </div>
-          <input type="hidden" id="fin-pay-method" value="現金">
-        </div>
-        <div id="fin-pay-receiver-row">
-          <label style="font-size:11px;font-weight:700;color:var(--text2);">扣款 / 入帳 對象 (資金來源)</label>
-          <div id="fin-pay-receiver-btns" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(70px, 1fr));gap:8px;margin-top:8px;">
-            <!-- Rendered by JS -->
-          </div>
-        </div>
-        <div><label style="font-size:11px;font-weight:700;color:var(--text2);">備註 (選填)</label><input type="text" id="fin-pay-note" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:6px;font-size:13px;font-weight:600;"></div>
-        <input type="hidden" id="fin-pay-dir">
-        <input type="hidden" id="fin-pay-edit-idx" value="-1">
-      </div>
-    </div>
-    <div class="fin-modal-footer"><button class="fin-btn-secondary" onclick="finClosePaymentModal()">取消</button><button class="fin-btn-primary" onclick="finSubmitPayment()">確認提交</button></div>
-  </div>
-</div>
-
-<div class="fin-modal-overlay" id="fin-ledger-modal">
-  <div class="fin-modal" style="max-width:380px;">
-    <div class="fin-modal-header"><h3 id="fin-ledger-modal-title">新增流水</h3><button class="fin-btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finCloseLedgerModal()">✕</button></div>
-    <div class="fin-modal-body">
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div><label style="font-size:11.5px;font-weight:700;color:var(--text2);">日期</label><input type="date" id="fin-led-date" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px;font-size:14px;font-weight:600;"></div>
-        <div><label style="font-size:11.5px;font-weight:700;color:var(--text2);">明細</label><input type="text" id="fin-led-note" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px;font-size:13px;font-weight:600;"></div>
-        <div><label style="font-size:11.5px;font-weight:700;color:var(--text2);">收入 (紅字)</label><input type="number" id="fin-led-in" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px;font-size:16px;font-weight:800;"></div>
-        <div><label style="font-size:11.5px;font-weight:700;color:var(--text2);">支出 (綠字)</label><input type="number" id="fin-led-out" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px;font-size:16px;font-weight:800;"></div>
-        <input type="hidden" id="fin-led-name" value="">
-        <input type="hidden" id="fin-led-idx" value="-1">
-      </div>
-    </div>
-    <div class="fin-modal-footer"><button class="fin-btn-secondary" onclick="finCloseLedgerModal()">取消</button><button class="fin-btn-primary" onclick="finSubmitLedger()">確認提交</button></div>
-  </div>
-</div>
-
-<!-- 阿姨結算完整列表 Modal -->
-<div class="fin-modal-overlay" id="fin-aunty-settlement-modal">
-  <div class="fin-modal" style="max-width: 580px;">
-    <div class="fin-modal-header">
-      <h3>本週阿姨結算完整列表</h3>
-      <button class="fin-btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finCloseAuntieSettlementModal()">✕</button>
-    </div>
-    <div class="fin-modal-body" style="max-height: 60vh; overflow-y: auto; padding: 0;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
-        <thead style="position: sticky; top: 0; background: var(--surface2); z-index: 5;">
-          <tr>
-            <th style="padding: 14px 18px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight:800;">阿姨名字</th>
-            <th style="padding: 14px 18px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight:800;">本週工單</th>
-            <th style="padding: 14px 18px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight:800; text-align: right;">未結金額</th>
-            <th style="padding: 14px 18px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight:800; text-align: center;">結清狀態</th>
-          </tr>
-        </thead>
-        <tbody id="fin-aunty-settlement-tbody">
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-</body></html>';
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>工單 '+ds+'</title><style>body{font-family:sans-serif;padding:24px;background:#f7f3ef;color:#2d2118}table{border-collapse:collapse;width:100%}th{background:#fdf9f6;padding:8px 12px;text-align:left;border-bottom:2px solid #ede5dc;font-size:12px}td{padding:8px 12px;border-bottom:1px solid #ede5dc;font-size:13px}h2{margin-bottom:16px;color:#7a6254}</style></head><body><h2>工單 '+ds+'（共'+rows.length+'筆）</h2><table><thead><tr><th>牌價</th><th>人名</th><th>時間地點</th><th>阿姨</th><th>實收</th><th>EE</th><th>退</th><th>備記</th></tr></thead><tbody>'+tb+'</tbody></table></body></html>';
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));a.download='工單_'+ds.replace(/\//g,'_')+'.html';a.click();
 }
 
@@ -3971,7 +3870,7 @@ function walkCopySub(i) {
 
 /* ── 班表資料載入已整合進 loadAllDataFromCloud，開頁時自動執行 ── */
 function loadAdminFromSheets() {
-  // 雲端載入由 window.onload 統一呼叫 loadAllDataFromCloud()，此處不重複
+  loadAllDataFromCloud();
 }
 
 // ==================== 轉檔器 (tf_*) ====================
@@ -3981,6 +3880,7 @@ var DGG_LIST_DEFAULT=["小陳","法漢","朱丹","黑桃","微風","微成","漫
 var tf_G = { mmgg: {}, ggList: [] };
 var tf_CR = [], tf_UM = {};
 var tf_initialized = false;
+var fin_initialized = false;
 var tf_auntieData = [];
 
 function tfST(id) {
@@ -4321,1088 +4221,106 @@ function tf_loadHistory() {
 }
 // ==================== end 轉檔器 ====================
 
-
-// ══ Financial Module JS ══
-
-// ── Financial Module Init ────────────────────────────────────────────────────
-function finInit() {
-  const keys=['ddb_raw_data','ddb_payments','ddb_history','ddb_ledgers','ddb_agent_cycles','ddb_aunty_cycles','ddb_aunty_accounts','ddb_wallet_cash','ddb_wallet_ledgers'];
-  keys.forEach((key,i)=>{
-    const val=localStorage.getItem(key);
-    if(!val)return;
-    const parsed=JSON.parse(val);
-    if(i===0)finRawData=parsed;
-    else if(i===1)finPayments=parsed;
-    else if(i===2)finDb.historyUnsettled=parsed;
-    else if(i===3)finDb.ledgers=parsed;
-    else if(i===4)finDb.agentCycles=parsed;
-    else if(i===5)finDb.auntyCycles=parsed;
-    else if(i===6)finDb.auntyAccounts=parsed;
-    else if(i===7)finDb.walletCash=parsed;
-    else if(i===8)finDb.walletLedgers=parsed;
-  });
-  const wStr = localStorage.getItem('ddb_wallets');
-  finDb.wallets = wStr ? JSON.parse(wStr) : ['我', '男友', '玉山銀行'];
-  if (!finDb.wallets.includes(finDb.payReceiver)) finDb.payReceiver = finDb.wallets[0];
-  finAnalyzeData();
-}
-
-
-// ═══════════════════════════════════════
-// Data State
-// ═══════════════════════════════════════
-let finRawData = [];
-let finPayments = [];
-let finDb = {
-  agents:{}, aunties:{}, dailyS:[],
-  currentWeek:'all',
-  filters:{ aunty:'all' },
-  viewMode:{ agent:'summary', aunty:'summary' },
-  sort:{ col:null, dir:'asc' },
-  agentSort:{ by:'amount', dir:'desc' },
-  auntySort:{ by:'amount', dir:'desc' },
-  historyUnsettled:{},
-  agentCycles:{}, auntyCycles:{},
-  auntyAccounts:{},
-  payReceiver:'我',
-  ledgers:{ '司機':[], '家人':[], '現金':[], '其他':[] },
-  activeLedger:'司機',
-  wallets: [], // 動態資金帳戶
-  walletCash:{}, walletLedgers:{}
-};
-
-const FIN_WD = ['日','一','二','三','四','五','六'];
-
-function finFmt(n){
-  if(n===undefined||n===null)return'$0';
-  const v=Math.round(n),abs=Math.abs(v),sign=v<0?'-':'';
-  return`${sign}$${abs.toLocaleString()}`;
-}
-function finFmtDate(dateStr){
-  if(!dateStr)return'';
-  const d=new Date((dateStr+'').replace(/\//g,'-'));
-  if(isNaN(d.getTime()))return dateStr;
-  return`${d.getMonth()+1}/${d.getDate()}(${FIN_WD[d.getDay()]})`;
-}
-function finGetWeekRange(dateStr){
-  const date=new Date(dateStr);if(isNaN(date))return'未知週期';
-  const day=date.getDay(),diff=date.getDate()-day+(day===0?-6:1);
-  const mon=new Date(date.setDate(diff)),sun=new Date(mon);sun.setDate(mon.getDate()+6);
-  const f=d=>`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
-  return`${f(mon)} - ${f(sun)}`;
-}
-
-// ─── Load ───
-function _finInitLoad() {
-  const keys=['ddb_raw_data','ddb_payments','ddb_history','ddb_ledgers','ddb_agent_cycles','ddb_aunty_cycles','ddb_aunty_accounts','ddb_wallet_cash','ddb_wallet_ledgers'];
-  keys.forEach((key,i)=>{
-    const val=localStorage.getItem(key);
-    if(!val)return;
-    const parsed=JSON.parse(val);
-    if(i===0)finRawData=parsed;
-    else if(i===1)finPayments=parsed;
-    else if(i===2)finDb.historyUnsettled=parsed;
-    else if(i===3)finDb.ledgers=parsed;
-    else if(i===4)finDb.agentCycles=parsed;
-    else if(i===5)finDb.auntyCycles=parsed;
-    else if(i===6)finDb.auntyAccounts=parsed;
-    else if(i===7)finDb.walletCash=parsed;
-    else if(i===8)finDb.walletLedgers=parsed;
-  });
-  
-  // 載入或初始化動態資金帳戶
-  const wStr = localStorage.getItem('ddb_wallets');
-  finDb.wallets = wStr ? JSON.parse(wStr) : ['我', '男友', '玉山銀行'];
-  if (!finDb.wallets.includes(finDb.payReceiver)) finDb.payReceiver = finDb.wallets[0];
-
-  finAnalyzeData();
-  finRenderPage('company');
-};
-
-function finSaveToLocal(){
-  localStorage.setItem('ddb_raw_data',JSON.stringify(finRawData));
-  localStorage.setItem('ddb_payments',JSON.stringify(finPayments));
-  localStorage.setItem('ddb_history',JSON.stringify(finDb.historyUnsettled));
-  localStorage.setItem('ddb_ledgers',JSON.stringify(finDb.ledgers));
-  localStorage.setItem('ddb_agent_cycles',JSON.stringify(finDb.agentCycles));
-  localStorage.setItem('ddb_aunty_cycles',JSON.stringify(finDb.auntyCycles));
-  localStorage.setItem('ddb_aunty_accounts',JSON.stringify(finDb.auntyAccounts));
-  localStorage.setItem('ddb_wallet_cash',JSON.stringify(finDb.walletCash));
-  localStorage.setItem('ddb_wallet_ledgers',JSON.stringify(finDb.walletLedgers));
-  localStorage.setItem('ddb_wallets',JSON.stringify(finDb.wallets));
-}
-
-// ─── Analyze ───
-function finAnalyzeData(){
-  const filtered=finDb.currentWeek==='all'?finRawData:finRawData.filter(r=>finGetWeekRange(r.date)===finDb.currentWeek);
-  finDb.agents={};finDb.aunties={};finDb.dailyS=[];
-  const dailyMap={};
-  filtered.forEach(r=>{
-    if(r.gg){
-      if(!finDb.agents[r.gg])finDb.agents[r.gg]={name:r.gg,records:[],total_back:0,entries:0};
-      finDb.agents[r.gg].records.push(r);
-      finDb.agents[r.gg].total_back+=r.back;
-      finDb.agents[r.gg].entries++;
-    }
-    if(r.ee){
-      if(!finDb.aunties[r.ee])finDb.aunties[r.ee]={name:r.ee,records:[],total_ee_pay:0,entries:0};
-      finDb.aunties[r.ee].records.push(r);
-      finDb.aunties[r.ee].total_ee_pay+=r.ee_pay;
-      finDb.aunties[r.ee].entries++;
-    }
-    if(r.date){if(!dailyMap[r.date])dailyMap[r.date]=0;dailyMap[r.date]+=r.s_profit;}
-  });
-  Object.values(finDb.agents).forEach(a=>{
-    a.mergedRecords=finMergeRecords(a.records,'gg');
-    a.finPayments=finPayments.filter(p=>p.name===a.name);
-  });
-  Object.values(finDb.aunties).forEach(a=>{
-    a.mergedRecords=finMergeRecords(a.records,'ee');
-    a.finPayments=finPayments.filter(p=>p.name===a.name);
-  });
-  for(let d in dailyMap)finDb.dailyS.push({date:d,amount:dailyMap[d]});
-  finDb.dailyS.sort((a,b)=>a.date.localeCompare(b.date));
-  finUpdateWeekSelector();
-}
-
-function finMergeRecords(records,type){
-  const groups={};
-  records.forEach(r=>{
-    const key=`${r.date}_${r.time}_${r.location}`;
-    if(!groups[key])groups[key]={...r,originalCount:1};
-    else{groups[key].back+=r.back;groups[key].ee_pay+=r.ee_pay;groups[key].s_profit+=r.s_profit;groups[key].price+=r.price;groups[key].m_rec+=r.m_rec;groups[key].gg_refund+=r.gg_refund;groups[key].originalCount++;}
-  });
-  return Object.values(groups);
-}
-
-function finUpdateWeekSelector(){
-  const c=document.getElementById('fin-week-selector-container');
-  const weeks=new Set();
-  finRawData.forEach(r=>{const w=finGetWeekRange(r.date);if(w!=='未知週期')weeks.add(w);});
-  const sorted=[...weeks].sort().reverse();
-  c.innerHTML=`<select onchange="finChangeWeek(this.value)" style="padding:8px 12px;border-radius:12px;border:1px solid var(--border);font-size:12.5px;font-weight:700;background:var(--surface2);outline:none;cursor:pointer;"><option value="all">所有日期</option>${sorted.map(w=>`<option value="${w}" ${finDb.currentWeek===w?'selected':''}>${w}</option>`).join('')}</select><button class="btn-secondary" style="margin-left:8px;" onclick="finSettleCurrentWeek()">🔒 結算</button>`;
-}
-
-function finChangeWeek(week){finDb.currentWeek=week;finAnalyzeData();finRenderCurrent();}
-
-// ═══════════════════════════════════════
-// Navigation
-// ═══════════════════════════════════════
-let finCurrentPage='company';
-
-function finSwitchPage(pageId,el){
-  finCurrentPage=pageId;
-  document.querySelectorAll('.fin-nav-item').forEach(n=>n.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('.fin-page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('fin-page-'+pageId).classList.add('active');
-  const titles={company:'✨ 公司總覽',accounts:'✨ 帳務管理',payment:'✨ 付款紀錄 (收銀台)',data:'✨ 原始資料庫',ledger:'✨ 小帳本'};
-  document.getElementById('fin-current-page-title').textContent=titles[pageId] || '';
-  finRenderPage(pageId);
-}
-
-function finSwitchInner(pageId,subId,el){
-  const page=document.getElementById('fin-page-'+pageId);
-  page.querySelectorAll('.fin-inner-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  page.querySelectorAll('.fin-inner-content').forEach(c=>c.classList.remove('active'));
-  document.getElementById(pageId+'-'+subId).classList.add('active');
-  finRenderInner(pageId,subId);
-}
-
-function finRenderInner(pageId,subId){
-  if(pageId==='accounts'&&subId==='agent')finRenderAgentPage(document.getElementById('fin-agent-content'));
-  if(pageId==='accounts'&&subId==='aunty')finRenderAuntyPage(document.getElementById('fin-aunty-content'));
-}
-
-function finRenderPage(pageId){
-  if(pageId==='company')finRenderCompanyPage(document.getElementById('fin-page-company'));
-  if(pageId==='accounts')finRenderAgentPage(document.getElementById('fin-agent-content'));
-  if(pageId==='payment')finRenderPaymentPage(document.getElementById('fin-accounts-payment-content'));
-  if(pageId==='data')finRenderDataPage();
-  if(pageId==='ledger')finRenderLedgerPage();
-}
-
-function finRenderCurrent(){finRenderPage(finCurrentPage);}
-
-function finSetFilter(type,val,el){
-  finDb.filters[type]=val;
-  el.closest('.filter-tabs').querySelectorAll('.fin-filter-tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  if(type==='aunty')finRenderAuntyPage(document.getElementById('fin-aunty-content'));
-}
-
-// ═══════════════════════════════════════
-// Card helpers & Quick Settle
-// ═══════════════════════════════════════
-function finTogglePcDetail(id,rowEl){
-  const det=document.getElementById(id);if(!det)return;
-  const open=det.classList.toggle('show');
-  rowEl.classList.toggle('open',open);
-}
-
-function finOnPrevInput(name,el){
-  const val=parseFloat(el.value)||0;
-  if(val===0)delete finDb.historyUnsettled[name];
-  else finDb.historyUnsettled[name]=val;
-  finSaveToLocal();
-  finUpdateCardFooter(name);
-}
-
-function finUpdateCardFooter(name){
-  const isAgent=!!finDb.agents[name];
-  const person=isAgent?finDb.agents[name]:finDb.aunties[name];
-  if(!person)return;
-  const paid=person.finPayments.reduce((s,p)=>s+p.amount,0);
-  const prev=finDb.historyUnsettled[name]||0;
-  const owing=prev+(isAgent?person.total_back:person.total_ee_pay)-paid;
-  const footEl=document.getElementById('foot-amt-'+name.replace(/\s/g,'_'));
-  if(!footEl)return;
-  footEl.textContent=finFmt(owing);
-  footEl.className='foot-total-amt '+(isAgent?(owing>=0?'text-red':'text-green'):(owing>=0?'text-green':'text-red'));
-}
-
-// ⚡ 快速一鍵結清功能 (跳過複雜選項)
-function finQuickSettle(name, dir, amount, note) {
-  if(!confirm(`確定要快速結清「${name}」的 ${finFmt(amount)} 嗎？\n\n(系統將以「現金」預設寫入「${finDb.wallets[0]}」)`)) return;
-  const rec = {
-      id: Date.now(),
-      name: name,
-      dir: dir,
-      date: new Date().toISOString().split('T')[0],
-      amount: amount,
-      method: '現金', 
-      note: note,
-      receiver: (finDb.wallets && finDb.wallets.length > 0) ? finDb.wallets[0] : '我'
-  };
-  finPayments.push(rec);
-  finSaveToLocal();
-  finAnalyzeData();
-  finRenderCurrent();
-}
-
-// ═══════════════════════════════════════
-// Agent Card Body
-// ═══════════════════════════════════════
-function finBuildAgentCardBody(agent){
-  if(finDb.viewMode.agent==='account'){
-    const acc=finDb.auntyAccounts[agent.name];
-    if(!acc||!acc.account)return`<div style="text-align:center;padding:32px 0;font-size:12.5px;color:var(--text3);font-weight:600;">尚未設定帳號<br><button onclick="finOpenAuntyAccountModal('${agent.name}')" style="margin-top:14px;padding:8px 18px;border-radius:10px;border:1px solid var(--color-pink);background:transparent;color:var(--color-pink);font-weight:700;cursor:pointer;font-size:12px;font-family:inherit;">＋ 設定帳號</button></div>`;
-    return`<div style="padding:20px 18px;"><div style="font-family:monospace;font-size:22px;font-weight:800;letter-spacing:1px;margin-bottom:8px;color:var(--text);">${acc.account}</div>${acc.note?`<div style="font-size:12px;color:var(--text2);margin-bottom:16px;font-weight:600;">📝 ${acc.note}</div>`:''}<div style="display:flex;gap:10px;"><button onclick="navigator.clipboard&&navigator.clipboard.writeText('${acc.account}');this.textContent='✓ 已複製';this.style.color='var(--green)';this.style.borderColor='var(--green)';this.style.background='var(--green-bg)';setTimeout(()=>{this.textContent='複製帳號';this.style.color='';this.style.borderColor='';this.style.background=''},1500)" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-weight:700;cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s;">複製帳號</button><button onclick="finOpenAuntyAccountModal('${agent.name}')" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--color-pink);background:var(--accent-light);color:var(--color-pink);font-weight:700;cursor:pointer;font-size:12px;font-family:inherit;">✏️ 修改</button></div></div>`;
-  }
-
-  const dateMap = finBuildAgentDateMap(agent);
-  const isDetail = finDb.viewMode.agent === 'detail';
-  let html = '';
-
-  const paidTotal = agent.finPayments.reduce((s,p)=>s+p.amount,0);
-  const prevOwing = finDb.historyUnsettled[agent.name] || 0;
-  const isSettled = (prevOwing + agent.total_back - paidTotal) <= 0;
-
-  if(agent.finPayments && agent.finPayments.length > 0){
-    html += `
-      <details class="payment-details">
-        <summary><span style="color:var(--green);">✔️ 已回帳記錄 (${agent.finPayments.length} 筆)</span> <span style="color:var(--green);">${finFmt(paidTotal)}</span></summary>
-        <div class="payment-details-content">
-          ${agent.finPayments.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(p => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--bg); background:#fdfefd;">
-              <div style="font-size:11.5px; color:var(--text3); font-weight:600;">${finFmtDate(p.date)} <span style="color:var(--text2); margin-left:6px;">${p.method||''} ${p.note||''}</span></div>
-              <div style="font-weight:800; font-size:13px; color:var(--green);">- ${finFmt(p.amount)}</div>
-            </div>
-          `).join('')}
-        </div>
-      </details>
-    `;
-  }
-
-  const uid = agent.name.replace(/\s/g,'_');
-  let orderHtml = '';
-  
-  if (isDetail) {
-    Object.keys(dateMap).sort().forEach(date => {
-      const d = dateMap[date];
-      orderHtml += `<div style="font-size:11.5px;font-weight:800;color:var(--color-pink);padding:10px 18px 4px;background:var(--surface);">${finFmtDate(date)}</div>`;
-      d.records.forEach(r => {
-        const btnHtml = isSettled ? '' : `<button class="quick-settle-btn" onclick="event.stopPropagation(); finQuickSettle('${agent.name}', 'in', ${r.back}, '結清 ${finFmtDate(date)} ${r.mm}')">⚡ 結清</button>`;
-        orderHtml += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 18px; border-bottom:1px solid var(--bg);">
-            <div style="display:flex; flex-direction:column; gap:3px;">
-              <div style="font-weight:800; font-size:12.5px; color:var(--text);">${r.mm}</div>
-              <div style="font-size:11px; color:var(--text3); font-weight:600;">${r.time} ${r.location.replace(/[①②③④⑤]/g,'').trim()}</div>
-            </div>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <span style="font-weight:800; font-size:13px; color:var(--red);">${finFmt(r.back)}</span>
-              ${btnHtml}
-            </div>
-          </div>`;
-      });
-    });
-  } else {
-    Object.keys(dateMap).sort().forEach((date, di) => {
-      const d = dateMap[date];
-      const detId = `ag_${uid}_${di}`;
-      orderHtml += `
-        <div class="pc-date-row" onclick="finTogglePcDetail('${detId}',this)">
-          <span class="pc-dr-date">${finFmtDate(date)}</span>
-          <span class="pc-dr-mms">${[...d.mms].join('・')}</span>
-          <span class="pc-dr-right">
-            <span class="pc-dr-amt text-red">${finFmt(d.subtotal)}</span>
-            <span class="pc-dr-arrow">▶</span>
-          </span>
-        </div>
-        <div class="pc-detail" id="${detId}">
-          ${d.records.map(r=>{
-            const btnHtml = isSettled ? '' : `<button class="quick-settle-btn" onclick="event.stopPropagation(); finQuickSettle('${agent.name}', 'in', ${r.back}, '結清 ${finFmtDate(date)} ${r.mm}')">⚡ 結清</button>`;
-            return `<div class="pc-det-row"><div><div class="pc-det-mm">${r.mm}</div><div class="pc-det-meta">${r.time} ${r.location.replace(/[①②③④⑤]/g,'').trim()}</div></div><div style="display:flex; align-items:center; gap:8px;"><span class="pc-det-amt text-red">${finFmt(r.back)}</span>${btnHtml}</div></div>`
-          }).join('')}
-        </div>`;
-    });
-  }
-  
-  html += orderHtml || '<div style="padding:32px;text-align:center;color:var(--text3);font-size:12.5px;font-weight:600;">暫無工單資料</div>';
-  return html;
-}
-
-function finBuildAgentDateMap(agent){
-  const dateMap={};
-  agent.mergedRecords.forEach(r=>{
-    if(!dateMap[r.date])dateMap[r.date]={records:[],mms:new Set(),subtotal:0};
-    dateMap[r.date].records.push(r);
-    dateMap[r.date].mms.add(r.mm);
-    dateMap[r.date].subtotal+=r.back;
-  });
-  return dateMap;
-}
-
-// ═══════════════════════════════════════
-// Aunty Card Body
-// ═══════════════════════════════════════
-function finBuildAuntyCardBody(ee){
-  if(finDb.viewMode.aunty==='account'){
-    const acc=finDb.auntyAccounts[ee.name];
-    if(!acc||!acc.account)return`<div style="text-align:center;padding:32px 0;font-size:12.5px;color:var(--text3);font-weight:600;">尚未設定帳號<br><button onclick="finOpenAuntyAccountModal('${ee.name}')" style="margin-top:14px;padding:8px 18px;border-radius:10px;border:1px solid var(--color-pink);background:transparent;color:var(--color-pink);font-weight:700;cursor:pointer;font-size:12px;font-family:inherit;">＋ 設定帳號</button></div>`;
-    return`<div style="padding:20px 18px;"><div style="font-family:monospace;font-size:22px;font-weight:800;letter-spacing:1px;margin-bottom:8px;color:var(--text);">${acc.account}</div>${acc.note?`<div style="font-size:12px;color:var(--text2);margin-bottom:16px;font-weight:600;">📝 ${acc.note}</div>`:''}<div style="display:flex;gap:10px;"><button onclick="navigator.clipboard&&navigator.clipboard.writeText('${acc.account}');this.textContent='✓ 已複製';this.style.color='var(--green)';this.style.borderColor='var(--green)';this.style.background='var(--green-bg)';setTimeout(()=>{this.textContent='複製帳號';this.style.color='';this.style.borderColor='';this.style.background=''},1500)" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-weight:700;cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s;">複製帳號</button><button onclick="finOpenAuntyAccountModal('${ee.name}')" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--color-pink);background:var(--accent-light);color:var(--color-pink);font-weight:700;cursor:pointer;font-size:12px;font-family:inherit;">✏️ 修改</button></div></div>`;
-  }
-
-  const dateMap = finBuildAuntyDateMap(ee);
-  const isDetail = finDb.viewMode.aunty === 'detail';
-  let html = '';
-
-  const paidTotal = ee.finPayments.reduce((s,p)=>s+p.amount,0);
-  const prevOwing = finDb.historyUnsettled[ee.name] || 0;
-  const isSettled = (prevOwing + ee.total_ee_pay - paidTotal) <= 0;
-
-  if(ee.finPayments && ee.finPayments.length > 0){
-    html += `
-      <details class="payment-details">
-        <summary><span style="color:var(--red);">✔️ 已付款記錄 (${ee.finPayments.length} 筆)</span> <span style="color:var(--red);">${finFmt(paidTotal)}</span></summary>
-        <div class="payment-details-content">
-          ${ee.finPayments.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(p => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 18px; border-bottom:1px solid var(--bg); background:#fdfdfd;">
-              <div style="font-size:11.5px; color:var(--text3); font-weight:600;">${finFmtDate(p.date)} <span style="color:var(--text2); margin-left:6px;">${p.method||''} ${p.note||''}</span></div>
-              <div style="font-weight:800; font-size:13px; color:var(--red);">- ${finFmt(p.amount)}</div>
-            </div>
-          `).join('')}
-        </div>
-      </details>
-    `;
-  }
-
-  const uid = ee.name.replace(/\s/g,'_');
-  let orderHtml = '';
-
-  if (isDetail) {
-    Object.keys(dateMap).sort().forEach(date => {
-      const d = dateMap[date];
-      orderHtml += `<div style="font-size:11.5px;font-weight:800;color:var(--ee);padding:10px 18px 4px;background:var(--surface);">${finFmtDate(date)}</div>`;
-      d.records.forEach(r => {
-        const isNo = r.location.includes('不收');
-        const amt = isNo ? -Math.abs(r.ee_pay) : r.ee_pay;
-        const btnHtml = isSettled ? '' : `<button class="quick-settle-btn" onclick="finOpenPaymentModal('${ee.name}', 'out', -1, ${amt}, '結清 ${finFmtDate(date)} ${r.mm}')">⚡ 結清</button>`;
-        
-        orderHtml += `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 18px; border-bottom:1px solid var(--bg);">
-            <div style="display:flex; flex-direction:column; gap:3px;">
-              <div style="font-weight:800; font-size:12.5px; color:var(--text);">${r.mm}</div>
-              <div style="font-size:11px; color:var(--text3); font-weight:600;">${r.time} ${r.location.replace(/[①②③④⑤]/g,'').trim()}</div>
-            </div>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <span style="font-weight:800; font-size:13px; color:var(--green);">${finFmt(amt)}</span>
-              ${btnHtml}
-            </div>
-          </div>`;
-      });
-    });
-  } else {
-    Object.keys(dateMap).sort().forEach((date, di) => {
-      const d = dateMap[date];
-      const detId = `ee_${uid}_${di}`;
-      orderHtml += `
-        <div class="pc-date-row" onclick="finTogglePcDetail('${detId}',this)">
-          <span class="pc-dr-date">${finFmtDate(date)}</span>
-          <span class="pc-dr-mms">${[...d.mms].join('・')}</span>
-          <span class="pc-dr-right">
-            <span class="pc-dr-amt text-green">${finFmt(d.subtotal)}</span>
-            <span class="pc-dr-arrow">▶</span>
-          </span>
-        </div>
-        <div class="pc-detail" id="${detId}">
-          ${d.records.map(r=>{
-            const isNo = r.location.includes('不收');
-            const amt = isNo ? -Math.abs(r.ee_pay) : r.ee_pay;
-            const btnHtml = isSettled ? '' : `<button class="quick-settle-btn" onclick="event.stopPropagation(); finQuickSettle('${ee.name}', 'out', ${amt}, '結清 ${finFmtDate(date)} ${r.mm}')">⚡ 結清</button>`;
-            return `<div class="pc-det-row"><div><div class="pc-det-mm">${r.mm}</div><div class="pc-det-meta">${r.time} ${r.location.replace(/[①②③④⑤]/g,'').trim()}</div></div><div style="display:flex; align-items:center; gap:8px;"><span class="pc-det-amt text-green">${finFmt(amt)}</span>${btnHtml}</div></div>`;
-          }).join('')}
-        </div>`;
-    });
-  }
-  
-  html += orderHtml || '<div style="padding:32px;text-align:center;color:var(--text3);font-size:12.5px;font-weight:600;">暫無工單資料</div>';
-  return html;
-}
-
-function finBuildAuntyDateMap(ee){
-  const dateMap={};
-  ee.mergedRecords.forEach(r=>{
-    if(!dateMap[r.date])dateMap[r.date]={records:[],mms:new Set(),subtotal:0};
-    const isNo=r.location.includes('不收');
-    dateMap[r.date].records.push(r);
-    dateMap[r.date].mms.add(r.mm);
-    dateMap[r.date].subtotal+=isNo?-Math.abs(r.ee_pay):r.ee_pay;
-  });
-  return dateMap;
-}
-
-// ═══════════════════════════════════════
-// finRenderAgentPage
-// ═══════════════════════════════════════
-function finRenderAgentPage(container){
-  let filtered=Object.values(finDb.agents);
-  const s=finDb.agentSort;
-  filtered.sort((a,b)=>{
-    const pA=a.finPayments.reduce((x,p)=>x+p.amount,0),pB=b.finPayments.reduce((x,p)=>x+p.amount,0);
-    const vA=s.by==='owing'?(finDb.historyUnsettled[a.name]||0)+a.total_back-pA:s.by==='name'?a.name:a.total_back;
-    const vB=s.by==='owing'?(finDb.historyUnsettled[b.name]||0)+b.total_back-pB:s.by==='name'?b.name:b.total_back;
-    if(s.by==='name')return s.dir==='asc'?vA.localeCompare(vB,'zh'):vB.localeCompare(vA,'zh');
-    return s.dir==='asc'?vA-vB:vB-vA;
-  });
-
-  const totalBack=filtered.reduce((s,a)=>s+a.total_back,0);
-  const totalPaid=filtered.reduce((s,a)=>s+a.finPayments.reduce((x,p)=>x+p.amount,0),0);
-  const totalPrev=filtered.reduce((s,a)=>s+(finDb.historyUnsettled[a.name]||0),0);
-
-  let html=`
-    <div class="summary-grid">
-      <div class="summary-card sc-purple"><div class="summary-label">上週未結</div><div class="summary-amount">${finFmt(totalPrev)}</div></div>
-      <div class="summary-card sc-pink"><div class="summary-label">本週應收</div><div class="summary-amount">${finFmt(totalBack)}</div></div>
-      <div class="summary-card sc-green"><div class="summary-label">實際已收</div><div class="summary-amount">${finFmt(totalPaid)}</div></div>
-      <div class="summary-card sc-blue"><div class="summary-label">尚欠總額</div><div class="summary-amount">${finFmt(totalPrev+totalBack-totalPaid)}</div></div>
-    </div>
-    <div class="section-header">
-      <div class="section-title">💼 經紀帳務 <span class="count-badge">${filtered.length} 人</span></div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="sort-bar">
-          <span style="font-size:11.5px;color:var(--text3);font-weight:700;padding:0 6px;">排序</span>
-          ${[['amount','本週'],['owing','尚欠'],['name','名稱']].map(([k,l])=>`<button class="sort-btn ${s.by===k?'active':''}" onclick="finAgentSortBy('${k}')">${l}${s.by===k?(s.dir==='desc'?' ↓':' ↑'):''}</button>`).join('')}
-        </div>
-        <div class="view-toggle">
-          <button class="view-toggle-btn ${finDb.viewMode.agent==='summary'?'active':''}" onclick="finSetViewMode('agent','summary')">摘要</button>
-          <button class="view-toggle-btn ${finDb.viewMode.agent==='detail'?'active':''}" onclick="finSetViewMode('agent','detail')">明細</button>
-          <button class="view-toggle-btn ${finDb.viewMode.agent==='account'?'active':''}" onclick="finSetViewMode('agent','account')">帳號</button>
-        </div>
-      </div>
-    </div>
-    <div class="cards-grid">`;
-
-  filtered.forEach(agent=>{
-    const paid=agent.finPayments.reduce((s,p)=>s+p.amount,0);
-    const prev=finDb.historyUnsettled[agent.name]||0;
-    const owing=prev+agent.total_back-paid;
-    const owingCls=owing>=0?'text-red':'text-green';
-    const uid=agent.name.replace(/\s/g,'_');
-
-    html+=`
-      <div class="person-card" id="agent-${uid}">
-        <div class="card-header">
-          <span class="card-name">${agent.name}</span>
-          <div class="prev-input-wrap">
-            <span class="prev-label">上週</span>
-            <input class="prev-input ${prev<0?'green-val':''}"
-              type="number" inputmode="numeric"
-              value="${prev||''}" placeholder="$0"
-              onchange="finOnPrevInput('${agent.name}',this)"
-              onclick="this.select()"
-              title="直接輸入修改上週未結金額">
-          </div>
-        </div>
-        <div class="card-body">${finBuildAgentCardBody(agent)}</div>
-        <div class="card-footer">
-          <div class="foot-total">
-            <div class="foot-total-label">尚欠總額</div>
-            <div class="foot-total-amt ${owingCls}" id="foot-amt-${uid}">${finFmt(owing)}</div>
-          </div>
-          <button class="pay-btn-primary" onclick="finOpenPayDir(this,'${agent.name}')">＋ 完整記帳</button>
-        </div>
-      </div>`;
-  });
-
-  html+=`</div>`;
-  container.innerHTML=html;
-}
-
-// ═══════════════════════════════════════
-// finRenderAuntyPage
-// ═══════════════════════════════════════
-function finRenderAuntyPage(container){
-  const filter=finDb.filters.aunty;
-  let filtered=Object.values(finDb.aunties).filter(a=>{
-    if(filter==='all')return true;
-    const c=finDb.auntyCycles[a.name];
-    if(filter==='day')return c==='日結';
-    if(filter==='wk')return c==='週結';
-    if(filter==='mo')return c==='月結';
-    return true;
-  });
-  const s=finDb.auntySort;
-  filtered.sort((a,b)=>{
-    const pA=a.finPayments.reduce((x,p)=>x+p.amount,0),pB=b.finPayments.reduce((x,p)=>x+p.amount,0);
-    const vA=s.by==='owing'?(finDb.historyUnsettled[a.name]||0)+a.total_ee_pay-pA:s.by==='name'?a.name:a.total_ee_pay;
-    const vB=s.by==='owing'?(finDb.historyUnsettled[b.name]||0)+b.total_ee_pay-pB:s.by==='name'?b.name:b.total_ee_pay;
-    if(s.by==='name')return s.dir==='asc'?vA.localeCompare(vB,'zh'):vB.localeCompare(vA,'zh');
-    return s.dir==='asc'?vA-vB:vB-vA;
-  });
-
-  const totalEE=filtered.reduce((s,a)=>s+a.total_ee_pay,0);
-  const totalPaid=filtered.reduce((s,a)=>s+a.finPayments.reduce((x,p)=>x+p.amount,0),0);
-  const totalPrev=filtered.reduce((s,a)=>s+(finDb.historyUnsettled[a.name]||0),0);
-
-  // ── 計算阿姨結算摘要 ──
-  const auntiesSummaryList = filtered.map(ee => {
-    const paid = ee.finPayments.reduce((s, p) => s + p.amount, 0);
-    const prev = finDb.historyUnsettled[ee.name] || 0;
-    return { name: ee.name, entries: ee.entries, owing: prev + ee.total_ee_pay - paid };
-  });
-  const unsettledAunties = auntiesSummaryList.filter(a => a.owing > 0).sort((a, b) => b.owing - a.owing);
-  
-  let summaryCardHtml = `
-    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:20px 24px; margin-bottom:20px; box-shadow:var(--shadow);">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <div style="font-weight:800; font-size:14.5px; display:flex; align-items:center; gap:10px; color:var(--text);">
-          🌸 本週阿姨結算摘要
-          <span style="font-size:11.5px; font-weight:700; color:var(--text2); background:var(--surface); padding:4px 10px; border-radius:12px; border:1px solid var(--border);">
-            共 ${filtered.length} 位阿姨 / ${unsettledAunties.length} 位未結清
-          </span>
-        </div>
-        <button class="btn-secondary" onclick="finOpenAuntieSettlementModal()" style="font-size:12px; padding:6px 14px; background:#fff; border-radius:10px;">📄 查看完整列表</button>
-      </div>
-      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:12px;">
-  `;
-  unsettledAunties.slice(0, 6).forEach(a => {
-    summaryCardHtml += `
-      <div style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; transition:transform .15s, box-shadow .15s; cursor:default;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(212,181,244,0.15)'" onmouseout="this.style.transform='none';this.style.boxShadow='none'">
-        <div>
-          <div style="font-weight:800; font-size:13px; color:var(--text);">${a.name}</div>
-          <div style="font-size:11px; color:var(--text3); font-weight:600; margin-top:2px;">${a.entries} 筆工單</div>
-        </div>
-        <div style="font-weight:800; color:var(--green); font-size:15px;">${finFmt(a.owing)}</div>
-      </div>
-    `;
-  });
-  summaryCardHtml += `</div>`;
-  if(unsettledAunties.length > 6) {
-    summaryCardHtml += `<div style="text-align:center; font-size:12px; font-weight:700; color:var(--text2); margin-top:16px;">還有 ${unsettledAunties.length - 6} 位未結清，請點擊上方查看完整列表</div>`;
-  } else if(unsettledAunties.length === 0) {
-    summaryCardHtml += `<div style="text-align:center; font-size:13px; font-weight:700; color:var(--color-pink); padding:16px 0; background:var(--accent-light); border-radius:12px; margin-top:8px;">🎉 本週阿姨已全數結清</div>`;
-  }
-  summaryCardHtml += `</div>`;
-
-  let html=`
-    <div class="summary-grid">
-      <div class="summary-card sc-purple"><div class="summary-label">上週未結</div><div class="summary-amount">${finFmt(totalPrev)}</div></div>
-      <div class="summary-card sc-green"><div class="summary-label">本週應付</div><div class="summary-amount">${finFmt(totalEE)}</div></div>
-      <div class="summary-card sc-pink"><div class="summary-label">實際已付</div><div class="summary-amount">${finFmt(totalPaid)}</div></div>
-      <div class="summary-card sc-blue"><div class="summary-label">尚欠總額</div><div class="summary-amount">${finFmt(totalPrev+totalEE-totalPaid)}</div></div>
-    </div>
-    
-    ${summaryCardHtml}
-
-    <div class="section-header">
-      <div class="section-title">🌸 阿姨帳務 <span class="count-badge">${filtered.length} 人</span></div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="sort-bar">
-          <span style="font-size:11.5px;color:var(--text3);font-weight:700;padding:0 6px;">排序</span>
-          ${[['amount','本週'],['owing','尚欠'],['name','名稱']].map(([k,l])=>`<button class="sort-btn ${s.by===k?'active':''}" onclick="finAuntySortBy('${k}')">${l}${s.by===k?(s.dir==='desc'?' ↓':' ↑'):''}</button>`).join('')}
-        </div>
-        <div class="view-toggle">
-          <button class="view-toggle-btn ${finDb.viewMode.aunty==='summary'?'active':''}" onclick="finSetViewMode('aunty','summary')">摘要</button>
-          <button class="view-toggle-btn ${finDb.viewMode.aunty==='detail'?'active':''}" onclick="finSetViewMode('aunty','detail')">明細</button>
-          <button class="view-toggle-btn ${finDb.viewMode.aunty==='account'?'active':''}" onclick="finSetViewMode('aunty','account')">帳號</button>
-        </div>
-      </div>
-    </div>
-    <div class="cards-grid">`;
-
-  filtered.forEach(ee=>{
-    const paid=ee.finPayments.reduce((s,p)=>s+p.amount,0);
-    const prev=finDb.historyUnsettled[ee.name]||0;
-    const owing=prev+ee.total_ee_pay-paid;
-    const owingCls=owing>=0?'text-green':'text-red';
-    const uid=ee.name.replace(/\s/g,'_');
-
-    html+=`
-      <div class="person-card" id="aunty-${uid}">
-        <div class="card-header">
-          <span class="card-name">${ee.name}<span class="tag-ee">EE</span></span>
-          <div class="prev-input-wrap">
-            <span class="prev-label">上週</span>
-            <input class="prev-input green-val"
-              type="number" inputmode="numeric"
-              value="${prev||''}" placeholder="$0"
-              onchange="finOnPrevInput('${ee.name}',this)"
-              onclick="this.select()"
-              title="直接輸入修改上週未結金額">
-          </div>
-        </div>
-        <div class="card-body">${finBuildAuntyCardBody(ee)}</div>
-        <div class="card-footer">
-          <div class="foot-total">
-            <div class="foot-total-label">尚欠總額</div>
-            <div class="foot-total-amt ${owingCls}" id="foot-amt-${uid}">${finFmt(owing)}</div>
-          </div>
-          <button class="pay-btn-primary" onclick="finOpenPayDir(this,'${ee.name}')">＋ 完整記帳</button>
-        </div>
-      </div>`;
-  });
-
-  html+=`</div>`;
-  container.innerHTML=html;
-}
-
-// ═══════════════════════════════════════
-// Sort
-// ═══════════════════════════════════════
-function finAgentSortBy(k){
-  if(finDb.agentSort.by===k)finDb.agentSort.dir=finDb.agentSort.dir==='desc'?'asc':'desc';
-  else finDb.agentSort={by:k,dir:'desc'};
-  finRenderAgentPage(document.getElementById('fin-agent-content'));
-}
-function finAuntySortBy(k){
-  if(finDb.auntySort.by===k)finDb.auntySort.dir=finDb.auntySort.dir==='desc'?'asc':'desc';
-  else finDb.auntySort={by:k,dir:'desc'};
-  finRenderAuntyPage(document.getElementById('fin-aunty-content'));
-}
-function finSetViewMode(type,mode){
-  finDb.viewMode[type]=mode;
-  if(type==='agent')finRenderAgentPage(document.getElementById('fin-agent-content'));
-  else finRenderAuntyPage(document.getElementById('fin-aunty-content'));
-}
-
-// ═══════════════════════════════════════
-// Company Page
-// ═══════════════════════════════════════
-function finRenderCompanyPage(container){
-  const totalS=finDb.dailyS.reduce((s,d)=>s+d.amount,0);
-  const totalBack=Object.values(finDb.agents).reduce((s,a)=>s+a.total_back,0);
-  const totalEEPay=Object.values(finDb.aunties).reduce((s,a)=>s+a.total_ee_pay,0);
-  container.innerHTML=`
-    <div class="summary-grid">
-      <div class="summary-card sc-peach"><div class="summary-label">本週公司淨利 S</div><div class="summary-amount">${finFmt(totalS)}</div></div>
-      <div class="summary-card sc-pink"><div class="summary-label">本週應收 (經紀)</div><div class="summary-amount">${finFmt(totalBack)}</div></div>
-      <div class="summary-card sc-green"><div class="summary-label">本週應付 (阿姨)</div><div class="summary-amount">${finFmt(totalEEPay)}</div></div>
-      <div class="summary-card sc-purple"><div class="summary-label">數據筆數</div><div class="summary-amount">${finRawData.length}</div></div>
-    </div>
-    <div class="company-grid" style="margin-top:20px;">
-      <div class="day-table"><div class="day-table-header">每日 S 淨利<span style="color:var(--color-peach);">${finFmt(totalS)}</span></div>${finDb.dailyS.map(d=>`<div class="day-row"><span style="color:var(--text3);font-size:11.5px;font-weight:600;">${finFmtDate(d.date)}</span><span class="day-row-amount ${d.amount>=0?'text-red':'text-green'}">${finFmt(d.amount)}</span></div>`).join('') || '<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;font-weight:600;">暫無資料</div>'}</div>
-      <div class="day-table"><div class="day-table-header">各經紀回款<span style="color:var(--color-pink);">${finFmt(totalBack)}</span></div>${Object.values(finDb.agents).sort((a,b)=>b.total_back-a.total_back).map(a=>`<div class="day-row"><span class="day-row-name"><a onclick="finJumpTo('accounts','agent','agent-${a.name.replace(/\s/g,'_')}')">${a.name}</a></span><span class="day-row-amount text-red">${finFmt(a.total_back)}</span></div>`).join('')||'<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;font-weight:600;">暫無資料</div>'}</div>
-      <div class="day-table"><div class="day-table-header">各阿姨 EE$<span style="color:var(--color-green);">${finFmt(totalEEPay)}</span></div>${Object.values(finDb.aunties).sort((a,b)=>b.total_ee_pay-a.total_ee_pay).map(e=>`<div class="day-row"><span class="day-row-name"><a onclick="finJumpTo('accounts','aunty','aunty-${e.name.replace(/\s/g,'_')}')">${e.name}</a></span><span class="day-row-amount text-green">${finFmt(e.total_ee_pay)}</span></div>`).join('')||'<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;font-weight:600;">暫無資料</div>'}</div>
-    </div>
-    <div class="section-header" style="margin-top:24px;"><div class="section-title">📊 欠款排行</div></div>
-    <div class="owing-grid">
-      <div class="owing-panel"><div class="owing-panel-header text-red">經紀欠我 (應收)</div>
-        ${Object.values(finDb.agents).map(a=>{const total=(finDb.historyUnsettled[a.name]||0)+a.total_back-a.finPayments.reduce((s,p)=>s+p.amount,0);return total!==0?`<div class="owing-panel-row" onclick="finJumpTo('accounts','agent','agent-${a.name.replace(/\s/g,'_')}')"><div><div class="owing-panel-name">${a.name}</div><div class="owing-panel-meta">${a.entries} 筆</div></div><div class="owing-amt ${total>=0?'text-red':'text-green'}">${finFmt(total)}</div></div>`:''}).join('')||'<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;font-weight:600;">無欠款</div>'}
-      </div>
-      <div class="owing-panel"><div class="owing-panel-header text-green">我欠阿姨 (應付)</div>
-        ${Object.values(finDb.aunties).map(e=>{const total=(finDb.historyUnsettled[e.name]||0)+e.total_ee_pay-e.finPayments.reduce((s,p)=>s+p.amount,0);return total!==0?`<div class="owing-panel-row" onclick="finJumpTo('accounts','aunty','aunty-${e.name.replace(/\s/g,'_')}')"><div><div class="owing-panel-name">${e.name}</div><div class="owing-panel-meta">${e.entries} 筆</div></div><div class="owing-amt ${total>=0?'text-green':'text-red'}">${finFmt(total)}</div></div>`:''}).join('')||'<div style="padding:20px;text-align:center;color:var(--text3);font-size:12px;font-weight:600;">無欠款</div>'}
-      </div>
-    </div>`;
-}
-
-function finJumpTo(pageId,subId,elementId){
-  const navItem=[...document.querySelectorAll('.fin-nav-item')].find(n=>n.getAttribute('onclick')&&n.getAttribute('onclick').includes(pageId));
-  if(navItem)finSwitchPage(pageId,navItem);
-  setTimeout(()=>{
-    if(subId){
-      const tabEl=document.querySelector(`#fin-page-${pageId} .inner-tab:${subId==='agent'||subId==='payment'?'first':'last'}-child`);
-      if(tabEl&&!tabEl.classList.contains('active'))tabEl.click();
-    }
-    setTimeout(()=>{
-      const el=document.getElementById(elementId);
-      if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='3px solid var(--color-pink)';setTimeout(()=>el.style.outline='',1500);}
-    },200);
-  },100);
-}
-
-// ═══════════════════════════════════════
-// Payment Page (收銀結帳台)
-// ═══════════════════════════════════════
-function finRenderPaymentPage(container){
-  const inP=finPayments.filter(p=>p.dir==='in'),outP=finPayments.filter(p=>p.dir==='out');
-  
-  // ── 計算資金對象餘額 ──
-  let balances = {};
-  finDb.wallets.forEach(w => balances[w] = 0);
-  finPayments.forEach(p => {
-     let w = p.receiver || finDb.wallets[0]; 
-     if(balances[w] === undefined) balances[w] = 0; 
-     if(p.dir === 'in') balances[w] += p.amount;
-     if(p.dir === 'out') balances[w] -= p.amount;
-  });
-
-  let walletHtml = `<div class="company-grid" style="margin-bottom: 24px;">`;
-  finDb.wallets.forEach(w => {
-     walletHtml += `
-       <div class="summary-card" style="padding:20px; border:1px solid var(--border); box-shadow:none; background:#fff;">
-         <div class="summary-label" style="font-size:14px; color:var(--text);">${w}</div>
-         <div class="summary-amount ${balances[w]>=0?'text-red':'text-green'}" style="margin-top:4px;">${finFmt(balances[w])}</div>
-       </div>`;
-  });
-  walletHtml += `</div>`;
-
-  // ── 待結清對象 ──
-  let pendingAgents = [];
-  Object.values(finDb.agents).forEach(a => {
-    const paid = a.finPayments.reduce((s,p)=>s+p.amount,0);
-    const prev = finDb.historyUnsettled[a.name] || 0;
-    const owing = prev + a.total_back - paid;
-    if(owing > 0) pendingAgents.push({ name: a.name, owing: owing });
-  });
-
-  let pendingAunties = [];
-  Object.values(finDb.aunties).forEach(ee => {
-    const paid = ee.finPayments.reduce((s,p)=>s+p.amount,0);
-    const prev = finDb.historyUnsettled[ee.name] || 0;
-    const owing = prev + ee.total_ee_pay - paid;
-    if(owing > 0) pendingAunties.push({ name: ee.name, owing: owing });
-  });
-
-  pendingAgents.sort((a,b) => b.owing - a.owing);
-  pendingAunties.sort((a,b) => b.owing - a.owing);
-
-  let pendingHtml = '';
-  if(pendingAgents.length > 0 || pendingAunties.length > 0) {
-    pendingHtml += `<div class="owing-grid" style="margin-bottom: 28px;">`;
-    
-    // 經紀應收
-    pendingHtml += `<div class="owing-panel"><div class="owing-panel-header text-red" style="display:flex; justify-content:space-between;"><span>📥 待收回 (經紀應收)</span><span class="count-badge">${pendingAgents.length} 人</span></div>`;
-    if(pendingAgents.length===0) pendingHtml += `<div style="padding:24px;text-align:center;color:var(--text3);font-size:12px;font-weight:600;">目前無待收帳款</div>`;
-    pendingAgents.forEach(a => {
-      pendingHtml += `<div class="owing-panel-row" style="padding:14px 18px;">
-        <div style="font-weight:800;font-size:15px;color:var(--text);">${a.name}</div>
-        <div style="display:flex; align-items:center; gap:14px;">
-          <div style="font-weight:800;font-size:18px;color:var(--red);">${finFmt(a.owing)}</div>
-          <button class="quick-settle-btn" style="background:var(--color-pink);color:#fff;border:none;padding:6px 16px;border-radius:8px;" onclick="finOpenPaymentModal('${a.name}', 'in', -1, ${a.owing})">結帳</button>
-        </div>
-      </div>`;
-    });
-    pendingHtml += `</div>`;
-
-    // 阿姨應付
-    pendingHtml += `<div class="owing-panel"><div class="owing-panel-header text-green" style="display:flex; justify-content:space-between;"><span>📤 待支付 (阿姨應付)</span><span class="count-badge">${pendingAunties.length} 人</span></div>`;
-    if(pendingAunties.length===0) pendingHtml += `<div style="padding:24px;text-align:center;color:var(--text3);font-size:12px;font-weight:600;">目前無待付帳款</div>`;
-    pendingAunties.forEach(ee => {
-      pendingHtml += `<div class="owing-panel-row" style="padding:14px 18px;">
-        <div style="font-weight:800;font-size:15px;color:var(--text);">${ee.name}</div>
-        <div style="display:flex; align-items:center; gap:14px;">
-          <div style="font-weight:800;font-size:18px;color:var(--green);">${finFmt(ee.owing)}</div>
-          <button class="quick-settle-btn" style="background:var(--color-green);color:#fff;border:none;padding:6px 16px;border-radius:8px;" onclick="finOpenPaymentModal('${ee.name}', 'out', -1, ${ee.owing})">結帳</button>
-        </div>
-      </div>`;
-    });
-    pendingHtml += `</div></div>`;
-  }
-
-  container.innerHTML=`
-    <div class="section-header" style="margin-top:0;">
-      <div class="section-title">🏦 資金對象餘額 (目前有多少錢)</div>
-      <button class="btn-secondary" onclick="finEditWallets()">✏️ 編輯對象</button>
-    </div>
-    ${walletHtml}
-
-    <div class="section-header">
-      <div class="section-title">💸 待結清對象 (快速結帳)</div>
-    </div>
-    ${pendingHtml}
-
-    <div class="section-header">
-      <div class="section-title">💳 歷史流水記錄 <span class="count-badge">${finPayments.length} 筆</span></div>
-      <div style="display:flex;gap:10px;">
-        <button class="btn-primary" style="background:var(--color-pink);box-shadow:none;" onclick="finOpenPaymentModal('','in')">＋ 手動收進</button>
-        <button class="btn-primary" style="background:var(--color-green);box-shadow:none;" onclick="finOpenPaymentModal('','out')">＋ 手動付出</button>
-      </div>
-    </div>
-    <div class="payment-list">
-      ${finPayments.length===0?'<div style="padding:36px;text-align:center;color:var(--text3);font-weight:600;">暫無記錄</div>':finPayments.slice().reverse().map((p,ri)=>{const realIdx=finPayments.length-1-ri;return`<div class="payment-row"><div class="payment-dir ${p.dir==='in'?'dir-in':'dir-out'}">${p.dir==='in'?'收進來':'付出去'}</div><div class="payment-date">${finFmtDate(p.date)}</div><div class="payment-name">${p.name}</div><div class="payment-method-tag">${p.method}</div><div class="payment-note">${p.note||''}${p.receiver?' → '+p.receiver:''}</div><div class="payment-amount ${p.dir==='in'?'text-red':'text-green'}">${finFmt(p.amount)}</div><div class="payment-actions"><button class="pay-edit-btn" onclick="finOpenPaymentModal('','',${realIdx})">編輯</button><button class="pay-del-btn" onclick="finDeletePayment(${realIdx})">刪除</button></div></div>`;}).join('')}
-    </div>`;
-}
-
-function finEditWallets() {
-  const str = prompt('請輸入帳戶/資金對象名稱 (用逗號分隔)：\n這將作為記帳時選擇的對象來源。', finDb.wallets.join(', '));
-  if (str !== null) {
-      const newWallets = str.split(',').map(s=>s.trim()).filter(s=>s);
-      if(newWallets.length > 0) {
-          finDb.wallets = newWallets;
-          if(!finDb.wallets.includes(finDb.payReceiver)) finDb.payReceiver = finDb.wallets[0];
-          finSaveToLocal();
-          finRenderCurrent();
-      } else {
-          alert('請至少保留一個帳戶/對象！');
-      }
-  }
-}
-
-// ═══════════════════════════════════════
-// Data Page (精簡版)
-// ═══════════════════════════════════════
-function finRenderDataPage(){
-  const container=document.getElementById('fin-excel-container');
-  let filtered=finRawData.map((r,i)=>({...r,_origIdx:i}));
-  document.getElementById('fin-raw-data-count').textContent=`${filtered.length} 筆`;
-  const cols=[{key:'date',label:'日期'},{key:'ee',label:'阿姨'},{key:'mm',label:'妹妹'},{key:'gg',label:'經紀'},{key:'time',label:'時間'},{key:'location',label:'位置'},{key:'ps',label:'PS'},{key:'write',label:'寫'},{key:'price',label:'牌價'},{key:'m_rec',label:'M收'},{key:'gg_refund',label:'回扣'},{key:'back',label:'回帳'},{key:'ee_pay',label:'EE$'},{key:'s_profit',label:'S淨利'},{key:'ox',label:'OX'},{key:'cycle',label:'週期'},{key:'col2',label:'欄2'}];
-
-  function colTh(c){return`<th><span>${c.label}</span></th>`;}
-  
-  container.innerHTML=`<table class="excel-table"><thead><tr><th style="width:40px;text-align:center;">#</th>${cols.map(colTh).join('')}<th>操作</th></tr></thead><tbody>${filtered.map((row)=>`<tr id="row-${row._origIdx}"><td style="text-align:center;padding:4px 8px;font-weight:700;color:var(--text3);">${row._origIdx+1}</td>${cols.map(c=>`<td contenteditable="true" class="editable-cell" onblur="finUpdateRawData(${row._origIdx},'${c.key}',this.textContent)">${row[c.key]}</td>`).join('')}<td><button onclick="finDeleteRawRow(${row._origIdx})" style="color:var(--red);border:none;background:var(--red-bg);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;">刪除</button></td></tr>`).join('')}</tbody></table>`;
-}
-
-function finUpdateRawData(idx,key,val){let v=val;if(['price','m_rec','gg_refund','back','ee_pay','s_profit'].includes(key))v=parseFloat(val)||0;finRawData[idx][key]=v;}
-function finDeleteRawRow(idx){if(confirm('確定刪除此筆原始資料？')){finRawData.splice(idx,1);finSaveToLocal();finAnalyzeData();finRenderDataPage();}}
-function finSaveDataChanges(){finSaveToLocal();finAnalyzeData();finRenderCurrent();alert('已儲存修改！');}
-
-// ═══════════════════════════════════════
-// Ledger
-// ═══════════════════════════════════════
-function finRenderLedgerPage(){
-  const active=finDb.activeLedger,list=finDb.ledgers[active]||[];
-  document.getElementById('fin-ledger-tabs-list').innerHTML=Object.keys(finDb.ledgers).map(t=>`<button class="ledger-tab ${t===active?'active':''}" onclick="finSwitchLedger('${t}')">${t}</button>`).join('')+`<button class="ledger-tab" onclick="finAddNewLedger()" style="border-style:dashed;">＋ 新增</button>`;
-  const totalIn=list.reduce((s,r)=>s+(r.in||0),0),totalOut=list.reduce((s,r)=>s+(r.out||0),0);
-  let running=0;
-  const rows=list.map((r,idx)=>{running+=(r.in||0)-(r.out||0);return`<div class="ledger-row"><span>${finFmtDate(r.date)}</span><span>${r.note}</span><span class="text-red">${r.in?finFmt(r.in):''}</span><span class="text-green">${r.out?finFmt(r.out):''}</span><span style="font-weight:800;">${finFmt(running)}</span><div style="display:flex;gap:6px;"><button class="pay-edit-btn" onclick="finEditLedger(${idx})">編輯</button><button class="pay-del-btn" onclick="finDeleteLedger(${idx})">刪除</button></div></div>`;}).reverse();
-  document.getElementById('fin-ledger-content').innerHTML=`
-    <div style="display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
-      <div class="ledger-sum-card"><div class="ledger-sum-label">總收入</div><div class="ledger-sum-val text-red">${finFmt(totalIn)}</div></div>
-      <div class="ledger-sum-card"><div class="ledger-sum-label">總支出</div><div class="ledger-sum-val text-green">${finFmt(totalOut)}</div></div>
-      <div class="ledger-sum-card"><div class="ledger-sum-label">現餘</div><div class="ledger-sum-val">${finFmt(totalIn-totalOut)}</div></div>
-    </div>
-    <div class="section-header"><div class="section-title">📒 ${active} 明細</div><button class="btn-primary" onclick="finOpenLedgerModal()">＋ 新增流水</button></div>
-    <div class="ledger-wrap">
-      <div class="ledger-row header"><span>日期</span><span>明細</span><span>收入</span><span>支出</span><span>餘額</span><span>操作</span></div>
-      ${rows.length?rows.join(''):'<div style="padding:32px;text-align:center;color:var(--text3);font-weight:600;font-size:12.5px;">暫無數據</div>'}
-    </div>`;
-}
-function finSwitchLedger(n){finDb.activeLedger=n;finRenderLedgerPage();}
-function finAddNewLedger(){const n=prompt('新帳本名稱：');if(n){finDb.ledgers[n]=[];finDb.activeLedger=n;finSaveToLocal();finRenderLedgerPage();}}
-function finOpenLedgerModal(idx=-1){const r=idx>=0?finDb.ledgers[finDb.activeLedger][idx]:{date:new Date().toISOString().split('T')[0],note:'',in:'',out:''};document.getElementById('fin-led-date').value=r.date;document.getElementById('fin-led-note').value=r.note;document.getElementById('fin-led-in').value=r.in||'';document.getElementById('fin-led-out').value=r.out||'';document.getElementById('fin-led-idx').value=idx;document.getElementById('fin-ledger-modal-title').textContent=idx>=0?'編輯流水':'新增流水';document.getElementById('fin-ledger-modal').style.display='flex';}
-function finCloseLedgerModal(){document.getElementById('fin-ledger-modal').style.display='none';}
-function finSubmitLedger(){const idx=parseInt(document.getElementById('fin-led-idx').value);const data={date:document.getElementById('fin-led-date').value,note:document.getElementById('fin-led-note').value,in:parseFloat(document.getElementById('fin-led-in').value)||0,out:parseFloat(document.getElementById('fin-led-out').value)||0};if(idx>=0)finDb.ledgers[finDb.activeLedger][idx]=data;else finDb.ledgers[finDb.activeLedger].push(data);finSaveToLocal();finRenderLedgerPage();finCloseLedgerModal();}
-function finEditLedger(idx){finOpenLedgerModal(idx);}
-function finDeleteLedger(idx){if(confirm('確定刪除？')){finDb.ledgers[finDb.activeLedger].splice(idx,1);finSaveToLocal();finRenderLedgerPage();}}
-
-// ═══════════════════════════════════════
-// Payment Modal
-// ═══════════════════════════════════════
-function finSetPayMethod(m){document.getElementById('fin-pay-method').value=m;['pm-cash','pm-jkopay','pm-bank','pm-cash2'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const map={'現金':'pm-cash','街口':'pm-jkopay','轉帳':'pm-bank','現金存款':'pm-cash2'};const active=map[m]===id;el.style.background=active?'var(--color-pink)':'transparent';el.style.color=active?'#fff':'var(--text2)';el.style.borderColor=active?'var(--color-pink)':'var(--border)';});}
-function finSetPayReceiver(r){finDb.payReceiver=r;finDb.wallets.forEach(w=>{const el=document.getElementById('pr-'+w);if(!el)return;const a=(w===r);el.style.background=a?'var(--color-purple)':'transparent';el.style.color=a?'#fff':'var(--text2)';el.style.borderColor=a?'var(--color-purple)':'var(--border)';});}
-
-function finOpenPaymentModal(name, dir, editIdx = -1, defaultAmount = '', defaultNote = '') {
-  const editing = editIdx >= 0;
-  const p = editing ? finPayments[editIdx] : null;
-  const nm = editing ? p.name : name;
-  const d = editing ? p.dir : (dir || 'in');
-  
-  const nameEl = document.getElementById('fin-pay-name');
-  nameEl.value = nm;
-  nameEl.readOnly = !!nm;
-  nameEl.style.background = nm ? 'var(--bg)' : '#fff';
-  
-  document.getElementById('fin-pay-dir').value = d;
-  document.getElementById('fin-pay-date').value = editing ? p.date : new Date().toISOString().split('T')[0];
-  document.getElementById('fin-pay-amount').value = editing ? p.amount : defaultAmount;
-  document.getElementById('fin-pay-note').value = editing ? (p.note || '') : defaultNote;
-  document.getElementById('fin-pay-edit-idx').value = editIdx;
-  document.getElementById('fin-pay-modal-title').textContent = editing ? '編輯付款' : (d === 'in' ? '記錄回帳 (收進來)' : '記錄付款 (付出去)');
-  
-  // 計算並顯示目前尚欠餘額
-  let currentBalance = null;
-  let isAgent = !!finDb.agents[nm];
-  let isAunty = !!finDb.aunties[nm];
-  if (nm) {
-    if (isAgent) {
-       const a = finDb.agents[nm];
-       const paid = a.finPayments.reduce((s,x)=>s+x.amount,0);
-       const prev = finDb.historyUnsettled[a.name] || 0;
-       currentBalance = prev + a.total_back - paid;
-    } else if (isAunty) {
-       const ee = finDb.aunties[nm];
-       const paid = ee.finPayments.reduce((s,x)=>s+x.amount,0);
-       const prev = finDb.historyUnsettled[ee.name] || 0;
-       currentBalance = prev + ee.total_ee_pay - paid;
-    }
-  }
-  
-  const balHint = document.getElementById('fin-pay-balance-hint');
-  if (balHint) {
-    if (currentBalance !== null && currentBalance !== 0 && !editing) {
-       balHint.style.display = 'block';
-       document.getElementById('fin-pay-balance-amount').textContent = finFmt(currentBalance);
-       document.getElementById('fin-pay-balance-amount').className = currentBalance > 0 ? (isAgent ? 'text-red' : 'text-green') : '';
-    } else {
-       balHint.style.display = 'none';
-    }
-  }
-
-  const dt = document.getElementById('fin-pay-dir-toggle');
-  if(dt) dt.style.display = (!nm && !editing) ? '' : 'none';
-  
-  finSetPayMethod(editing ? p.method : (d === 'in' ? '現金' : '街口'));
-  
-  // 動態生成對象(帳戶)按鈕
-  const btnsContainer = document.getElementById('fin-pay-receiver-btns');
-  if (btnsContainer) {
-    btnsContainer.innerHTML = finDb.wallets.map(w => `<button id="pr-${w}" onclick="event.preventDefault();finSetPayReceiver('${w}')" style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">${w}</button>`).join('');
-  }
-  finSetPayReceiver(editing ? (p.receiver || finDb.wallets[0]) : (finDb.payReceiver || finDb.wallets[0]));
-  
-  const hint = document.getElementById('fin-pay-account-hint');
-  if(hint){
-    if(d === 'out' && nm){
-      const acc = finDb.auntyAccounts[nm];
-      if(acc && acc.account){
-        document.getElementById('fin-pay-account-text').textContent = acc.account;
-        document.getElementById('fin-pay-account-note').textContent = (acc.type || '') + (acc.note ? '・' + acc.note : '');
-        hint.style.display = '';
-      } else hint.style.display = 'none';
-    } else hint.style.display = 'none';
-  }
-  document.getElementById('fin-payment-modal').style.display = 'flex';
-}
-
-function finClosePaymentModal(){document.getElementById('fin-payment-modal').style.display='none';}
-function finSetManualPayDir(d){document.getElementById('fin-pay-dir').value=d;document.getElementById('fin-pay-modal-title').textContent=d==='in'?'記錄回帳 (收進來)':'記錄付款 (付出去)';document.getElementById('fin-pdt-in').style.background=d==='in'?'var(--color-pink)':'transparent';document.getElementById('fin-pdt-in').style.color=d==='in'?'#fff':'var(--text2)';document.getElementById('fin-pdt-in').style.borderColor=d==='in'?'var(--color-pink)':'var(--border)';document.getElementById('fin-pdt-out').style.background=d==='out'?'var(--color-green)':'transparent';document.getElementById('fin-pdt-out').style.color=d==='out'?'#fff':'var(--text2)';document.getElementById('fin-pdt-out').style.borderColor=d==='out'?'var(--color-green)':'var(--border)';finSetPayMethod(d==='in'?'現金':'街口');}
-
-function finSubmitPayment(){
-  const amount=parseFloat(document.getElementById('fin-pay-amount').value);
-  if(!amount)return alert('請輸入金額');
-  const editIdx=parseInt(document.getElementById('fin-pay-edit-idx').value);
-  const dir=document.getElementById('fin-pay-dir').value;
-  const receiver=finDb.payReceiver || finDb.wallets[0]; // 現改為不分 IN/OUT 皆記錄對象(帳戶)
-  
-  const rec={
-    id:editIdx>=0?finPayments[editIdx].id:Date.now(),
-    name:document.getElementById('fin-pay-name').value,
-    dir:dir,
-    date:document.getElementById('fin-pay-date').value,
-    amount:amount,
-    method:document.getElementById('fin-pay-method').value,
-    note:document.getElementById('fin-pay-note').value||'',
-    receiver:receiver
-  };
-  
-  if(editIdx>=0) finPayments[editIdx]=rec;
-  else finPayments.push(rec);
-  
-  finSaveToLocal();
-  finAnalyzeData();
-  finRenderCurrent();
-  finClosePaymentModal();
-}
-function finDeletePayment(idx){if(confirm('確定刪除？')){finPayments.splice(idx,1);finSaveToLocal();finAnalyzeData();finRenderCurrent();}}
-
-// pay dir picker (點擊+完整記帳時顯示)
-function finOpenPayDir(btn,name){
-  const ex=document.getElementById('fin-_pay_dir_picker');if(ex){ex.remove();if(ex.dataset.finname===name)return;}
-  const isAgent=!!finDb.agents[name];
-  const choices=isAgent?[{label:'收回來（經紀→我）',dir:'in',color:'var(--red)'},{label:'付出去（我→經紀）',dir:'out',color:'var(--green)'}]:[{label:'付過去（我→阿姨）',dir:'out',color:'var(--green)'},{label:'收回來（阿姨→我）',dir:'in',color:'var(--red)'}];
-  const popup=document.createElement('div');popup.id='fin-_pay_dir_picker';popup.dataset.finname=name;
-  popup.style.cssText='position:absolute;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);padding:8px;min-width:180px;';
-  popup.innerHTML=choices.map(c=>`<button onclick="finOpenPaymentModal('${name}','${c.dir}');document.getElementById('fin-_pay_dir_picker').remove();" style="display:block;width:100%;padding:10px 14px;border:none;background:transparent;text-align:left;font-size:13px;font-weight:800;color:${c.color};cursor:pointer;border-radius:8px;font-family:inherit;transition:background .15s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">${c.label}</button>`).join('');
-  const rect=btn.getBoundingClientRect();document.body.appendChild(popup);
-  popup.style.top=(rect.bottom+6+window.scrollY)+'px';popup.style.right=(window.innerWidth-rect.right)+'px';
-  setTimeout(()=>{document.addEventListener('click',function close(e){if(!popup.contains(e.target)&&e.target!==btn){popup.remove();document.removeEventListener('click',close);}});},10);
-}
-
-// ═══════════════════════════════════════
-// Paste & Export
-// ═══════════════════════════════════════
-function finOpenPasteModal(){document.getElementById('fin-paste-modal').style.display='flex';}
-function finClosePasteModal(){document.getElementById('fin-paste-modal').style.display='none';}
-function finProcessPasteData(){
-  const text=document.getElementById('fin-paste-area').value.trim();if(!text)return;
-  const lines=text.split('\n');const newRecs=[];
-  lines.forEach(l=>{const c=l.split('\t');if(c.length>=12){newRecs.push({date:c[0]||'',ee:c[1]||'',mm:c[2]||'',gg:c[3]||'',time:c[4]||'',location:c[5]||'',ps:c[6]||'',write:c[7]||'',price:parseFloat(c[8])||0,m_rec:parseFloat(c[9])||0,gg_refund:parseFloat(c[10])||0,back:parseFloat(c[11])||0,ee_pay:parseFloat(c[12])||0,s_profit:parseFloat(c[13])||0,ox:c[14]||'',cycle:(c[15]||'').trim(),col2:c[16]||'',id:Date.now()+Math.random()});}});
-  if(newRecs.length){finRawData=[...finRawData,...newRecs];finSaveToLocal();finAnalyzeData();finRenderCurrent();finClosePasteModal();document.getElementById('fin-paste-area').value='';alert(`✅ 成功匯入 ${newRecs.length} 筆！`);} else alert('無法解析，請確認格式');
-}
-
-// 加入 '\uFEFF' (BOM) 防止 Excel 打開變成亂碼
-function finExportData(){
-  const snap={exportedAt:new Date().toISOString(),version:'DDB-v4',finRawData,finPayments,historyUnsettled:finDb.historyUnsettled,agentCycles:finDb.agentCycles,auntyCycles:finDb.auntyCycles,ledgers:finDb.ledgers};
-  const blob=new Blob(['\uFEFF', JSON.stringify(snap,null,2)],{type:'application/json;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  const d=new Date();
-  a.download=`DDB_備份_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ═══════════════════════════════════════
-// Settle & Account modal
-// ═══════════════════════════════════════
-function finSettleCurrentWeek(){if(finDb.currentWeek==='all')return alert('請先選擇特定週別');if(!confirm(`確定結算 ${finDb.currentWeek}？`))return;Object.values(finDb.agents).forEach(a=>{const c=(finDb.historyUnsettled[a.name]||0)+a.total_back-a.finPayments.reduce((s,p)=>s+p.amount,0);if(c!==0)finDb.historyUnsettled[a.name]=c;else delete finDb.historyUnsettled[a.name];});Object.values(finDb.aunties).forEach(e=>{const c=(finDb.historyUnsettled[e.name]||0)+e.total_ee_pay-e.finPayments.reduce((s,p)=>s+p.amount,0);if(c!==0)finDb.historyUnsettled[e.name]=c;else delete finDb.historyUnsettled[e.name];});finSaveToLocal();alert('結算完成！');finRenderCurrent();}
-
-function finOpenAuntyAccountModal(name){const acc=finDb.auntyAccounts[name]||{account:'',note:''};const html=`<div class="fin-modal-overlay" id="fin-acct-modal" style="display:flex;" onclick="if(event.target===this)finCloseAuntyAccountModal()"><div class="fin-modal" style="max-width:350px;"><div class="fin-modal-header"><h3>${name} 收款帳號</h3><button class="btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finCloseAuntyAccountModal()">✕</button></div><div class="fin-modal-body"><div style="display:flex;flex-direction:column;gap:14px;"><div><label style="font-size:11px;font-weight:700;color:var(--text2);">帳號</label><input type="text" id="acct-number" value="${acc.account||''}" placeholder="帳號後5碼" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:6px;font-size:16px;font-weight:700;font-family:monospace;letter-spacing:1px;"></div><div><label style="font-size:11px;font-weight:700;color:var(--text2);">備註</label><input type="text" id="acct-note" value="${acc.note||''}" placeholder="玉山、街口…" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:6px;font-size:13px;font-weight:600;"></div><input type="hidden" id="acct-name" value="${name}"></div></div><div class="fin-modal-footer"><button class="btn-secondary" onclick="finCloseAuntyAccountModal()">取消</button><button class="btn-primary" onclick="finSaveAuntyAccount()">儲存</button></div></div></div>`;document.body.insertAdjacentHTML('beforeend',html);document.getElementById('fin-acct-number').focus();}
-function finSaveAuntyAccount(){const name=document.getElementById('fin-acct-name').value,acc=document.getElementById('fin-acct-number').value.trim();if(!acc)return alert('請輸入帳號');finDb.auntyAccounts[name]={account:acc,note:document.getElementById('fin-acct-note').value.trim()};finSaveToLocal();finCloseAuntyAccountModal();finRenderCurrent();}
-function finCloseAuntyAccountModal(){const el=document.getElementById('fin-acct-modal');if(el)el.remove();}
-
-// ═══════════════════════════════════════
-// Aunty Settlement Modal (阿姨結算完整版)
-// ═══════════════════════════════════════
-function finOpenAuntieSettlementModal() {
-  const auntiesList = Object.values(finDb.aunties).map(ee => {
-    const paid = ee.finPayments.reduce((s, p) => s + p.amount, 0);
-    const prev = finDb.historyUnsettled[ee.name] || 0;
-    const owing = prev + ee.total_ee_pay - paid;
-    return { name: ee.name, entries: ee.entries, owing: owing };
-  }).sort((a, b) => b.owing - a.owing);
-
-  let tbodyHtml = '';
-  auntiesList.forEach(a => {
-    const isSettled = a.owing <= 0;
-    const statusHtml = isSettled
-      ? `<span style="color:var(--color-pink); font-weight:800; font-size:11px; background:var(--accent-light); padding:4px 10px; border-radius:6px;">✓ 已結清</span>`
-      : `<span style="color:var(--green); font-weight:800; font-size:11px; background:var(--green-bg); padding:4px 10px; border-radius:6px;">尚有未結</span>`;
-    
-    const amtHtml = isSettled
-      ? `<span style="color:var(--color-pink); font-weight:700;">${finFmt(a.owing)}</span>`
-      : `<span style="color:var(--green); font-weight:800; font-size:15px;">${finFmt(a.owing)}</span>`;
-
-    tbodyHtml += `
-      <tr style="border-bottom: 1px solid var(--bg); transition: background .15s;" onmouseover="this.style.background='var(--accent-light)'" onmouseout="this.style.background=''">
-        <td style="padding: 14px 18px; font-weight:800; color:var(--text);">${a.name}</td>
-        <td style="padding: 14px 18px; color:var(--text2); font-size:12px; font-weight:600;">${a.entries} 筆</td>
-        <td style="padding: 14px 18px; text-align: right;">${amtHtml}</td>
-        <td style="padding: 14px 18px; text-align: center;">${statusHtml}</td>
-      </tr>
-    `;
-  });
-
-  document.getElementById('fin-aunty-settlement-tbody').innerHTML = tbodyHtml || '<tr><td colspan="4" style="text-align:center; padding: 32px; color:var(--text3); font-size:13px; font-weight:600;">本週無阿姨資料</td></tr>';
-  document.getElementById('fin-aunty-settlement-modal').style.display = 'flex';
-}
-
-function finCloseAuntieSettlementModal() {
-  document.getElementById('fin-aunty-settlement-modal').style.display = 'none';
-}
-
 </script>
+
+<!-- ══ Financial Modals ══ -->
+<div class="fin-modal-overlay" id="fin-paste-modal">
+  <div class="fin-modal">
+    <div class="fin-modal-header"><h3>貼入原始數據 (Tab 分隔)</h3><button class="fin-btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finClosePasteModal()">✕</button></div>
+    <div class="fin-modal-body"><textarea id="fin-paste-area" placeholder="請將 Excel 17 個欄位數據貼至此處..."></textarea></div>
+    <div class="fin-modal-footer"><button class="fin-btn-secondary" onclick="finClosePasteModal()">取消</button><button class="fin-btn-primary" onclick="finProcessPasteData()">確認解析</button></div>
+  </div>
+</div>
+
+<div class="fin-modal-overlay" id="fin-payment-modal">
+  <div class="fin-modal" style="max-width:440px;">
+    <div class="fin-modal-header"><h3 id="fin-pay-modal-title">記帳</h3><button class="fin-btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finClosePaymentModal()">✕</button></div>
+    <div class="fin-modal-body">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div><label style="font-size:11px;font-weight:700;color:var(--text2);">對象</label><input type="text" id="fin-pay-name" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:14px;font-weight:700;background:var(--surface2);margin-top:6px;"></div>
+        
+        <!-- 自動計算目前尚欠金額提示區塊 -->
+        <div id="fin-pay-balance-hint" style="display:none; padding:10px 14px; background:var(--surface2); border-radius:10px; border:1px dashed var(--border); font-size:12px; font-weight:700;">
+          結算餘額提示：目前尚欠 <span id="fin-pay-balance-amount" style="font-size:16px; font-weight:800; margin-left:6px;"></span>
+        </div>
+
+        <div id="fin-pay-dir-toggle" style="display:none;">
+          <label style="font-size:11px;font-weight:700;color:var(--text2);">方向</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+            <button id="fin-pdt-in" onclick="finSetManualPayDir('in')" style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;color:var(--text2);font-family:inherit;">📥 收進來</button>
+            <button id="fin-pdt-out" onclick="finSetManualPayDir('out')" style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;color:var(--text2);font-family:inherit;">📤 付出去</button>
+          </div>
+        </div>
+        <div id="fin-pay-account-hint" style="display:none;background:var(--blue-bg);border:1px solid var(--color-blue);border-radius:12px;padding:12px 16px;">
+          <div style="font-size:11px;font-weight:800;color:var(--blue-theme);margin-bottom:4px;">💳 存款帳號</div>
+          <div id="fin-pay-account-text" style="font-weight:700;color:var(--text);font-family:monospace;font-size:16px;letter-spacing:1px;"></div>
+          <div id="fin-pay-account-note" style="font-size:11px;color:var(--text3);margin-top:4px;"></div>
+        </div>
+        <div><label style="font-size:11px;font-weight:700;color:var(--text2);">日期</label><input type="date" id="fin-pay-date" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:6px;font-size:14px;font-weight:600;"></div>
+        <div><label style="font-size:11px;font-weight:700;color:var(--text2);">金額</label><input type="number" id="fin-pay-amount" placeholder="0" inputmode="numeric" style="width:100%;padding:12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:6px;font-size:20px;font-weight:800;text-align:right;"></div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:var(--text2);">付款方式</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;">
+            <button id="fin-pm-cash"   onclick="finSetPayMethod('現金')"    style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">💵 現金</button>
+            <button id="fin-pm-jkopay" onclick="finSetPayMethod('街口')"    style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">📱 街口</button>
+            <button id="fin-pm-bank"   onclick="finSetPayMethod('轉帳')"    style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">🏦 轉帳</button>
+            <button id="fin-pm-cash2"  onclick="finSetPayMethod('現金存款')" style="padding:10px;border-radius:10px;border:2px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit;">🏧 無卡存</button>
+          </div>
+          <input type="hidden" id="fin-pay-method" value="現金">
+        </div>
+        <div id="fin-pay-receiver-row">
+          <label style="font-size:11px;font-weight:700;color:var(--text2);">扣款 / 入帳 對象 (資金來源)</label>
+          <div id="fin-pay-receiver-btns" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(70px, 1fr));gap:8px;margin-top:8px;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+        <div><label style="font-size:11px;font-weight:700;color:var(--text2);">備註 (選填)</label><input type="text" id="fin-pay-note" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:6px;font-size:13px;font-weight:600;"></div>
+        <input type="hidden" id="fin-pay-dir">
+        <input type="hidden" id="fin-pay-edit-idx" value="-1">
+      </div>
+    </div>
+    <div class="fin-modal-footer"><button class="fin-btn-secondary" onclick="finClosePaymentModal()">取消</button><button class="fin-btn-primary" onclick="finSubmitPayment()">確認提交</button></div>
+  </div>
+</div>
+
+<div class="fin-modal-overlay" id="fin-ledger-modal">
+  <div class="fin-modal" style="max-width:380px;">
+    <div class="fin-modal-header"><h3 id="fin-ledger-modal-title">新增流水</h3><button class="fin-btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finCloseLedgerModal()">✕</button></div>
+    <div class="fin-modal-body">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div><label style="font-size:11.5px;font-weight:700;color:var(--text2);">日期</label><input type="date" id="fin-led-date" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px;font-size:14px;font-weight:600;"></div>
+        <div><label style="font-size:11.5px;font-weight:700;color:var(--text2);">明細</label><input type="text" id="fin-led-note" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px;font-size:13px;font-weight:600;"></div>
+        <div><label style="font-size:11.5px;font-weight:700;color:var(--text2);">收入 (紅字)</label><input type="number" id="fin-led-in" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px;font-size:16px;font-weight:800;"></div>
+        <div><label style="font-size:11.5px;font-weight:700;color:var(--text2);">支出 (綠字)</label><input type="number" id="fin-led-out" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-top:4px;font-size:16px;font-weight:800;"></div>
+        <input type="hidden" id="fin-led-name" value="">
+        <input type="hidden" id="fin-led-idx" value="-1">
+      </div>
+    </div>
+    <div class="fin-modal-footer"><button class="fin-btn-secondary" onclick="finCloseLedgerModal()">取消</button><button class="fin-btn-primary" onclick="finSubmitLedger()">確認提交</button></div>
+  </div>
+</div>
+
+<!-- 阿姨結算完整列表 Modal -->
+<div class="fin-modal-overlay" id="fin-aunty-settlement-modal">
+  <div class="fin-modal" style="max-width: 580px;">
+    <div class="fin-modal-header">
+      <h3>本週阿姨結算完整列表</h3>
+      <button class="fin-btn-secondary" style="padding:4px 10px;border:none;background:transparent;" onclick="finCloseAuntieSettlementModal()">✕</button>
+    </div>
+    <div class="fin-modal-body" style="max-height: 60vh; overflow-y: auto; padding: 0;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+        <thead style="position: sticky; top: 0; background: var(--surface2); z-index: 5;">
+          <tr>
+            <th style="padding: 14px 18px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight:800;">阿姨名字</th>
+            <th style="padding: 14px 18px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight:800;">本週工單</th>
+            <th style="padding: 14px 18px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight:800; text-align: right;">未結金額</th>
+            <th style="padding: 14px 18px; border-bottom: 2px solid var(--border); color: var(--text2); font-weight:800; text-align: center;">結清狀態</th>
+          </tr>
+        </thead>
+        <tbody id="fin-aunty-settlement-tbody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 </body></html>
