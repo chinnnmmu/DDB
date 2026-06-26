@@ -140,3 +140,38 @@ function loadAllData() {
     return { multiNotes: [], workOrders: {}, kvData: { day:'', week:'', note:'', db:'', walk:'' }, error: err.message };
   }
 }
+
+// ==================== Admin.html 相容函式 ====================
+// Admin.html 使用 save(key, val) 單筆寫入班表資料
+function save(key, val) {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_KV);
+    var data = sh.getDataRange().getValues();
+    for (var i = 0; i < data.length; i++) {
+      if (String(data[i][0]) === String(key)) {
+        sh.getRange(i + 1, 2).setValue(val);
+        return { success: true };
+      }
+    }
+    sh.appendRow([key, val]);
+    return { success: true };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+}
+
+// Admin.html 使用 loadAll() 讀取所有班表 KV 資料
+function loadAll() {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_KV);
+    var data = sh.getDataRange().getValues();
+    var result = { day: '', week: '', note: '', db: '', walk: '' };
+    data.forEach(function(row) {
+      var k = String(row[0]);
+      if (k in result) result[k] = String(row[1] || '');
+    });
+    return result;
+  } catch (err) {
+    return { day: '', week: '', note: '', db: '', walk: '', error: err.message };
+  }
+}
