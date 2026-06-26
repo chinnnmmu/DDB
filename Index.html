@@ -2580,7 +2580,7 @@ function parseImpLine(line){
     var first=parts[0]||'', note2='';
     first=first.replace(/[（(]([^)）]*)[)）]/g,function(_,n){note2=(note2?note2+' ':'')+n;return '';}).trim();
     var pm=first.match(/^(\d+)(.+)/);
-    var pai2=pm?String(parseInt(pm[1])*10):'';
+    var pai2=pm?pm[1]:'';
     var name2=pm?pm[2].trim():first;
     var time2=(parts[1]||'').trim();
     var place2=(parts[2]||'').trim();
