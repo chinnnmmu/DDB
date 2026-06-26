@@ -319,13 +319,16 @@ body.sidebar-collapsed .app{margin-left:44px;}
 #tab-admin #toggleDbBtn{display:block;width:100%;margin-top:8px;padding:4px;border-radius:4px;background:var(--card2);border:1px solid var(--border);color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);text-align:center;}
 #tab-admin .copy-wide-a{display:block;width:100%;margin-top:8px;padding:5px;border-radius:5px;border:none;background:var(--rose);color:#fff;font-weight:600;font-size:12px;font-family:var(--font);cursor:pointer;text-align:center;}
 #tab-admin .copy-wide-b{display:block;width:100%;margin-top:8px;padding:5px;border-radius:5px;border:none;background:var(--gold);color:#fff;font-weight:600;font-size:12px;font-family:var(--font);cursor:pointer;text-align:center;}
-#tab-admin .top-zone{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:stretch;margin-bottom:12px;height:clamp(380px,50vh,820px);}
-#tab-admin .top-left,#tab-admin .top-middle,#tab-admin .top-right{display:flex;flex-direction:column;height:100%;}
-#tab-admin .top-left .card,#tab-admin .top-middle .card,#tab-admin .top-right .card{flex:1;display:flex;flex-direction:column;min-height:0;}
-#tab-admin .top-left textarea,#tab-admin .top-left .ro-box,#tab-admin .top-middle .ro-box,#tab-admin .top-right #admin-notepad{flex:1;min-height:0;overflow-y:auto;}
-#tab-admin .week-zone{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:stretch;height:clamp(260px,32vh,560px);}
-#tab-admin .week-zone>.card{display:flex;flex-direction:column;min-height:0;}
-#tab-admin .week-zone>.card #admin-weekInput,#tab-admin .week-zone>.card #admin-pureOutput{flex:1;min-height:0;overflow-y:auto;}
+/* 三欄輸入區：移除固定高度，改用 align-items:start 讓各欄由內容決定高度，避免溢出蓋住下方區塊 */
+#tab-admin .top-zone{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:start;margin-bottom:12px;}
+#tab-admin .top-left,#tab-admin .top-middle,#tab-admin .top-right{display:flex;flex-direction:column;}
+#tab-admin .top-left .card,#tab-admin .top-middle .card,#tab-admin .top-right .card{display:flex;flex-direction:column;}
+/* textarea 改為固定高度＋捲軸，不依賴 flex 撐滿父層 */
+#tab-admin .top-left textarea,#tab-admin .top-left .ro-box,#tab-admin .top-middle .ro-box,#tab-admin .top-right #admin-notepad{height:280px;min-height:120px;overflow-y:auto;}
+/* 週報輸入區：同樣移除固定高度 */
+#tab-admin .week-zone{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:start;}
+#tab-admin .week-zone>.card{display:flex;flex-direction:column;}
+#tab-admin .week-zone>.card #admin-weekInput,#tab-admin .week-zone>.card #admin-pureOutput{height:220px;min-height:100px;overflow-y:auto;}
 #tab-admin .db-zone>.card{display:flex;flex-direction:column;}
 #tab-admin #admin-db{height:clamp(280px,34vh,600px);max-height:none;overflow-y:auto;flex-shrink:0;}
 #tab-admin .day-panel.card{padding:14px;}
