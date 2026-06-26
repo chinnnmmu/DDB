@@ -1105,14 +1105,25 @@ function loadAllDataFromCloud(silent) {
       try {
         var cloudEmpty = true;
         if (data && data.multiNotes && Array.isArray(data.multiNotes) && data.multiNotes.length > 0) {
-          // 30秒靜音刷新時，先把當前編輯器的資料合併進去再覆蓋
-          if (silent) { syncEditorsToNotes(); }
-          multiNotes = data.multiNotes;
-          // 如果 localStorage 有更多筆，用 localStorage（避免雲端存舊了）
-          try {
-            var lsN = JSON.parse(localStorage.getItem(MULTI_NOTES_LS_KEY)||'null');
-            if (lsN && Array.isArray(lsN) && lsN.length > multiNotes.length) { multiNotes = lsN; }
-          } catch(e){}
+          if (silent) {
+            // 靜默刷新：先同步編輯器，再合併雲端（不直接覆蓋）
+            syncEditorsToNotes();
+            var cloudNotes = data.multiNotes;
+            // 把雲端有但 in-memory 沒有的筆記補進來
+            cloudNotes.forEach(function(cn) {
+              var exists = multiNotes.find(function(n){ return String(n.id)===String(cn.id); });
+              if (!exists) multiNotes.push(cn);
+            });
+            // 重新存回雲端（以 in-memory 為準）
+            saveMultiNotes();
+          } else {
+            // 首次載入：直接用雲端資料，再用 localStorage 補更多筆
+            multiNotes = data.multiNotes;
+            try {
+              var lsN = JSON.parse(localStorage.getItem(MULTI_NOTES_LS_KEY)||'null');
+              if (lsN && Array.isArray(lsN) && lsN.length > multiNotes.length) { multiNotes = lsN; }
+            } catch(e){}
+          }
           renderMultiNoteList();
           cloudEmpty = false;
         }
