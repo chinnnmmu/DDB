@@ -601,16 +601,6 @@ body.sidebar-collapsed .app{margin-left:44px;}
             </div>
 
             <div id="quick-add-wrap" style="padding: 0.8rem; background: var(--card2); border-bottom: 1px solid var(--border);">
-              <!-- 多行解析區 -->
-              <div id="multi-paste-area" style="margin-bottom:0.6rem; background:var(--card); border:1px solid var(--border); border-radius:var(--r-sm); padding:0.5rem;">
-                <div style="font-size:0.75rem; color:var(--text3); margin-bottom:0.3rem;">支援格式：第1行=日期+時間、第2行=妹妹名、之後=地點、末行=備記(3+1等)</div>
-                <textarea id="qa-multi" style="height:5.5rem; font-size:0.875rem; font-family:var(--mono); width:100%; resize:none;" placeholder="7/1（週三）13:00&#10;北鼻&#10;嘉賓閣溫泉會館&#10;臺北市北投區光明路230號&#10;3+1"></textarea>
-                <div style="display:flex; gap:6px; margin-top:0.4rem; align-items:center;">
-                  <button class="btn btn-sage btn-sm" onclick="parseMultiLine()">⚡ 解析帶入欄位</button>
-                  <button class="btn btn-plain btn-sm" onclick="document.getElementById('qa-multi').value=''">清除</button>
-                  <span id="multi-parse-msg" style="font-size:0.8125rem; color:var(--text2);"></span>
-                </div>
-              </div>
               <div class="qa-fields">
                 <input id="qa-pai" class="qa-pai" placeholder="牌價" type="number" oninput="previewQaEE()" onkeydown="if(event.key==='Enter') submitQa(true)">
                 <input id="qa-name" class="qa-name" placeholder="人名" onkeydown="if(event.key==='Enter') submitQa(true)">
@@ -2674,19 +2664,28 @@ function parseImpLine(line){
 
   // 空格格式：{牌}{姓名} {時間}{地點} {阿姨}({備記}){實收} {EE}
   var note='';
-  line=line.replace(/\(([^)]*)\)/g,function(_,n){note=(note?note+' ':'')+n;return '';});
+  // 擷取全形/半形括號內備記
+  line=line.replace(/[（(]([^)）]*)[)）]/g,function(_,n){note=(note?note+' ':'')+n;return '';}).trim();
 
-  var m=line.match(/^(\d+)([一-龥A-Za-z]+)\s+(.*)/);
+  // 牌（數字）+ 人名（中英文，數字與名之間可有空格）
+  var m=line.match(/^(\d+)\s*([一-鿿㐀-䶿A-Za-z][一-鿿㐀-䶿A-Za-z0-9]*)\s+(.*)/);
   if(!m) return null;
   var pai=m[1], name=m[2], rest=m[3].trim();
 
-  var numMatches=rest.match(/(\d+)\s+(\d+)$/);
+  // 末尾兩個數字：實收 EE
+  var numMatches=rest.match(/(-?\d+)\s+(-?\d+)$/);
   var shi='',ee='';
   if(numMatches){ shi=numMatches[1]; ee=numMatches[2]; rest=rest.slice(0,rest.length-numMatches[0].length).trim(); }
+  else {
+    // 只有一個末尾數字：實收
+    var numMatch1=rest.match(/\s+(-?\d+)$/);
+    if(numMatch1){ shi=numMatch1[1]; rest=rest.slice(0,rest.length-numMatch1[0].length).trim(); }
+  }
 
+  // 末尾中文詞（2字以上，不含數字）= 阿姨
   var auntie='',place=rest;
-  var lastWord=rest.match(/([一-龥A-Za-z]+)$/);
-  if(lastWord && lastWord[0].length>=2 && !/\d/.test(lastWord[0])){
+  var lastWord=rest.match(/([一-鿿]{2,})$/);
+  if(lastWord){
     auntie=lastWord[0];
     place=rest.slice(0,rest.length-lastWord[0].length).trim();
   }
@@ -2928,94 +2927,6 @@ function submitQa(cont){
   previewQaEE();
 }
 
-function toggleMultiPaste() {
-  var area = document.getElementById('multi-paste-area');
-  var isOpen = area.style.display !== 'none';
-  area.style.display = isOpen ? 'none' : 'block';
-  document.getElementById('multi-paste-toggle').textContent = isOpen ? '📋 多行貼入解析' : '▲ 收起';
-  if(!isOpen) setTimeout(function(){ document.getElementById('qa-multi').focus(); }, 50);
-}
-
-function parseMultiLine() {
-  var raw = document.getElementById('qa-multi').value.trim();
-  var msgEl = document.getElementById('multi-parse-msg');
-  if(!raw){ msgEl.textContent = '⚠️ 請先貼入內容'; return; }
-
-  var lines = raw.split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
-  if(lines.length < 1){ msgEl.textContent = '⚠️ 內容太少'; return; }
-
-  // 判斷特殊備記的 pattern
-  var NOTE_RE = /^(\d+[+＋]\d+|雙飛|二王|外帶|住家|無套內|無套外|口爆|顏射|毒龍|後門|SM|攝影|自慰秀|情趣|入珠)/;
-  // 地址特徵：含市縣區路街巷號樓或超長且含數字
-  var ADDR_RE = /[市縣區路街巷號樓棟]|^\d+號/;
-  // 時間 pattern：HH:MM（半形或全形冒號）或 HHMM
-  var TIME_RE = /(\d{1,2}[：:]\d{2}|\d{3,4})/;
-  // 日期 pattern：M/D 或 MM/DD
-  var DATE_RE = /^(\d{1,2})[\/\-](\d{1,2})/;
-  // 週別去除
-  var WEEK_RE = /[（(][週周][一二三四五六日][）)]/g;
-
-  var parsedDate = '', parsedTime = '', parsedName = '', parsedPlaces = [], parsedNotes = [];
-  var dateFound = false, nameFound = false;
-
-  lines.forEach(function(line, idx) {
-    // 特殊備記（3+1 等），不管順序
-    if(NOTE_RE.test(line)){
-      parsedNotes.push(line);
-      return;
-    }
-    // 第一行優先偵測日期+時間
-    if(idx === 0 && DATE_RE.test(line)){
-      var clean = line.replace(WEEK_RE, '').trim();
-      var dm = clean.match(DATE_RE);
-      parsedDate = dm[1] + '/' + dm[2];
-      dateFound = true;
-      var tm = clean.match(/(\d{1,2}[：:]\d{2})/);
-      if(!tm) tm = clean.match(/[^\d](\d{3,4})/) || clean.match(/^(\d{3,4})/);
-      if(tm) parsedTime = tm[1];
-      return;
-    }
-    // 地址行
-    if(ADDR_RE.test(line) || line.length > 12){
-      parsedPlaces.push(line);
-      return;
-    }
-    // 妹妹名：短字串、非地址、排在日期後的第一個
-    if(!nameFound && line.length <= 8){
-      parsedName = line;
-      nameFound = true;
-      return;
-    }
-    // 其餘視為地點
-    parsedPlaces.push(line);
-  });
-
-  // 帶入日期 → 切換選擇日期
-  if(parsedDate && selDate){
-    var fullDate = normDate(parsedDate);
-    var pts = fullDate.split('/');
-    if(pts.length === 3){
-      SD(parseInt(pts[0],10), parseInt(pts[1],10)-1, parseInt(pts[2],10));
-    }
-  }
-
-  // 時間地點合併：time + 地點，空格分隔
-  var placeVal = (parsedTime ? parsedTime + ' ' : '') + parsedPlaces.join(' ');
-
-  if(parsedName) document.getElementById('qa-name').value = parsedName;
-  if(placeVal.trim()) document.getElementById('qa-place').value = placeVal.trim();
-  if(parsedNotes.length) document.getElementById('qa-note').value = parsedNotes.join('、');
-
-  previewQaEE();
-
-  var parts = [];
-  if(parsedDate) parts.push('日期 '+parsedDate);
-  if(parsedName) parts.push('妹妹 '+parsedName);
-  if(placeVal.trim()) parts.push('地點已填');
-  if(parsedNotes.length) parts.push('備記 '+parsedNotes.join('/'));
-  msgEl.style.color = 'var(--sage)';
-  msgEl.textContent = '✓ 已帶入：' + (parts.length ? parts.join('、') : '（無法解析）');
-}
 
 function copyLastQa(){
   var k = selKey();
