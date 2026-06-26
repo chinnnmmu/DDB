@@ -628,11 +628,6 @@ body.sidebar-collapsed .app{margin-left:44px;}
               </div>
             </div>
 
-            <!-- 篩選列已移除 -->
-            <input id="filter-name" type="hidden" value="">
-            <input id="filter-auntie" type="hidden" value="">
-            <input id="filter-time" type="hidden" value="">
-            <select id="filter-status" style="display:none;"><option value=""></option></select>
 
             <div class="tbl-wrap">
               <table class="etbl" id="etbl" style="display: table; min-width: 600px;">
@@ -1187,7 +1182,6 @@ var today=new Date();
 var noteFilter = 'all';
 var currentStickyId = null;
 var multiNotes = [];
-var workorderFilters = { name: '', auntie: '', time: '', status: '' };
 
 var COLS = ['pai','name','place','auntie','shi','ee','rebate','note'];
 var WDS=['一','二','三','四','五','六','日'];
@@ -1606,23 +1600,6 @@ function saveMultiNote(num) {
 }
 
 // ===== 工單篩選和刪除功能 =====
-function applyWorkorderFilters() {
-  workorderFilters.name = document.getElementById('filter-name').value.toLowerCase();
-  workorderFilters.auntie = document.getElementById('filter-auntie').value.toLowerCase();
-  workorderFilters.time = document.getElementById('filter-time').value.toLowerCase();
-  workorderFilters.status = document.getElementById('filter-status').value;
-  
-  RR(); // 重新渲染表格
-}
-
-function clearWorkorderFilters() {
-  document.getElementById('filter-name').value = '';
-  document.getElementById('filter-auntie').value = '';
-  document.getElementById('filter-time').value = '';
-  document.getElementById('filter-status').value = '';
-  workorderFilters = { name: '', auntie: '', time: '', status: '' };
-  RR();
-}
 
 function deleteWorkorder(rowIndex) {
   var k = selKey();
@@ -2360,51 +2337,28 @@ function RR(){
     if(el) el.style.display = hasD ? 'inline-flex' : 'none';
   });
   
-  // 應用篩選
-  var filteredRows = rows.filter(function(row, ri) {
-    var nameMatch = !workorderFilters.name || (row.name || '').toLowerCase().includes(workorderFilters.name);
-    var auntieMatch = !workorderFilters.auntie || (row.auntie || '').toLowerCase().includes(workorderFilters.auntie);
-    var timeMatch = !workorderFilters.time || (row.place || '').toLowerCase().includes(workorderFilters.time);
-    var statusMatch = !workorderFilters.status || (workorderFilters.status === 'settled' ? row.settled === true : row.settled !== true);
-    return nameMatch && auntieMatch && timeMatch && statusMatch;
-  });
-  
   var tbl = document.getElementById('etbl');
-  if(tbl) tbl.style.display = (hasD && filteredRows.length) ? 'table' : 'none';
-  
+  if(tbl) tbl.style.display = (hasD && rows.length) ? 'table' : 'none';
+
   var tblAdd = document.getElementById('tbl-add');
   if(tblAdd) tblAdd.style.display = hasD ? 'block' : 'none';
-  
+
   var emptyEl = document.getElementById('wo-empty');
   if(emptyEl) {
-    emptyEl.style.display = (hasD && filteredRows.length) ? 'none' : 'block';
-    if(workorderFilters.name || workorderFilters.auntie || workorderFilters.time || workorderFilters.status) {
-      emptyEl.textContent = '沒有符合篩選條件的工單';
-    } else {
-      emptyEl.textContent = hasD ? '尚無工單，可在上方快速新增' : '點選左側日期查看工單';
-    }
+    emptyEl.style.display = (hasD && rows.length) ? 'none' : 'block';
+    emptyEl.textContent = hasD ? '尚無工單，可在上方快速新增' : '點選左側日期查看工單';
   }
-  
+
   var htitle = document.getElementById('wo-htitle');
-  if(htitle) htitle.textContent = hasD ? dateStr + ' 工單 (' + filteredRows.length + '/' + rows.length + ')' : '點選日期';
-  
+  if(htitle) htitle.textContent = hasD ? dateStr + ' 工單 (' + rows.length + ')' : '點選日期';
+
   var cb = document.getElementById('wo-cnt');
-  if(cb) { cb.textContent = filteredRows.length + ' 筆 / 共 ' + rows.length; cb.style.display = rows.length ? 'inline-block' : 'none'; }
-  
+  if(cb) { cb.textContent = rows.length + ' 筆'; cb.style.display = rows.length ? 'inline-block' : 'none'; }
+
   if(!hasD || !rows.length){ updateDailyStats(); return; }
-  
+
   var html='';
-  var displayIndex = 0;
   rows.forEach(function(row,ri){
-    // 檢查此行是否符合篩選條件
-    var nameMatch = !workorderFilters.name || (row.name || '').toLowerCase().includes(workorderFilters.name);
-    var auntieMatch = !workorderFilters.auntie || (row.auntie || '').toLowerCase().includes(workorderFilters.auntie);
-    var timeMatch = !workorderFilters.time || (row.place || '').toLowerCase().includes(workorderFilters.time);
-    var statusMatch = !workorderFilters.status || (workorderFilters.status === 'settled' ? row.settled === true : row.settled !== true);
-    
-    if(!(nameMatch && auntieMatch && timeMatch && statusMatch)) return;
-    
-    displayIndex++;
     var isSettled = row.settled === true;
     var rowStyle = isSettled ? 'opacity:0.55; background:#f5f5f5;' : '';
     html+='<tr style="'+rowStyle+'">';
