@@ -2610,11 +2610,11 @@ function parseImpLine(line){
     var place2=(parts[2]||'').trim();
     var auntie2=(parts[3]||'').trim();
     var moneyStr=(parts[4]||'').trim();
-    var shi2='',rebate2='';
+    var shi2='',ee2='';
     var mm=moneyStr.match(/^(-?\d+)[\/／](-?\d+)$/);
-    if(mm){shi2=mm[1];rebate2=mm[2];}else if(moneyStr){shi2=moneyStr;}
+    if(mm){shi2=mm[1];ee2=mm[2];}else if(moneyStr){shi2=moneyStr;}
     var placeStr=time2?(time2+' '+place2).trim():place2;
-    return {id:'r'+Date.now()+Math.random(),pai:pai2,name:name2,place:placeStr,auntie:auntie2,shi:shi2,rebate:rebate2,ee:'',note:note2,settled:false,settledDate:'',settledAmount:''};
+    return {id:'r'+Date.now()+Math.random(),pai:pai2,name:name2,place:placeStr,auntie:auntie2,shi:shi2,rebate:'',ee:ee2,note:note2,settled:false,settledDate:'',settledAmount:''};
   }
 
   // 空格格式：{牌}{姓名} {時間}{地點} {阿姨}({備記}){實收} {EE}
