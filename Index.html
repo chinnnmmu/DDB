@@ -348,6 +348,15 @@ body.sidebar-collapsed .app{margin-left:44px;}
 #tab-admin #admin-dbStatus{font-size:11px;color:var(--sage);min-height:14px;margin-top:4px;}
 #tab-admin #admin-missing{font-size:12px;color:var(--danger);font-weight:600;min-height:14px;margin-top:4px;}
 #tab-admin #admin-globalStatus{font-size:12px;color:var(--text2);min-height:16px;}
+/* 轉換結果縮短（有捲軸就好） */
+#tab-admin #admin-outputDiv{height:180px;min-height:80px;}
+/* 探索搜尋：左右並排 */
+#bb-results{display:grid;grid-template-columns:260px 1fr;gap:10px;align-items:start;margin-top:8px;}
+#bb-list-left{padding:0;overflow:hidden;}
+#bb-list{padding:0;overflow:hidden;}
+.bsort-btn.bsort-active{background:var(--rose)!important;color:#fff!important;border-color:var(--rose)!important;}
+.bbp-left{cursor:default;}
+@media(max-width:768px){#bb-results{grid-template-columns:1fr;}}
 /* Walk Panel */
 #tab-walk{overflow-x:hidden;}
 #tab-walk .walk-wrap{padding:16px;max-width:1400px;margin:0;}
@@ -684,6 +693,26 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
 
 <div id="tab-bb" class="panel">
+
+  <!-- 資料來源：自動讀取班表管理→自由編輯區，移到最上方方便操作 -->
+  <div class="card" style="margin-bottom:8px;padding:0.6rem 0.75rem;">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">📋 班表資料來源：<b>班表管理 → 自由編輯區</b>（切換到此頁自動載入）</div>
+    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-sage btn-sm" onclick="parseBBFromNotepad()">⚡ 重新解析</button>
+      <button class="btn btn-plain btn-sm" id="paste-btn" onclick="togglePaste()">✎ 手動貼上</button>
+      <span class="msg" id="bb-msg"></span>
+    </div>
+    <!-- 手動貼上備用（收起狀態） -->
+    <div class="paste-area" id="bb-paste" style="margin-top:8px;">
+      <textarea style="height:4.5rem;font-size:0.9375rem" id="bb-raw" placeholder="貼上班表原始文字..." oninput="saveLS('bb-raw-cache',this.value)"></textarea>
+      <div style="display:flex;gap:0.4rem;margin-top:0.4rem;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-sage btn-sm" onclick="parseBB()">⚡ 解析</button>
+        <button class="btn btn-rose-outline btn-sm" onclick="clearBB()">清除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 篩選＋搜尋控制列 -->
   <div class="card">
     <div style="padding:0.5rem">
       <div class="chips" id="chips">
@@ -708,34 +737,30 @@ body.sidebar-collapsed .app{margin-left:44px;}
         <span class="chip" data-f="日韓" onclick="TC(this)">日韓</span>
         <span class="chip" data-f="台妹" onclick="TC(this)">台妹</span>
       </div>
-      <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
-        <input id="bbq" placeholder="搜尋人名、服務..." oninput="RBB()" style="flex:1;min-width:10rem">
-        <div style="display:flex;gap:0.4rem;font-size:0.875rem;color:var(--text2)">
-          <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="bm" value="and" checked onchange="RBB()"> AND</label>
-          <label style="display:flex;align-items:center;gap:4px;cursor:pointer"><input type="radio" name="bm" value="or" onchange="RBB()"> OR</label>
+      <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;margin-top:0.3rem;">
+        <input id="bbq" placeholder="搜尋人名、服務..." oninput="RBB()" style="flex:1;min-width:8rem">
+        <div style="display:flex;gap:0.4rem;font-size:0.8125rem;color:var(--text2)">
+          <label style="display:flex;align-items:center;gap:3px;cursor:pointer"><input type="radio" name="bm" value="and" checked onchange="RBB()"> AND</label>
+          <label style="display:flex;align-items:center;gap:3px;cursor:pointer"><input type="radio" name="bm" value="or" onchange="RBB()"> OR</label>
         </div>
-        <select id="bb-sort" onchange="RBB()" style="width:auto;height:30px;padding:0 0.4rem;font-size:0.8125rem;border-radius:var(--r-sm);">
-          <option value="price-asc">牌價 低➜高</option>
-          <option value="price-desc">牌價 高➜低</option>
-          <option value="name">按名字</option>
-        </select>
+        <!-- 排序：直接按鈕，不用下拉選單 -->
+        <div style="display:flex;gap:3px;">
+          <button onclick="setBBSort('price-asc')" id="bsort-asc" class="btn btn-plain btn-sm bsort-btn bsort-active">低→高</button>
+          <button onclick="setBBSort('price-desc')" id="bsort-desc" class="btn btn-plain btn-sm bsort-btn">高→低</button>
+          <button onclick="setBBSort('name')" id="bsort-name" class="btn btn-plain btn-sm bsort-btn">名字</button>
+        </div>
         <button class="btn btn-rose-outline btn-sm" onclick="resetBB()">清除</button>
       </div>
       <div class="bb-stats" id="bb-stats">共 0 位｜顯示 0 位</div>
     </div>
   </div>
-  <div class="card" id="bb-list"><div class="empty">請先貼入班表並解析</div></div>
-  <div style="text-align:center;margin:0.4rem 0">
-    <button class="btn btn-plain btn-sm" id="paste-btn" onclick="togglePaste()">▲ 貼入班表</button>
+
+  <!-- 左右並排：左=精簡（勾選服務），右=完整資料 -->
+  <div id="bb-results">
+    <div class="card" id="bb-list-left"><div class="empty">請先解析班表</div></div>
+    <div class="card" id="bb-list"><div class="empty">請先解析班表</div></div>
   </div>
-  <div class="paste-area" id="bb-paste">
-    <textarea style="height:4.5rem;font-size:0.9375rem" id="bb-raw" placeholder="貼上班表原始文字..." oninput="saveLS('bb-raw-cache',this.value)"></textarea>
-    <div style="display:flex;gap:0.4rem;margin-top:0.4rem;flex-wrap:wrap;align-items:center">
-      <button class="btn btn-sage btn-sm" onclick="parseBB()">⚡ 解析班表</button>
-      <button class="btn btn-rose-outline btn-sm" onclick="clearBB()">清除</button>
-      <span class="msg" id="bb-msg"></span>
-    </div>
-  </div>
+
 </div>
 
 <div id="tab-stat" class="panel">
@@ -783,7 +808,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
       <div class="card">
         <div class="lbl">📝 自由編輯區 <span style="font-size:10px;color:var(--sage);font-weight:400;">（同步至探索搜尋）</span></div>
         <textarea id="admin-notepad" placeholder="在此自由輸入或整理內容…" spellcheck="false"
-          oninput="adminAutoSave('note',this.value)"></textarea>
+          oninput="adminAutoSave('note',this.value);syncNotepadToBb()"></textarea>
         <div class="btn-row" style="margin-top:10px;">
           <button class="primary" onclick="adminCopyNotepad()">📋 複製此欄</button>
           <button class="subtle" onclick="adminClearNotepad()">清除</button>
@@ -830,7 +855,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
       </div>
       <div style="margin-top:12px;">
         <textarea id="admin-db" placeholder="請在此貼入母檔資料…" spellcheck="false"
-          oninput="adminAutoSave('db',this.value);syncDbToBbRaw()"></textarea>
+          oninput="adminAutoSave('db',this.value)"></textarea>
         <div id="admin-dbStatus">（整理後顯示統計）</div>
         <button id="toggleDbBtn" onclick="adminToggleDbCollapse()">▼ 展開完整母檔</button>
       </div>
@@ -998,7 +1023,7 @@ function setTheme(themeName) {
 
 var SK='ddb9',SNK='ddb9s';
 
-var notes={},stickies=[],bbData=[];
+var notes={},stickies=[],bbData=[],bbSortMode='price-asc';
 var selDate=null,selR=-1,selC=-1,pDel=-1;
 var vy=new Date().getFullYear(),vm=new Date().getMonth();
 var today=new Date();
@@ -1165,7 +1190,7 @@ function loadAllDataFromCloud(silent) {
           var eDb   = document.getElementById('admin-db');
           if (eDay  && kv.day)  { eDay.value  = kv.day;  try{RC();}catch(e){} }
           if (eWeek && kv.week) { eWeek.value = kv.week; try{RW();}catch(e){} }
-          if (eNote && kv.note) { eNote.value = kv.note; }
+          if (eNote && kv.note) { eNote.value = kv.note; try{syncNotepadToBb();}catch(e){} }
           if (eDb   && kv.db)   { eDb.value   = kv.db;   try{syncDbToBbRaw();}catch(e){} }
           if (kv.walk) {
             try {
@@ -1850,6 +1875,8 @@ function ST(id){
   if(id==='note') { RSG(); renderMultiNoteList(); }
   if(id==='all') renderAllOrders();
   if(id==='stat') renderUnpaidDashboard();
+  // 切換到探索搜尋時，自動從自由編輯區重新解析
+  if(id==='bb') { syncNotepadToBb(); if(document.getElementById('bb-raw').value.trim()) parseBB(); }
 }
 
 function SST(id){ ST(id); }
@@ -2487,10 +2514,19 @@ function parseSched(raw){
 function getFs(){return Array.from(document.querySelectorAll('.chip.on')).map(function(c){return c.dataset.f;});}
 function gmatch(g,f){if(f==='日韓')return g.section==='jp';if(f==='台妹')return g.section==='tw';return g.tags.concat(g.ok).concat(g.services).concat(g.free).join(' ').indexOf(f)>=0;}
 
+/* 排序按鈕切換 */
+function setBBSort(mode) {
+  bbSortMode = mode;
+  document.querySelectorAll('.bsort-btn').forEach(function(b){ b.classList.remove('bsort-active'); });
+  var active = document.getElementById('bsort-'+( mode==='price-asc'?'asc': mode==='price-desc'?'desc':'name' ));
+  if(active) active.classList.add('bsort-active');
+  RBB();
+}
+
 function RBB(){
   var fs=getFs(),q=document.getElementById('bbq').value.toLowerCase(),andM=document.querySelector('input[name=bm]:checked').value==='and';
-  // 移除日韓和台妹標籤（在篩選時）
-  fs = fs.filter(function(f) { return f !== '日韓' && f !== '台妹'; });
+  // 日韓/台妹不算服務篩選
+  fs = fs.filter(function(f){ return f !== '日韓' && f !== '台妹'; });
   var svcFs=fs;
   var rows=bbData.filter(function(g){
     var all=[g.name,g.price+'',g.timeRaw,g.section==='jp'?'日韓':'台妹'].concat(g.tags).concat(g.ok).concat(g.services).concat(g.free).join(' ').toLowerCase();
@@ -2498,16 +2534,23 @@ function RBB(){
     if(!fs.length)return true;
     return andM?fs.every(function(f){return gmatch(g,f);}):fs.some(function(f){return gmatch(g,f);});
   });
-  var sortMode = document.getElementById('bb-sort') ? document.getElementById('bb-sort').value : 'price-asc';
-  if(sortMode==='price-desc') rows.sort(function(a,b){return b.price-a.price;});
-  else if(sortMode==='name') rows.sort(function(a,b){return a.name<b.name?-1:a.name>b.name?1:0;});
+  if(bbSortMode==='price-desc') rows.sort(function(a,b){return b.price-a.price;});
+  else if(bbSortMode==='name') rows.sort(function(a,b){return a.name<b.name?-1:a.name>b.name?1:0;});
   else rows.sort(function(a,b){return a.price-b.price;});
   var statEl=document.getElementById('bb-stats');
-  if(statEl) statEl.textContent='共 '+bbData.length+' 位｜顯示 '+rows.length+' 位'+(fs.length?' ｜ '+fs.join(' + '):'');
-  var el=document.getElementById('bb-list');
-  if(!el) return;
-  if(!rows.length){el.innerHTML='<div class="empty">'+(bbData.length?'沒有符合條件':'請先貼入班表並解析')+'</div>';return;}
+  if(statEl) statEl.textContent='共 '+bbData.length+' 位｜顯示 '+rows.length+' 位'+(svcFs.length?' ｜ '+svcFs.join(' + '):'');
 
+  var elL=document.getElementById('bb-list-left');
+  var elR=document.getElementById('bb-list');
+  if(!elR) return;
+  if(!rows.length){
+    var msg='<div class="empty">'+(bbData.length?'沒有符合條件':'請先解析班表')+'</div>';
+    if(elL) elL.innerHTML=msg;
+    elR.innerHTML=msg;
+    return;
+  }
+
+  /* 完整卡片（右欄） */
   function renderCard(g){
     var isJP=g.section==='jp', specs=g.specs;
     var hasF=svcFs.length>0;
@@ -2522,22 +2565,44 @@ function RBB(){
     return '<div class="bbp '+(isJP?'jp':'tw')+'"><div class="prow"><span class="pprice">'+g.price+'</span> <span class="pname">『'+g.name+'』</span>'+(specs?'<span class="pspec">'+specs+'</span>':'')+(g.timeRaw?'<span class="ptime">'+g.timeRaw+'</span>':'')+'</div>'+row1+row2+row3+'</div>';
   }
 
-  // 判斷是否有日韓/台妹篩選 chip
-  var chipFs = getFs();
-  var filterJP = chipFs.indexOf('日韓')>=0, filterTW = chipFs.indexOf('台妹')>=0;
-  var showJP = !filterTW || filterJP, showTW = !filterJP || filterTW;
-  var jpRows = rows.filter(function(g){return g.section==='jp';});
-  var twRows = rows.filter(function(g){return g.section!=='jp';});
-  var html = '';
+  /* 精簡卡片（左欄）：只顯示牌/名/規格 + 勾選篩選對應的服務 */
+  function renderCardLeft(g){
+    var hasF=svcFs.length>0, specs=g.specs;
+    var matched=[];
+    if(hasF){
+      g.tags.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}).forEach(function(t){matched.push('<span class="ptag tmatch">'+t+'</span>');});
+      g.ok.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}).forEach(function(t){matched.push('<span class="ptag tmatch">✓'+t+'</span>');});
+      g.services.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}).forEach(function(s){matched.push('<span class="ptag tmatch">◼'+s+'</span>');});
+      g.free.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}).forEach(function(s){matched.push('<span class="ptag tmatch">◻'+s+'</span>');});
+    } else {
+      // 無篩選時顯示前幾個主要 tag
+      g.tags.slice(0,3).forEach(function(t){matched.push('<span class="ptag tsage">'+t+'</span>');});
+    }
+    var mRow=matched.length?'<div class="prow" style="margin-top:2px;">'+matched.join('')+'</div>':'';
+    return '<div class="bbp bbp-left"><div class="prow"><span class="pprice">'+g.price+'</span> <span class="pname">『'+g.name+'』</span>'+(specs?'<span class="pspec">'+specs+'</span>':'')+'</div>'+mRow+'</div>';
+  }
+
+  var chipFs=getFs();
+  var filterJP=chipFs.indexOf('日韓')>=0, filterTW=chipFs.indexOf('台妹')>=0;
+  var showJP=!filterTW||filterJP, showTW=!filterJP||filterTW;
+  var jpRows=rows.filter(function(g){return g.section==='jp';});
+  var twRows=rows.filter(function(g){return g.section!=='jp';});
+
+  var htmlR='', htmlL='';
   if(showJP && jpRows.length){
-    html += '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--sky);padding:6px 4px 4px;">🇯🇵 日韓（'+jpRows.length+'）</div>';
-    html += jpRows.map(renderCard).join('');
+    var hdr='<div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--sky);padding:6px 4px 4px;">🇯🇵 日韓（'+jpRows.length+'）</div>';
+    htmlR+=hdr; htmlL+=hdr;
+    htmlR+=jpRows.map(renderCard).join('');
+    htmlL+=jpRows.map(renderCardLeft).join('');
   }
   if(showTW && twRows.length){
-    html += '<div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--sage);padding:10px 4px 4px;">🇹🇼 台妹（'+twRows.length+'）</div>';
-    html += twRows.map(renderCard).join('');
+    var hdr2='<div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--sage);padding:10px 4px 4px;">🇹🇼 台妹（'+twRows.length+'）</div>';
+    htmlR+=hdr2; htmlL+=hdr2;
+    htmlR+=twRows.map(renderCard).join('');
+    htmlL+=twRows.map(renderCardLeft).join('');
   }
-  el.innerHTML = html || '<div class="empty">沒有符合條件</div>';
+  if(elL) elL.innerHTML=htmlL||'<div class="empty">沒有符合條件</div>';
+  elR.innerHTML=htmlR||'<div class="empty">沒有符合條件</div>';
 }
 
 function toast(msg){
@@ -2805,14 +2870,22 @@ function adminAutoSave(key, val) {
   }, 1500);
 }
 
-/* ── Sync db → bb-raw ── */
-function syncDbToBbRaw() {
-  var dbVal = document.getElementById('admin-db');
+/* ── 同步自由編輯區 → bb-raw（探索搜尋資料來源）── */
+function syncNotepadToBb() {
+  var notepad = document.getElementById('admin-notepad');
   var bbRaw = document.getElementById('bb-raw');
-  if (dbVal && bbRaw) {
-    bbRaw.value = dbVal.value;
+  if (notepad && bbRaw) {
+    bbRaw.value = notepad.value;
     saveLS('bb-raw-cache', bbRaw.value);
   }
+}
+// 保留舊名稱為空函式，避免殘存呼叫出錯
+function syncDbToBbRaw() {}
+
+// 從自由編輯區重新解析班表（供「重新解析」按鈕使用）
+function parseBBFromNotepad() {
+  syncNotepadToBb();
+  parseBB();
 }
 
 /* ══════════════════════════════════════════
