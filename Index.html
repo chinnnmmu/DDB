@@ -1341,19 +1341,29 @@ function loadAllDataFromCloud(silent) {
           cloudEmpty = false;
         }
         if (data && data.workOrders && typeof data.workOrders === 'object' && Object.keys(data.workOrders).length > 0) {
-          // 比較 localStorage 有沒有更新的工單（重整前來不及存雲端的）
-          var lsOrders = null, lsTs = 0;
+          // 合併 localStorage 和雲端工單（取聯集，各日期取筆數多的）
+          var lsOrders2 = null, lsTs2 = 0;
           try {
             var lsRaw = JSON.parse(localStorage.getItem(ORDERS_LS_KEY)||'null');
-            if (lsRaw && lsRaw.ts && lsRaw.data) { lsOrders = lsRaw.data; lsTs = lsRaw.ts; }
+            if (lsRaw && lsRaw.ts && lsRaw.data) { lsOrders2 = lsRaw.data; lsTs2 = lsRaw.ts; }
           } catch(e){}
-          // 如果 localStorage 在 10 秒內有更新，優先用 localStorage（代表剛重整）
-          if (lsOrders && (Date.now() - lsTs < 10000)) {
-            notes = lsOrders;
-            toast('✓ 已從本機快取還原（雲端同步中）');
-            saveAllDataToCloud(); // 把剛才來不及存的立刻補傳
-          } else {
-            notes = data.workOrders;
+          var merged = data.workOrders;
+          var needUpload = false;
+          if (lsOrders2 && typeof lsOrders2 === 'object') {
+            // 對每個日期 key，取筆數較多（較新）的那份
+            Object.keys(lsOrders2).forEach(function(dk) {
+              var lsRows = lsOrders2[dk] || [];
+              var cloudRows = merged[dk] || [];
+              if (lsRows.length > cloudRows.length) {
+                merged[dk] = lsRows;
+                needUpload = true;
+              }
+            });
+          }
+          notes = merged;
+          if (needUpload) {
+            toast('✓ 已合併本機快取（補傳中）');
+            setTimeout(saveAllDataToCloud, 500);
           }
           try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
           try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
