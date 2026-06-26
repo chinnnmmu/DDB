@@ -1099,14 +1099,34 @@ function loadAllDataFromCloud(silent) {
     .withSuccessHandler(function(data) {
       clearTimeout(cloudTimeout);
       try {
-        if (data && data.multiNotes && Array.isArray(data.multiNotes)) {
+        var cloudEmpty = true;
+        if (data && data.multiNotes && Array.isArray(data.multiNotes) && data.multiNotes.length > 0) {
           multiNotes = data.multiNotes;
           renderMultiNoteList();
+          cloudEmpty = false;
         }
-        if (data && data.workOrders && typeof data.workOrders === 'object') {
+        if (data && data.workOrders && typeof data.workOrders === 'object' && Object.keys(data.workOrders).length > 0) {
           notes = data.workOrders;
           try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
           try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
+          cloudEmpty = false;
+        }
+        // 如果雲端是空的，嘗試從 localStorage 搬移舊資料
+        if (cloudEmpty && !localStorage.getItem('ddb-migrated')) {
+          var lsNotes = null, lsOrders = null;
+          try { lsNotes = JSON.parse(localStorage.getItem('ddb9s') || 'null'); } catch(e){}
+          try { lsOrders = JSON.parse(localStorage.getItem('ddb9') || 'null'); } catch(e){}
+          if (lsNotes || lsOrders) {
+            if (Array.isArray(lsNotes) && lsNotes.length) { multiNotes = lsNotes; renderMultiNoteList(); }
+            if (lsOrders && typeof lsOrders === 'object') {
+              notes = lsOrders;
+              try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
+              try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
+            }
+            localStorage.setItem('ddb-migrated', '1');
+            saveAllDataToCloud();
+            toast('✓ 已將本機舊資料搬移到雲端');
+          }
         }
       } catch(handlerErr) { console.error('loadAllData handler:', handlerErr); }
       hideLoadingOverlay();
