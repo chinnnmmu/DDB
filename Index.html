@@ -2665,10 +2665,10 @@ function copyLastQa(){
 function applyLayoutOffset(){
   var app = document.querySelector('.app');
   if(!app) return;
-  if(window.innerWidth < 1024){ app.style.marginLeft=''; app.style.maxWidth=''; return; }
+  if(window.innerWidth < 1024){ app.style.removeProperty('margin-left'); app.style.removeProperty('max-width'); return; }
   var w = document.body.classList.contains('sidebar-collapsed') ? 44 : 160;
-  app.style.marginLeft = w+'px';
-  app.style.maxWidth = 'calc(100% - '+w+'px)';
+  app.style.setProperty('margin-left', w+'px', 'important');
+  app.style.setProperty('max-width', 'calc(100% - '+w+'px)', 'important');
 }
 function toggleSidebar(){
   var collapsed = document.body.classList.toggle('sidebar-collapsed');
