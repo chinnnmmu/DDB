@@ -1205,7 +1205,10 @@ function load(){
   multiNotes=[];
 }
 var _cloudSaveTimer = null;
+var ORDERS_LS_KEY = 'ddb-work-orders';
 function save(){
+  // 立即存到 localStorage，避免重整遺失
+  try{ localStorage.setItem(ORDERS_LS_KEY, JSON.stringify({ts: Date.now(), data: notes})); }catch(e){}
   clearTimeout(_cloudSaveTimer);
   _cloudSaveTimer = setTimeout(function(){
     saveAllDataToCloud();
@@ -1338,7 +1341,20 @@ function loadAllDataFromCloud(silent) {
           cloudEmpty = false;
         }
         if (data && data.workOrders && typeof data.workOrders === 'object' && Object.keys(data.workOrders).length > 0) {
-          notes = data.workOrders;
+          // 比較 localStorage 有沒有更新的工單（重整前來不及存雲端的）
+          var lsOrders = null, lsTs = 0;
+          try {
+            var lsRaw = JSON.parse(localStorage.getItem(ORDERS_LS_KEY)||'null');
+            if (lsRaw && lsRaw.ts && lsRaw.data) { lsOrders = lsRaw.data; lsTs = lsRaw.ts; }
+          } catch(e){}
+          // 如果 localStorage 在 10 秒內有更新，優先用 localStorage（代表剛重整）
+          if (lsOrders && (Date.now() - lsTs < 10000)) {
+            notes = lsOrders;
+            toast('✓ 已從本機快取還原（雲端同步中）');
+            saveAllDataToCloud(); // 把剛才來不及存的立刻補傳
+          } else {
+            notes = data.workOrders;
+          }
           try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
           try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
           cloudEmpty = false;
@@ -1372,7 +1388,12 @@ function loadAllDataFromCloud(silent) {
           var lsNotes = null, lsOrders = null;
           try { lsNotes = JSON.parse(localStorage.getItem(MULTI_NOTES_LS_KEY)||'null'); } catch(e){}
           if (!lsNotes) { try { lsNotes = JSON.parse(localStorage.getItem('ddb9s')||'null'); } catch(e){} }
-          try { lsOrders = JSON.parse(localStorage.getItem('ddb9')||'null'); } catch(e){}
+          // 先用新 key，再試舊 key
+          try {
+            var lsRaw2 = JSON.parse(localStorage.getItem(ORDERS_LS_KEY)||'null');
+            if (lsRaw2 && lsRaw2.data) lsOrders = lsRaw2.data;
+          } catch(e){}
+          if (!lsOrders) { try { lsOrders = JSON.parse(localStorage.getItem('ddb9')||'null'); } catch(e){} }
           if (lsNotes && Array.isArray(lsNotes) && lsNotes.length) { multiNotes = lsNotes; renderMultiNoteList(); }
           if (lsOrders && typeof lsOrders === 'object' && Object.keys(lsOrders).length) {
             notes = lsOrders;
