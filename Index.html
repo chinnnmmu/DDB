@@ -2651,11 +2651,20 @@ function copyLastQa(){
   previewQaEE();
 }
 
+function applyLayoutOffset(){
+  var app = document.querySelector('.app');
+  if(!app) return;
+  if(window.innerWidth < 1024){ app.style.marginLeft=''; app.style.maxWidth=''; return; }
+  var w = document.body.classList.contains('sidebar-collapsed') ? 44 : 160;
+  app.style.marginLeft = w+'px';
+  app.style.maxWidth = 'calc(100% - '+w+'px)';
+}
 function toggleSidebar(){
   var collapsed = document.body.classList.toggle('sidebar-collapsed');
   var sidebar = document.getElementById('mainSidebar');
   if(sidebar) sidebar.classList.toggle('collapsed', collapsed);
   try{ localStorage.setItem('ddb-sidebar-collapsed', collapsed?'1':'0'); }catch(e){}
+  applyLayoutOffset();
 }
 
 window.onload=function(){
@@ -2668,6 +2677,8 @@ window.onload=function(){
       var sb=document.getElementById('mainSidebar'); if(sb) sb.classList.add('collapsed');
     }
   } catch(e){}
+  applyLayoutOffset();
+  window.addEventListener('resize', applyLayoutOffset);
 
   var impBtn = document.getElementById('imp-btn');
   if(impBtn) impBtn.onclick=doImport;
