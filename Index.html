@@ -2672,18 +2672,19 @@ function RBB(){
     return;
   }
 
-  /* 完整卡片（右欄） */
+  /* 完整卡片（右欄）：永遠顯示所有資料，篩選命中的項目額外標色 */
   function renderCard(g){
     var isJP=g.section==='jp', specs=g.specs;
     var hasF=svcFs.length>0;
-    var tagH=(hasF?g.tags.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.tags).map(function(t){return '<span class="ptag '+(hasF?'tmatch':'tsage')+'">'+t+'</span>';}).join('');
-    var okH=(hasF?g.ok.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.ok).map(function(t){return '<span class="ptag '+(hasF?'tmatch':'tsky')+'">✓'+t+'</span>';}).join('');
-    var ngH=(hasF?g.ng.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.ng).map(function(t){return '<span class="ptag '+(hasF?'tmatch':'trose')+'">✗'+t+'</span>';}).join('');
-    var svcH=(hasF?g.services.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.services).map(function(s){return '<span class="ptag '+(hasF?'tmatch':'tpeach')+'">'+s+'</span>';}).join('');
-    var freeH=(hasF?g.free.filter(function(s){return svcFs.some(function(f){return s.indexOf(f)>=0;});}):g.free).map(function(s){return '<span class="ptag '+(hasF?'tmatch':'tlatte')+'">'+s+'</span>';}).join('');
+    function hit(s){ return hasF && svcFs.some(function(f){return s.indexOf(f)>=0;}); }
+    var tagH=g.tags.map(function(t){return '<span class="ptag '+(hit(t)?'tmatch':'tsage')+'">'+t+'</span>';}).join('');
+    var okH=g.ok.map(function(t){return '<span class="ptag '+(hit(t)?'tmatch':'tsky')+'">✓'+t+'</span>';}).join('');
+    var ngH=g.ng.map(function(t){return '<span class="ptag '+(hit(t)?'tmatch':'trose')+'">✗'+t+'</span>';}).join('');
+    var svcH=g.services.map(function(s){return '<span class="ptag '+(hit(s)?'tmatch':'tpeach')+'">'+s+'</span>';}).join('');
+    var freeH=g.free.map(function(s){return '<span class="ptag '+(hit(s)?'tmatch':'tlatte')+'">'+s+'</span>';}).join('');
     var row1=(tagH||okH||ngH)?'<div class="prow">'+tagH+okH+ngH+'</div>':'';
-    var row2=svcH?'<div class="prow"><span class="tmuted">◼</span>'+svcH+'</div>':'';
-    var row3=freeH?'<div class="prow"><span class="tmuted">◻</span>'+freeH+'</div>':'';
+    var row2=svcH?'<div class="prow"><span class="tmuted">■</span>'+svcH+'</div>':'';
+    var row3=freeH?'<div class="prow"><span class="tmuted">□</span>'+freeH+'</div>':'';
     return '<div class="bbp '+(isJP?'jp':'tw')+'"><div class="prow"><span class="pprice">'+g.price+'</span> <span class="pname">『'+g.name+'』</span>'+(specs?'<span class="pspec">'+specs+'</span>':'')+(g.timeRaw?'<span class="ptime">'+g.timeRaw+'</span>':'')+'</div>'+row1+row2+row3+'</div>';
   }
 
