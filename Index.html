@@ -444,6 +444,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <button class="snav-item" data-tab="stat" onclick="ST('stat')"><span class="snav-icon">📊</span> 數據紀錄</button>
     <button class="snav-item" data-tab="admin" onclick="ST('admin')"><span class="snav-icon">📋</span> 班表管理</button>
     <button class="snav-item" data-tab="walk" onclick="ST('walk')"><span class="snav-icon">✦</span> 現走表</button>
+    <button class="snav-item" data-tab="tf" onclick="ST('tf')"><span class="snav-icon">📊</span> 轉檔器</button>
   </div>
   <div class="sidebar-footer">
     <div class="theme-toggle-inline sidebar-expand-only" id="themeToggle">
@@ -977,6 +978,125 @@ body.sidebar-collapsed .app{margin-left:44px;}
 </div><!-- /walk-wrap -->
 </div><!-- /tab-walk -->
 
+<!-- ==================== 轉檔器 Tab ==================== -->
+<div id="tab-tf" class="panel">
+<div style="max-width:1400px;margin:0 auto;">
+
+  <!-- Sub-nav -->
+  <div class="sub-nav">
+    <button class="sub-tab active" id="tf-tab-convert" onclick="tfST('convert')">📋 對帳轉換</button>
+    <button class="sub-tab" id="tf-tab-mapping" onclick="tfST('mapping')">👥 配對管理</button>
+    <button class="sub-tab" id="tf-tab-auntie" onclick="tfST('auntie')">📖 阿姨表</button>
+    <button class="sub-tab" id="tf-tab-history" onclick="tfST('history')">🗂 歷史備份</button>
+  </div>
+
+  <!-- 對帳轉換 -->
+  <div class="sub-panel active" id="tf-p-convert">
+    <div style="display:grid;grid-template-columns:340px 1fr;gap:12px;align-items:start;">
+      <div>
+        <div class="card" style="padding:14px;">
+          <div class="card-head" style="margin:-14px -14px 12px;padding:8px 14px;"><span class="card-title">✨ 工單資料輸入</span></div>
+          <input type="text" id="tf-date" placeholder="日期（例如 3/19）" style="margin-bottom:8px;">
+          <textarea id="tf-raw" rows="15" placeholder="請貼入原始對話工單..." style="height:320px;resize:vertical;"></textarea>
+          <div style="display:flex;gap:6px;margin-top:8px;">
+            <button class="btn btn-rose" style="flex:1;" onclick="tf_doConvert()">🚀 開始轉換</button>
+            <button class="btn btn-plain" onclick="tf_clearP1()">清除</button>
+          </div>
+        </div>
+
+        <div class="card" id="tf-uc" style="display:none;padding:14px;margin-top:0;">
+          <div class="card-head" style="margin:-14px -14px 10px;padding:8px 14px;background:var(--peach-light);"><span class="card-title" style="color:var(--peach);">⚠️ 需指派新人員</span></div>
+          <div id="tf-ul" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
+          <button class="btn btn-sage" style="width:100%;margin-top:10px;" onclick="tf_applyU()">✅ 確認鎖定</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" id="tf-rc" style="display:none;padding:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span class="card-title">🎉 轉換結果</span>
+            <span id="tf-count" style="background:var(--sky-light);color:var(--sky);padding:2px 10px;border-radius:99px;font-size:0.8125rem;font-weight:600;">總計：0 筆</span>
+          </div>
+          <div style="overflow-x:auto;margin-bottom:10px;">
+            <table class="etbl" style="min-width:700px;">
+              <thead><tr>
+                <th>日期</th><th>阿姨</th><th>妹妹</th><th>GG</th><th>時間</th>
+                <th style="text-align:left;padding-left:8px;">位置/地點</th><th>PS</th><th>寫</th><th>牌價</th><th>M收</th>
+              </tr></thead>
+              <tbody id="tf-rtb"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sky" style="flex:1;" onclick="tf_copyXL()">📋 複製 Excel 格式</button>
+            <button class="btn btn-rose" style="flex:1;" onclick="tf_saveToCloud()">🚀 寫入雲端備份</button>
+          </div>
+        </div>
+        <div id="tf-empty" style="text-align:center;padding:60px 20px;color:var(--text3);">
+          <div style="font-size:2.5rem;margin-bottom:8px;">📝</div>
+          <div>系統待命中，請貼入工單開始</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配對管理 -->
+  <div class="sub-panel" id="tf-p-mapping">
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:12px;align-items:start;">
+      <div class="card" style="padding:14px;">
+        <div class="card-head" style="margin:-14px -14px 12px;padding:8px 14px;"><span class="card-title">💼 經紀人名單 (GG)</span></div>
+        <div id="tf-gg-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:6px;">
+          <input type="text" id="tf-new-gg" placeholder="新增名字...">
+          <button class="btn btn-sky btn-sm" onclick="tf_addGgTag()">新增</button>
+        </div>
+      </div>
+      <div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span class="card-title">👩‍👧 分組配對資料庫</span>
+          <div style="display:flex;gap:6px;">
+            <input type="text" id="tf-mm-search" placeholder="🔍 搜尋妹妹..." style="width:150px;" oninput="tf_filterMm()">
+            <button class="btn btn-rose btn-sm" onclick="tf_addMm()">＋ 新增</button>
+          </div>
+        </div>
+        <div id="tf-mm-container" style="max-height:60vh;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 阿姨表 -->
+  <div class="sub-panel" id="tf-p-auntie">
+    <div class="card" style="padding:14px;max-width:700px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span class="card-title">📖 阿姨表（退補設定）</span>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sage btn-sm" onclick="tf_addAuntie()">＋ 新增</button>
+          <button class="btn btn-rose btn-sm" onclick="tf_saveAunties()">💾 儲存</button>
+        </div>
+      </div>
+      <div style="font-size:0.8125rem;color:var(--text3);margin-bottom:8px;">類型填 JP 或 TW，退補欄填正數（JP+5, TW+3 等）。辨識妹妹/阿姨會自動參考此表。</div>
+      <table class="etbl">
+        <thead><tr><th>阿姨名稱</th><th>類型 (JP/TW)</th><th>退補</th><th>操作</th></tr></thead>
+        <tbody id="tf-auntie-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 歷史備份 -->
+  <div class="sub-panel" id="tf-p-history">
+    <div class="card" style="padding:14px;max-width:800px;margin:0 auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span class="card-title">🗂️ 雲端原始工單備份</span>
+        <button class="btn btn-sage btn-sm" onclick="tf_loadHistory()">🔄 重新整理</button>
+      </div>
+      <div id="tf-history" style="max-height:70vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
+        <div class="empty">讀取中...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /tab-tf -->
+
 <!-- Patch Modal -->
 <div class="modal-overlay" id="admin-patchModal" onclick="if(event.target===this)adminClosePatchModal()">
   <div class="modal-box">
@@ -1002,6 +1122,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
   <button class="bnav-item" data-tab="stat" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
   <button class="bnav-item" data-tab="admin" onclick="ST('admin')"><span class="bnav-icon">📋</span>班表</button>
   <button class="bnav-item" data-tab="walk" onclick="ST('walk')"><span class="bnav-icon">✦</span>現走</button>
+  <button class="bnav-item" data-tab="tf" onclick="ST('tf')"><span class="bnav-icon">📊</span>轉檔</button>
 </nav>
 
 
@@ -1860,7 +1981,7 @@ function submitStatPartPayment(ui, auntieName) {
 
 function ST(id){
   window.scrollTo(0,0); // 切換 tab 時，回到頁面最頂端
-  var allTabs=['note','cal','all','bb','stat','admin','walk'];
+  var allTabs=['note','cal','all','bb','stat','admin','walk','tf'];
   allTabs.forEach(function(t){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
@@ -1877,6 +1998,7 @@ function ST(id){
   if(id==='stat') renderUnpaidDashboard();
   // 切換到探索搜尋時，自動從自由編輯區重新解析
   if(id==='bb') { syncNotepadToBb(); if(document.getElementById('bb-raw').value.trim()) parseBB(); }
+  if(id==='tf') { if(!tf_initialized){ tf_loadG(); tf_initialized=true; } }
 }
 
 function SST(id){ ST(id); }
@@ -3258,6 +3380,326 @@ function walkCopySub(i) {
 function loadAdminFromSheets() {
   loadAllDataFromCloud();
 }
+
+// ==================== 轉檔器 (tf_*) ====================
+var DMMGG_DEFAULT={"仙妮":"小魚兒","佐佐":"漫隊長","優結莉":"微成","夏琴":"小魚兒","娜娜":"貓貓","子晴":"小陳","宮澤":"微風","小倉":"凡人","小貓":"耀威","小龍女":"阿志","尤安":"朱丹","思思":"邦哥","日潔":"朱丹","晴晴":"貓貓","黛比":"法漢","月剛凜":"微成","林欣":"漫隊長","校校":"邦哥","潘娜":"小陳","水棠":"小高","芯咩":"嬌嬌","芸昕":"漫若希","瀅禾":"朱丹","莉多":"小陳","菲妮":"小魚兒","萌喬":"漫隊長","莫凡":"法漢","萌奈美":"龜龜","薇星":"邦哥","蘇芙":"朱丹","陳湘":"朱丹","金詩雅":"韋小寶","貝貝":"小陳","詩晴":"朱丹","樂伊":"小陳","江月":"朱丹","迪迪":"朱丹","妮古":"朱丹","周潔":"朱丹","妮妮":"朱丹","詩情":"朱丹","林凡凡":"小陳","山田優奈":"微風","屈沢茉莉":"微風","金慧恩":"小火柴","韓熙恩":"韋小寶","秋夜楓":"微風","橘彩芊":"黑桃","海嘯風":"微風","甜心":"嬌嬌","矢乃":"微成","弓奶":"微風","安啾":"嬌嬌"};
+var DGG_LIST_DEFAULT=["小陳","法漢","朱丹","黑桃","微風","微成","漫隊長","貓貓","凡人","耀威","阿志","邦哥","韋小寶","小高","嬌嬌","漫若希","龜龜","小魚兒"];
+
+var tf_G = { mmgg: {}, ggList: [] };
+var tf_CR = [], tf_UM = {};
+var tf_initialized = false;
+var tf_auntieData = [];
+
+function tfST(id) {
+  ['convert','mapping','auntie','history'].forEach(function(s) {
+    var p = document.getElementById('tf-p-'+s);
+    var t = document.getElementById('tf-tab-'+s);
+    if(p) p.classList.toggle('active', s===id);
+    if(t) t.classList.toggle('active', s===id);
+  });
+  if(id==='mapping') { tf_renderGgTags(); tf_renderMm(); }
+  if(id==='auntie') { tf_renderAunties(); }
+  if(id==='history') { tf_loadHistory(); }
+}
+
+function tf_loadG() {
+  google.script.run
+    .withSuccessHandler(function(data) {
+      var needSave = false;
+      if (Object.keys(data.mmgg).length === 0 && data.ggList.length === 0) {
+        tf_G.mmgg = JSON.parse(JSON.stringify(DMMGG_DEFAULT));
+        tf_G.ggList = DGG_LIST_DEFAULT.slice();
+        needSave = true;
+      } else {
+        tf_G = data;
+        if (!tf_G.mmgg) tf_G.mmgg = {};
+        if (!tf_G.ggList || tf_G.ggList.length === 0) tf_G.ggList = [];
+      }
+      tf_renderGgTags();
+      if (needSave) tf_saveS();
+    })
+    .withFailureHandler(function() {})
+    .getInitData();
+  google.script.run
+    .withSuccessHandler(function(list) { tf_auntieData = list || []; tf_renderAunties(); })
+    .withFailureHandler(function() {})
+    .getAuntieList();
+}
+
+function tf_saveS() {
+  google.script.run.updateMapping(tf_G.mmgg, tf_G.ggList);
+}
+
+function tf_renderGgTags() {
+  var el = document.getElementById('tf-gg-tags');
+  if(!el) return;
+  el.innerHTML = tf_G.ggList.map(function(n) {
+    return '<span class="chip on" style="cursor:default;">'+n+'<span onclick="tf_removeGg(\''+n+'\')" style="margin-left:4px;cursor:pointer;opacity:.7;">✕</span></span>';
+  }).join('');
+  tf_renderMm();
+}
+
+function tf_addGgTag() {
+  var v = document.getElementById('tf-new-gg').value.trim();
+  if(v && tf_G.ggList.indexOf(v)===-1) {
+    tf_G.ggList.push(v); tf_saveS(); tf_renderGgTags();
+    document.getElementById('tf-new-gg').value = '';
+  }
+}
+
+function tf_removeGg(name) {
+  tf_G.ggList = tf_G.ggList.filter(function(x){return x!==name;});
+  tf_saveS(); tf_renderGgTags();
+}
+
+function tf_renderMm() {
+  var container = document.getElementById('tf-mm-container');
+  if(!container) return;
+  var grouped = {};
+  tf_G.ggList.forEach(function(gg){ grouped[gg] = []; });
+  grouped['未指派'] = [];
+  Object.keys(tf_G.mmgg).forEach(function(mm) {
+    var gg = tf_G.mmgg[mm];
+    var target = (gg && grouped[gg] !== undefined) ? gg : '未指派';
+    grouped[target].push(mm);
+  });
+  var html = '';
+  Object.keys(grouped).forEach(function(gg) {
+    var mms = grouped[gg];
+    if(mms.length === 0) return;
+    var opts = tf_G.ggList.map(function(x){return '<option value="'+x+'"'+(x===gg?' selected':'')+'>'+x+'</option>';}).join('');
+    html += '<div class="card" style="padding:10px;">';
+    html += '<div style="font-weight:600;color:var(--sky);font-size:0.875rem;margin-bottom:6px;">💼 '+gg+' <span style="font-size:0.75rem;color:var(--text3);">('+mms.length+')</span></div>';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:4px;">';
+    mms.forEach(function(mm) {
+      html += '<div class="tf-mm-item" data-name="'+mm+'" style="position:relative;display:inline-flex;align-items:center;gap:4px;background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:0.8125rem;">';
+      html += '<select style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:1;" onchange="tf_updateMm(\''+mm+'\',this.value)"><option value="" disabled>指定</option>'+opts+'</select>';
+      html += '<span style="font-weight:600;pointer-events:none;">'+mm+'</span>';
+      html += '<span onclick="tf_deleteMm(\''+mm+'\')" style="color:var(--text3);cursor:pointer;z-index:2;position:relative;font-size:0.75rem;">✕</span>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+function tf_filterMm() {
+  var q = document.getElementById('tf-mm-search').value.toLowerCase();
+  document.querySelectorAll('.tf-mm-item').forEach(function(el) {
+    el.style.display = el.dataset.name.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function tf_updateMm(mm, val) { tf_G.mmgg[mm] = val; tf_saveS(); tf_renderMm(); }
+function tf_deleteMm(mm) { if(confirm('確定刪除 '+mm+'？')) { delete tf_G.mmgg[mm]; tf_saveS(); tf_renderMm(); } }
+function tf_addMm() { var mm = prompt('輸入新人員姓名:'); if(mm && !tf_G.mmgg[mm]) { tf_G.mmgg[mm]=''; tf_saveS(); tf_renderMm(); } }
+
+function tf_renderAunties() {
+  var tbody = document.getElementById('tf-auntie-tbody');
+  if(!tbody) return;
+  tbody.innerHTML = tf_auntieData.map(function(a, i) {
+    return '<tr><td><div class="cv"><input class="cinp" value="'+a.name+'" onchange="tf_auntieData['+i+'].name=this.value"></div></td>'+
+      '<td><div class="cv mono"><input class="cinp mono" value="'+a.type+'" onchange="tf_auntieData['+i+'].type=this.value" placeholder="JP/TW"></div></td>'+
+      '<td><div class="cv mono"><input class="cinp mono" value="'+a.bonus+'" onchange="tf_auntieData['+i+'].bonus=Number(this.value)||0"></div></td>'+
+      '<td><div class="cv"><button class="btn btn-plain btn-sm" onclick="tf_auntieData.splice('+i+',1);tf_renderAunties()">刪</button></div></td></tr>';
+  }).join('');
+}
+
+function tf_addAuntie() {
+  tf_auntieData.push({name:'',type:'',bonus:0});
+  tf_renderAunties();
+}
+
+function tf_saveAunties() {
+  google.script.run
+    .withSuccessHandler(function(){toast('✅ 阿姨表已儲存');})
+    .withFailureHandler(function(e){toast('❌ '+e.message);})
+    .saveAuntieList(tf_auntieData);
+}
+
+function tf_parseLine(line, date) {
+  var originalLine = line.trim();
+  if(!originalLine || originalLine.includes('改休')) return null;
+  var psCol = '';
+  var bm = originalLine.match(/[\(（](.*?)[\)）]/);
+  if(bm) { psCol = bm[1].trim(); originalLine = originalLine.replace(/[\(（].*?[\)）]/g,' ').trim(); }
+  originalLine = originalLine.replace(/(\d{4})([一-龥]+)/g,'$1 $2');
+  var tokens = originalLine.split(/\s+/).filter(Boolean);
+  if(tokens.length===0) return null;
+  var price='', mm='';
+  var first = tokens[0];
+  var pm = first.match(/^(\d+)(.+)/);
+  if(pm) { price = String(parseInt(pm[1])*10); mm = pm[2].trim(); tokens.shift(); }
+  else {
+    if(/^\d+$/.test(first)) { price=String(parseInt(first)*10); tokens.shift(); if(tokens.length>0) mm=tokens.shift(); }
+    else { mm=tokens.shift(); }
+  }
+  var writeCol='', shou='';
+  if(tokens.length>=1) {
+    var last1=tokens[tokens.length-1];
+    if(/^-?\d+$/.test(last1)) {
+      writeCol=last1; tokens.pop();
+      if(tokens.length>=1) {
+        var last2=tokens[tokens.length-1];
+        if(/^-?\d+$/.test(last2)||last2==='0') { shou=last2; tokens.pop(); }
+        else { shou=writeCol; }
+      }
+    }
+  }
+  var time='', place='', ee='', timeIdx=-1;
+  for(var i=0;i<tokens.length;i++) { if(/^\d{4}$/.test(tokens[i])) { time=tokens[i]; timeIdx=i; break; } }
+  if(timeIdx!==-1) {
+    var mid = tokens.slice(0,timeIdx).concat(tokens.slice(timeIdx+1));
+    if(mid.length>=1) {
+      var lp=mid[mid.length-1];
+      var em=lp.match(/^([^\d]+)(\d+)$/);
+      if(em) { ee=em[1].trim(); shou=em[2]; mid.pop(); }
+      else { ee=lp; mid.pop(); }
+      place=mid.join(' ');
+    }
+  } else {
+    if(tokens.length>=2) {
+      var lp2=tokens[tokens.length-1];
+      var em2=lp2.match(/^([^\d]+)(\d+)$/);
+      if(em2) { ee=em2[1].trim(); shou=em2[2]; tokens.pop(); }
+      else { ee=lp2; tokens.pop(); }
+      place=tokens.join(' ');
+    } else if(tokens.length===1) { place=tokens[0]; ee=tokens[0]; }
+  }
+  if(!shou && writeCol) shou=writeCol;
+  var gg = tf_G.mmgg[mm] || '';
+  if(!gg && mm) tf_UM[mm]='';
+  return { date:date, ee:ee, mm:mm, gg:gg, time:time, place:place, psCol:psCol, writeCol:writeCol, price:price, shou:shou, warn:!gg };
+}
+
+function tf_doConvert() {
+  var raw = document.getElementById('tf-raw').value.trim();
+  if(!raw) { alert('請貼入工單！'); return; }
+  var dateInput = document.getElementById('tf-date').value.trim();
+  tf_CR=[]; tf_UM={}; var curDate=dateInput;
+  raw.split('\n').forEach(function(rawLine) {
+    var line=rawLine.trim();
+    if(!line||/^[📌📋【每日]/.test(line)) return;
+    var dm=line.match(/^(\d+\/\d+)/);
+    if(dm&&line.replace(/[一二三四五六日\s]/g,'').length<=6){curDate=dm[1];return;}
+    var p=tf_parseLine(line,curDate); if(!p) return;
+    var sp=p.place.match(/(\d+)\+(\d+)/);
+    if(sp) {
+      var n=parseInt(sp[1]);
+      var base=p.place.replace(/\d+\+\d+.*$/,'').trim();
+      var halfShou=p.shou;
+      if(!isNaN(p.shou)&&p.shou!=='') halfShou=String(Math.round(parseFloat(p.shou)/n));
+      for(var i=0;i<n;i++){
+        var finPlace=base+' '+sp[1]+'+'+sp[2]+' '+(i===0?'①':'②');
+        if(halfShou==='0'||String(p.shou)==='0') finPlace+=' (不收)';
+        tf_CR.push(Object.assign({},p,{place:finPlace,shou:halfShou,split:true}));
+      }
+    } else {
+      var fp=p.place;
+      if(String(p.shou)==='0'&&!fp.includes('(不收)')) fp+=' (不收)';
+      tf_CR.push(Object.assign({},p,{place:fp,split:false}));
+    }
+  });
+  if(tf_CR.length===0){alert('沒有內容被轉換！');return;}
+  document.getElementById('tf-empty').style.display='none';
+  if(Object.keys(tf_UM).length>0){ tf_renderWarning(); document.getElementById('tf-uc').style.display=''; }
+  else { document.getElementById('tf-uc').style.display='none'; }
+  tf_renderTable();
+}
+
+function tf_renderWarning() {
+  document.getElementById('tf-ul').innerHTML=Object.keys(tf_UM).map(function(mm){
+    return '<div style="display:flex;align-items:center;gap:6px;padding:4px 6px;background:var(--peach-light);border:1px solid var(--peach);border-radius:6px;font-size:0.8125rem;">'+
+      '<span style="font-weight:600;color:var(--peach);min-width:50px;">'+mm+'</span>'+
+      '<input type="text" placeholder="手打輸入 GG" style="flex:1;" oninput="tf_UM[\''+mm+'\']=this.value">'+
+      '</div>';
+  }).join('');
+}
+
+function tf_applyU() {
+  Object.keys(tf_UM).forEach(function(mm) {
+    var gg=tf_UM[mm];
+    if(gg){ tf_G.mmgg[mm]=gg; tf_CR.forEach(function(r){if(r.mm===mm){r.gg=gg;r.warn=false;}}); }
+  });
+  tf_saveS(); document.getElementById('tf-uc').style.display='none';
+  tf_renderTable(); tf_renderMm();
+}
+
+function tf_renderTable() {
+  document.getElementById('tf-rtb').innerHTML=tf_CR.map(function(r,i){
+    var gc=r.warn
+      ?'<span style="color:var(--danger);font-weight:700;" contenteditable="true" onblur="tf_inlineGG('+i+',this.innerText)">❓</span>'
+      :'<span contenteditable="true" style="color:var(--sky);font-weight:600;" onblur="tf_inlineGG('+i+',this.innerText)">'+r.gg+'</span>';
+    return '<tr>'+
+      '<td><div class="cv mono" contenteditable="true" onblur="tf_CR['+i+'].date=this.innerText">'+r.date+'</div></td>'+
+      '<td><div class="cv" contenteditable="true" onblur="tf_CR['+i+'].ee=this.innerText">'+r.ee+'</div></td>'+
+      '<td><div class="cv bold" contenteditable="true" onblur="tf_CR['+i+'].mm=this.innerText">'+r.mm+'</div></td>'+
+      '<td><div class="cv">'+gc+'</div></td>'+
+      '<td><div class="cv mono" contenteditable="true" onblur="tf_CR['+i+'].time=this.innerText">'+r.time+'</div></td>'+
+      '<td style="text-align:left;"><div class="cv" contenteditable="true" onblur="tf_CR['+i+'].place=this.innerText">'+r.place+'</div></td>'+
+      '<td><div class="cv" contenteditable="true" onblur="tf_CR['+i+'].psCol=this.innerText">'+r.psCol+'</div></td>'+
+      '<td><div class="cv mono" contenteditable="true" onblur="tf_CR['+i+'].writeCol=this.innerText">'+r.writeCol+'</div></td>'+
+      '<td><div class="cv mono" contenteditable="true" onblur="tf_CR['+i+'].price=this.innerText">'+r.price+'</div></td>'+
+      '<td><div class="cv mono green" contenteditable="true" onblur="tf_CR['+i+'].shou=this.innerText">'+r.shou+'</div></td>'+
+      '</tr>';
+  }).join('');
+  document.getElementById('tf-count').innerText='總計：'+tf_CR.length+' 筆';
+  document.getElementById('tf-rc').style.display='';
+}
+
+function tf_inlineGG(i, v) {
+  v=v.trim();
+  if(v&&v!=='❓'){tf_CR[i].gg=v;tf_CR[i].warn=false;if(tf_CR[i].mm){tf_G.mmgg[tf_CR[i].mm]=v;tf_saveS();tf_renderMm();}}
+}
+
+function tf_copyXL() {
+  var text=tf_CR.map(function(r){return[r.date,r.ee,r.mm,r.gg,r.time,r.place,r.psCol||'',r.writeCol,r.price,r.shou].join('\t');}).join('\n');
+  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  toast('✅ 已複製 Excel 格式');
+}
+
+function tf_saveToCloud() {
+  var raw=document.getElementById('tf-raw').value.trim();
+  var dateInput=document.getElementById('tf-date').value.trim();
+  toast('寫入中...');
+  google.script.run
+    .withSuccessHandler(function(){toast('✅ 已寫入雲端！'); tf_clearP1();})
+    .withFailureHandler(function(e){toast('❌ '+e.message);})
+    .saveToSheet(tf_CR, raw, dateInput);
+}
+
+function tf_clearP1() {
+  document.getElementById('tf-raw').value='';
+  document.getElementById('tf-rc').style.display='none';
+  document.getElementById('tf-uc').style.display='none';
+  document.getElementById('tf-empty').style.display='';
+  tf_CR=[];
+}
+
+function tf_loadHistory() {
+  var container=document.getElementById('tf-history');
+  container.innerHTML='<div class="empty">讀取中...</div>';
+  google.script.run
+    .withSuccessHandler(function(data){
+      if(!data||data.length===0){container.innerHTML='<div class="empty">目前沒有備份紀錄</div>';return;}
+      container.innerHTML=data.map(function(item){
+        return '<div class="card" style="padding:10px;">'+
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px;">'+
+          '<div style="display:flex;gap:4px;flex-wrap:wrap;">'+
+          '<span class="chip on">📂 '+item.weekTab+'</span>'+
+          '<span class="chip">📅 '+(item.date||'未標註')+'</span>'+
+          '<span class="chip" style="background:var(--peach-light);border-color:var(--peach);color:var(--peach);">共 '+item.count+' 單</span>'+
+          '</div>'+
+          '<span style="font-size:0.75rem;color:var(--text3);">'+item.timestamp+'</span>'+
+          '</div>'+
+          '<textarea readonly style="width:100%;height:120px;resize:vertical;font-size:0.8125rem;background:var(--card2);">'+item.raw+'</textarea>'+
+          '</div>';
+      }).join('');
+    })
+    .withFailureHandler(function(){container.innerHTML='<div class="empty">讀取失敗</div>';})
+    .getRawOrdersHistory();
+}
+// ==================== end 轉檔器 ====================
 
 </script>
 </body></html>

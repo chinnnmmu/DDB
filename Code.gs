@@ -141,6 +141,108 @@ function loadAllData() {
   }
 }
 
+// ==================== 轉檔器 Sheets ====================
+var SHEET_NAME_MMGG       = '妹妹配對';
+var SHEET_NAME_AUNTIE     = '阿姨表';
+var SHEET_NAME_TF_RECORDS = '轉換紀錄';
+var SHEET_NAME_TF_BACKUP  = '工單備份';
+
+// 讀取妹妹配對 + 經濟人清單（供轉檔器初始化）
+function getInitData() {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_MMGG);
+    var data = sh.getDataRange().getValues();
+    var mmgg = {};
+    data.forEach(function(row) {
+      if (row[0] && String(row[0]) !== '妹妹名稱') mmgg[String(row[0])] = String(row[1] || '');
+    });
+    // 從 KV 讀取 ggList
+    var shK = getOrCreateSheet(SHEET_NAME_KV);
+    var kData = shK.getDataRange().getValues();
+    var ggList = [];
+    kData.forEach(function(row) {
+      if (String(row[0]) === 'ggList') { try { ggList = JSON.parse(String(row[1])); } catch(e) {} }
+    });
+    return { mmgg: mmgg, ggList: ggList };
+  } catch(e) { return { mmgg: {}, ggList: [] }; }
+}
+
+// 儲存妹妹配對 + 經濟人清單
+function updateMapping(mmgg, ggList) {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_MMGG);
+    sh.clearContents();
+    sh.appendRow(['妹妹名稱', '經濟人']);
+    Object.keys(mmgg || {}).forEach(function(mm) {
+      if (mm) sh.appendRow([mm, mmgg[mm] || '']);
+    });
+    // ggList 存到 KV
+    var shK = getOrCreateSheet(SHEET_NAME_KV);
+    var kData = shK.getDataRange().getValues();
+    var ggVal = JSON.stringify(ggList || []);
+    var found = false;
+    for (var i = 0; i < kData.length; i++) {
+      if (String(kData[i][0]) === 'ggList') { shK.getRange(i+1,2).setValue(ggVal); found=true; break; }
+    }
+    if (!found) shK.appendRow(['ggList', ggVal]);
+    return { success: true };
+  } catch(e) { return { success: false, message: e.message }; }
+}
+
+// 轉換結果 + 原始備份 寫入 Sheets
+function saveToSheet(records, rawText, dateInput) {
+  try {
+    var shR = getOrCreateSheet(SHEET_NAME_TF_RECORDS);
+    if (shR.getLastRow() === 0) shR.appendRow(['日期','阿姨','妹妹','GG','時間','地點','PS','寫','牌價','M收','建立時間']);
+    var now = new Date().toLocaleString('zh-TW');
+    (records || []).forEach(function(r) {
+      shR.appendRow([r.date||'',r.ee||'',r.mm||'',r.gg||'',r.time||'',r.place||'',r.psCol||'',r.writeCol||'',r.price||'',r.shou||'',now]);
+    });
+    var shB = getOrCreateSheet(SHEET_NAME_TF_BACKUP);
+    if (shB.getLastRow() === 0) shB.appendRow(['日期','備份時間','筆數','原始工單']);
+    shB.appendRow([dateInput||'', now, (records||[]).length, rawText||'']);
+    return { success: true };
+  } catch(e) { return { success: false, message: e.message }; }
+}
+
+// 讀取歷史備份（最新 20 筆）
+function getRawOrdersHistory() {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_TF_BACKUP);
+    var data = sh.getDataRange().getValues();
+    if (data.length <= 1) return [];
+    var result = [];
+    for (var i = data.length-1; i >= 1 && result.length < 20; i--) {
+      result.push({ date: String(data[i][0]), timestamp: String(data[i][1]), count: data[i][2], raw: String(data[i][3]), weekTab: '備份 #'+(data.length-i) });
+    }
+    return result;
+  } catch(e) { return []; }
+}
+
+// 讀取阿姨表
+function getAuntieList() {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_AUNTIE);
+    var data = sh.getDataRange().getValues();
+    var result = [];
+    data.forEach(function(row) {
+      if (row[0] && String(row[0]) !== '阿姨名稱') result.push({ name: String(row[0]), type: String(row[1]||''), bonus: Number(row[2])||0 });
+    });
+    return result;
+  } catch(e) { return []; }
+}
+
+// 儲存阿姨表
+function saveAuntieList(list) {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_AUNTIE);
+    sh.clearContents();
+    sh.appendRow(['阿姨名稱', '類型(JP/TW)', '退補']);
+    (list || []).forEach(function(a) { if(a.name) sh.appendRow([a.name, a.type||'', a.bonus||0]); });
+    return { success: true };
+  } catch(e) { return { success: false, message: e.message }; }
+}
+
 // ==================== Admin.html 相容函式 ====================
 // Admin.html 使用 save(key, val) 單筆寫入班表資料
 function save(key, val) {
