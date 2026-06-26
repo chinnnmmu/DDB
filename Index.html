@@ -1541,9 +1541,10 @@ function renderMultiNoteList(filter) {
   container.innerHTML = filtered.map(function(n, i){
     var col = NOTE_COLORS.find(function(c){ return c.key===(n.color||'lavender'); })||NOTE_COLORS[0];
     var preview = (n.text||'').split('\n').slice(0,2).join(' ').slice(0,40);
-    return '<div onclick="loadNoteToSlot('+i+')" style="padding:7px 9px;margin-bottom:4px;background:'+col.bg+';border:1px solid '+col.border+';border-radius:7px;cursor:pointer;font-size:12px;line-height:1.4;">'
+    return '<div style="padding:7px 9px;margin-bottom:4px;background:'+col.bg+';border:1px solid '+col.border+';border-radius:7px;font-size:12px;line-height:1.4;position:relative;">'
       +'<div style="font-size:10.5px;color:rgba(0,0,0,.4);margin-bottom:2px;">'+(n.time||'')+'</div>'
-      +'<div style="color:#2d2118;">'+preview+'</div>'
+      +'<div onclick="loadNoteToSlot('+i+')" style="color:#2d2118;cursor:pointer;padding-right:18px;">'+preview+'</div>'
+      +'<button onclick="deleteNoteById(\''+n.id+'\')" style="position:absolute;top:5px;right:5px;background:none;border:none;cursor:pointer;font-size:13px;color:rgba(0,0,0,.3);padding:0;line-height:1;" title="刪除">✕</button>'
       +'</div>';
   }).join('');
 }
@@ -1579,6 +1580,12 @@ function addMultiNote() {
     var ed=document.getElementById('multi-editor'+i);
     if(ed&&!ed.value.trim()){ ed.dataset.noteId=String(newNote.id); ed.focus(); return; }
   }
+}
+
+function deleteNoteById(id) {
+  multiNotes = multiNotes.filter(function(n){ return String(n.id)!==String(id); });
+  saveMultiNotes(); renderMultiNoteList();
+  toast('✓ 便簽已刪除');
 }
 
 function saveMultiNote(num) {
