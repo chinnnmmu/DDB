@@ -324,11 +324,13 @@ body.sidebar-collapsed .app{margin-left:44px;}
 #tab-admin .top-left,#tab-admin .top-middle,#tab-admin .top-right{display:flex;flex-direction:column;}
 #tab-admin .top-left .card,#tab-admin .top-middle .card,#tab-admin .top-right .card{display:flex;flex-direction:column;}
 /* textarea 改為固定高度＋捲軸，不依賴 flex 撐滿父層 */
-#tab-admin .top-left textarea,#tab-admin .top-left .ro-box,#tab-admin .top-middle .ro-box,#tab-admin .top-right #admin-notepad{height:280px;min-height:120px;overflow-y:auto;}
+/* 當日班表輸入欄加高（+5cm ≈ 48px） */
+#tab-admin .top-left textarea,#tab-admin .top-left .ro-box,#tab-admin .top-middle .ro-box,#tab-admin .top-right #admin-notepad{height:328px;min-height:140px;overflow-y:auto;}
 /* 週報輸入區：同樣移除固定高度 */
 #tab-admin .week-zone{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:start;}
 #tab-admin .week-zone>.card{display:flex;flex-direction:column;}
-#tab-admin .week-zone>.card #admin-weekInput,#tab-admin .week-zone>.card #admin-pureOutput{height:220px;min-height:100px;overflow-y:auto;}
+/* 週間預報輸入欄加倍高度 */
+#tab-admin .week-zone>.card #admin-weekInput,#tab-admin .week-zone>.card #admin-pureOutput{height:440px;min-height:160px;overflow-y:auto;}
 #tab-admin .db-zone>.card{display:flex;flex-direction:column;}
 #tab-admin #admin-db{height:clamp(280px,34vh,600px);max-height:none;overflow-y:auto;flex-shrink:0;}
 #tab-admin .day-panel.card{padding:14px;}
