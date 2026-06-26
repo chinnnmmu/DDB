@@ -255,7 +255,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 .stat-btn-row { display: flex; gap: 0.4rem; margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px dashed var(--border); justify-content: flex-end; align-items: center; }
 
 @media(min-width:1024px){
-  body{display:flex;align-items:stretch;min-height:100vh;}
+  .layout-wrapper{display:flex;align-items:stretch;min-height:100vh;width:100%;}
   .bottom-nav{display:none;}
   .top-nav{display:none;}
   .sidebar{display:flex;position:sticky;top:0;height:100vh;overflow-y:auto;}
@@ -415,6 +415,7 @@ body.sidebar-collapsed .sidebar{width:44px !important;padding:16px 4px !importan
 </head>
 <body>
 
+<div class="layout-wrapper">
 <aside class="sidebar" id="mainSidebar">
   <button class="sidebar-collapse-btn" id="sidebarToggle" onclick="toggleSidebar()" title="收合側邊欄">‹</button>
   <div class="sidebar-logo sidebar-expand-only">✦ DDB</div>
@@ -963,6 +964,7 @@ body.sidebar-collapsed .sidebar{width:44px !important;padding:16px 4px !importan
 
 
 </div>
+</div><!-- end layout-wrapper -->
 
 <nav class="bottom-nav">
   <button class="bnav-item" data-tab="note" onclick="ST('note')"><span class="bnav-icon">📝</span>便簽</button>
