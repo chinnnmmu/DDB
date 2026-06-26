@@ -429,6 +429,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
   #tab-walk .sub-outputs-grid{grid-template-columns:1fr;}
 }
 /* ── 轉檔器 ── */
+#tab-tf{max-width:100%!important;}
 #tab-tf .sub-panel>div{width:100%;}
 #tab-tf .etbl th{background:var(--card2);color:var(--text2);font-size:0.8rem;}
 #tab-tf .etbl td{font-size:0.875rem;}
@@ -995,7 +996,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
 <!-- ==================== 轉檔器 Tab ==================== -->
 <div id="tab-tf" class="panel">
-<div style="max-width:1400px;margin:0 auto;">
+<div style="width:100%;">
 
   <!-- Sub-nav -->
   <div class="sub-nav">
@@ -1080,7 +1081,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
   <!-- 阿姨表 -->
   <div class="sub-panel" id="tf-p-auntie">
-    <div class="card" style="padding:14px;max-width:700px;">
+    <div class="card" style="padding:14px;width:100%;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <span class="card-title">📖 阿姨表（退補設定）</span>
         <div style="display:flex;gap:6px;">
@@ -1098,7 +1099,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
   <!-- 歷史備份 -->
   <div class="sub-panel" id="tf-p-history">
-    <div class="card" style="padding:14px;max-width:800px;margin:0 auto;">
+    <div class="card" style="padding:14px;width:100%;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <span class="card-title">🗂️ 雲端原始工單備份</span>
         <button class="btn btn-sage btn-sm" onclick="tf_loadHistory()">🔄 重新整理</button>
