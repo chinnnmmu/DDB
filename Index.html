@@ -1541,12 +1541,11 @@ function clearWorkorderFilters() {
 }
 
 function deleteWorkorder(rowIndex) {
-  if(!confirm('確定要刪除這筆工單嗎？此操作無法復原。')) return;
   var k = selKey();
   if(!k || !notes[k] || !notes[k][rowIndex]) return;
   notes[k].splice(rowIndex, 1);
   save(); RR(); RC(); RW(); renderUnpaidDashboard(); renderAllOrders();
-  toast('工單已刪除');
+  toast('✓ 工單已刪除');
 }
 
 function calculateEE(pai, shi, rebate) {
@@ -2234,13 +2233,12 @@ function addRow(){
 function delRow(ri){var k=selKey();if(!k)return;notes[k].splice(ri,1);selR=-1;selC=-1;save();RR();RC();RW();renderUnpaidDashboard();renderAllOrders();}
 
 function deleteWorkorderFromAll(dateKey, rowIndex) {
-  if(!confirm('確定要刪除這筆工單嗎？此操作無法復原。')) return;
   if(notes[dateKey] && notes[dateKey][rowIndex]) {
     notes[dateKey].splice(rowIndex, 1);
     save();
     renderAllOrders();
     if(selDate) RR();
-    toast('工單已刪除');
+    toast('✓ 工單已刪除');
   }
 }
 
