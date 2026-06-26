@@ -916,61 +916,64 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
   <div class="walk-grid">
 
-    <!-- 左側操作面板 -->
+    <!-- 左側操作面板：2欄並排 -->
     <div class="walk-panel-left">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
 
-      <div class="walk-card">
-        <div class="walk-card-title"><span class="wdot"></span>今日日期</div>
-        <div class="date-row">
-          <input type="date" id="walk-datePicker" onchange="walkOnDateChange()">
-          <div class="date-weekday" id="walk-weekdayDisplay">（一）</div>
-        </div>
-      </div>
-
-      <div class="walk-card">
-        <div class="walk-card-title"><span class="wdot" style="background:var(--sage)"></span>每日快速編輯</div>
-        <div class="quick-label">今日改休內容</div>
-        <textarea class="quick-textarea quick-gap" id="walk-quickRest" rows="3"
-          placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
-        <div class="quick-label">今日約滿內容</div>
-        <textarea class="quick-textarea" id="walk-quickFull" rows="2"
-          placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
-      </div>
-
-      <div class="walk-card">
-        <div class="walk-card-title"><span class="wdot" style="background:var(--sky)"></span>貼上原始廣告文案</div>
-        <textarea id="walkInputText" class="raw-input" placeholder="將廣告原文貼在這裡 · · ·"></textarea>
-        <button class="btn-convert" onclick="walkProcessAll()">✦ 四款同時轉檔 ✦</button>
-      </div>
-
-      <div class="walk-card">
-        <div class="adv-toggle" onclick="walkToggleAdv()">
-          <span>⚙ 進階符號設定</span>
-          <span class="adv-arrow" id="walk-advArrow">▼</span>
-        </div>
-        <div class="adv-body" id="walk-advBody">
-          <div class="adv-inner">
-            <div class="adv-preset-tabs">
-              <div class="adv-tab" onclick="walkSwitchPreset(0)"><input class="adv-tab-name" id="walk-tabName0" value="款式 A" onclick="event.stopPropagation()"></div>
-              <div class="adv-tab" onclick="walkSwitchPreset(1)"><input class="adv-tab-name" id="walk-tabName1" value="款式 B" onclick="event.stopPropagation()"></div>
-              <div class="adv-tab" onclick="walkSwitchPreset(2)"><input class="adv-tab-name" id="walk-tabName2" value="款式 C" onclick="event.stopPropagation()"></div>
-              <div class="adv-tab active" onclick="walkSwitchPreset(3)"><input class="adv-tab-name" id="walk-tabName3" value="款式 D" onclick="event.stopPropagation()"></div>
-            </div>
-            <div class="adv-row"><label>大抬頭樣式</label><input type="text" id="walk-symTitle"></div>
-            <div class="adv-row"><label>名單前綴符號</label><input type="text" id="walk-symDot"></div>
-            <div class="adv-row"><label>中間分隔點</label><input type="text" id="walk-symMid"></div>
-            <div class="adv-row"><label>日韓分類抬頭</label><input type="text" id="walk-symJp"></div>
-            <div class="adv-row"><label>本地分類抬頭</label><input type="text" id="walk-symTw"></div>
-            <div class="adv-row"><label>時間前綴括號</label><input type="text" id="walk-timePrefix"></div>
-            <div class="adv-row"><label>時間後綴括號</label><input type="text" id="walk-timeSuffix"></div>
-            <div class="adv-row"><label>年齡組分隔線</label><input type="text" id="walk-symGroupSep"></div>
-            <div class="adv-row"><label>異動分區線</label><input type="text" id="walk-symStatusLine"></div>
-            <div class="adv-row"><label>即將登場線</label><input type="text" id="walk-symComing"></div>
-            <button class="btn-reset-adv" onclick="walkResetAll()">↺ 恢復所有預設</button>
+        <!-- a: 今日日期 -->
+        <div class="walk-card">
+          <div class="walk-card-title"><span class="wdot"></span>今日日期</div>
+          <div class="date-row">
+            <input type="date" id="walk-datePicker" onchange="walkOnDateChange()">
+            <div class="date-weekday" id="walk-weekdayDisplay">（一）</div>
           </div>
         </div>
-      </div>
 
+        <!-- b: 每日快速編輯 -->
+        <div class="walk-card">
+          <div class="walk-card-title"><span class="wdot" style="background:var(--sage)"></span>每日快速編輯</div>
+          <div class="quick-label">今日改休內容</div>
+          <textarea class="quick-textarea quick-gap" id="walk-quickRest" rows="3"
+            placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
+          <div class="quick-label">今日約滿內容</div>
+          <textarea class="quick-textarea" id="walk-quickFull" rows="2"
+            placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
+        </div>
+
+        <!-- c: 貼上原始廣告文案 -->
+        <div class="walk-card">
+          <div class="walk-card-title"><span class="wdot" style="background:var(--sky)"></span>貼上原始廣告文案</div>
+          <textarea id="walkInputText" class="raw-input" placeholder="將廣告原文貼在這裡 · · ·"></textarea>
+          <button class="btn-convert" onclick="walkProcessAll()">✦ 四款同時轉檔 ✦</button>
+        </div>
+
+        <!-- d: 進階符號設定（直接展開） -->
+        <div class="walk-card">
+          <div class="walk-card-title"><span class="wdot" style="background:var(--gold)"></span>⚙ 進階符號設定</div>
+          <div id="walk-advBody" class="adv-body open">
+            <div class="adv-inner">
+              <div class="adv-preset-tabs">
+                <div class="adv-tab" onclick="walkSwitchPreset(0)"><input class="adv-tab-name" id="walk-tabName0" value="款式 A" onclick="event.stopPropagation()"></div>
+                <div class="adv-tab" onclick="walkSwitchPreset(1)"><input class="adv-tab-name" id="walk-tabName1" value="款式 B" onclick="event.stopPropagation()"></div>
+                <div class="adv-tab" onclick="walkSwitchPreset(2)"><input class="adv-tab-name" id="walk-tabName2" value="款式 C" onclick="event.stopPropagation()"></div>
+                <div class="adv-tab active" onclick="walkSwitchPreset(3)"><input class="adv-tab-name" id="walk-tabName3" value="款式 D" onclick="event.stopPropagation()"></div>
+              </div>
+              <div class="adv-row"><label>大抬頭樣式</label><input type="text" id="walk-symTitle"></div>
+              <div class="adv-row"><label>名單前綴符號</label><input type="text" id="walk-symDot"></div>
+              <div class="adv-row"><label>中間分隔點</label><input type="text" id="walk-symMid"></div>
+              <div class="adv-row"><label>日韓分類抬頭</label><input type="text" id="walk-symJp"></div>
+              <div class="adv-row"><label>本地分類抬頭</label><input type="text" id="walk-symTw"></div>
+              <div class="adv-row"><label>時間前綴括號</label><input type="text" id="walk-timePrefix"></div>
+              <div class="adv-row"><label>時間後綴括號</label><input type="text" id="walk-timeSuffix"></div>
+              <div class="adv-row"><label>年齡組分隔線</label><input type="text" id="walk-symGroupSep"></div>
+              <div class="adv-row"><label>異動分區線</label><input type="text" id="walk-symStatusLine"></div>
+              <div class="adv-row"><label>即將登場線</label><input type="text" id="walk-symComing"></div>
+              <button class="btn-reset-adv" onclick="walkResetAll()">↺ 恢復所有預設</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div><!-- /walk-panel-left -->
 
     <!-- 右側輸出 -->
@@ -3365,11 +3368,7 @@ function walkGetDateString() {
   return (d.getMonth()+1) + '/' + d.getDate() + ' (' + WD_NAMES[d.getDay()] + ')';
 }
 
-function walkToggleAdv() {
-  walkAdvOpen = !walkAdvOpen;
-  walkGEl('walk-advBody').classList.toggle('open', walkAdvOpen);
-  walkGEl('walk-advArrow').classList.toggle('open', walkAdvOpen);
-}
+
 function walkSyncTabNames() {
   for (var i=0;i<4;i++) walkGEl('walk-tabName'+i).value = walkPresets[i].name;
 }
