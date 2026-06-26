@@ -1,12 +1,10 @@
 // ==================== DDB GAS Web App 後端 ====================
-// System 1 (Index.html): workOrders + multiNotes
-// System 2 (Admin.html): day/week/note/db/walk (key-value store)
 
-var SHEET_NAME_NOTES    = 'MultiNotes';
-var SHEET_NAME_ORDERS   = 'WorkOrders';
-var SHEET_NAME_META     = 'Meta';
-var SHEET_NAME_ADMIN    = 'AdminSettings';
-var SHEET_NAME_KV       = 'AdminData';   // System 2 key-value store
+var SHEET_NAME_NOTES    = '便簽';
+var SHEET_NAME_ORDERS   = '工單';
+var SHEET_NAME_META     = '同步紀錄';
+var SHEET_NAME_ADMIN    = '格式設定';
+var SHEET_NAME_KV       = '班表資料';
 
 // ---- 入口點 ----
 function doGet(e) {
@@ -17,19 +15,16 @@ function doGet(e) {
 }
 
 // ==================== System 2: save(key, val) ====================
-// 儲存任意 key-value 到 AdminData sheet
 function save(key, val) {
   try {
     var sh = getOrCreateSheet(SHEET_NAME_KV);
     var data = sh.getDataRange().getValues();
-    // 尋找是否已有這個 key
     for (var i = 0; i < data.length; i++) {
       if (String(data[i][0]) === String(key)) {
         sh.getRange(i + 1, 2).setValue(val);
         return { success: true };
       }
     }
-    // 沒有就新增一行
     sh.appendRow([key, val]);
     return { success: true };
   } catch (err) {
@@ -38,7 +33,6 @@ function save(key, val) {
 }
 
 // ==================== System 2: loadAll() ====================
-// 讀取所有 key-value，回傳 { day, week, note, db, walk }
 function loadAll() {
   try {
     var sh = getOrCreateSheet(SHEET_NAME_KV);
@@ -63,26 +57,25 @@ function getOrCreateSheet(name) {
 }
 
 // ==================== System 1: saveAllData ====================
-// payload = { multiNotes, workOrders }
 function saveAllData(payload) {
   try {
     if (typeof payload === 'string') payload = JSON.parse(payload);
 
-    // 1. 儲存便簽 (MultiNotes)
+    // 1. 儲存便簽
     if (payload.multiNotes && Array.isArray(payload.multiNotes)) {
       var sh = getOrCreateSheet(SHEET_NAME_NOTES);
       sh.clearContents();
-      sh.appendRow(['id', 'time', 'text']);
+      sh.appendRow(['編號', '時間', '內容']);
       payload.multiNotes.forEach(function(n) {
         sh.appendRow([n.id || '', n.time || '', n.text || '']);
       });
     }
 
-    // 2. 儲存工單 (WorkOrders)
+    // 2. 儲存工單
     if (payload.workOrders && typeof payload.workOrders === 'object') {
       var shO = getOrCreateSheet(SHEET_NAME_ORDERS);
       shO.clearContents();
-      shO.appendRow(['date','pai','name','place','auntie','shi','ee','rebate','note','settled','settledDate','settledAmount','id']);
+      shO.appendRow(['日期','牌','人名','時間地點','阿姨','實收','EE','退','備記','已結','結帳日','結帳金額','編號']);
       Object.keys(payload.workOrders).forEach(function(dateKey) {
         var rows = payload.workOrders[dateKey] || [];
         rows.forEach(function(r) {
@@ -100,7 +93,7 @@ function saveAllData(payload) {
     // 3. 記錄同步時間
     var shM = getOrCreateSheet(SHEET_NAME_META);
     shM.clearContents();
-    shM.appendRow(['lastSync', new Date().toLocaleString('zh-TW')]);
+    shM.appendRow(['最後同步', new Date().toLocaleString('zh-TW')]);
 
     return { success: true, message: '同步成功' };
   } catch (err) {
@@ -113,7 +106,7 @@ function loadAllData() {
   try {
     var result = { multiNotes: [], workOrders: {} };
 
-    // 1. 讀取便簽
+    // 1. 讀取便簽（依欄位順序讀，不依標題）
     var sh = getOrCreateSheet(SHEET_NAME_NOTES);
     var data = sh.getDataRange().getValues();
     if (data.length > 1) {
@@ -125,7 +118,7 @@ function loadAllData() {
       }
     }
 
-    // 2. 讀取工單
+    // 2. 讀取工單（依欄位順序讀，不依標題）
     var shO = getOrCreateSheet(SHEET_NAME_ORDERS);
     var oData = shO.getDataRange().getValues();
     if (oData.length > 1) {
@@ -152,14 +145,13 @@ function loadAllData() {
 }
 
 // ==================== System 2: saveAdminData ====================
-// payload = { schDB, formatPresets }
 function saveAdminData(payload) {
   try {
     if (typeof payload === 'string') payload = JSON.parse(payload);
 
     var shA = getOrCreateSheet(SHEET_NAME_ADMIN);
     shA.clearContents();
-    shA.appendRow(['key', 'value']);
+    shA.appendRow(['設定名稱', '設定值']);
 
     if (payload.schDB && typeof payload.schDB === 'string') {
       shA.appendRow(['schDB', payload.schDB]);
@@ -168,7 +160,6 @@ function saveAdminData(payload) {
       shA.appendRow(['formatPresets', JSON.stringify(payload.formatPresets)]);
     }
 
-    // 記錄同步時間
     var shM = getOrCreateSheet(SHEET_NAME_META);
     var metaData = shM.getDataRange().getValues();
     var found = false;
