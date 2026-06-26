@@ -1782,6 +1782,7 @@ function submitStatPartPayment(ui, auntieName) {
 }
 
 function ST(id){
+  window.scrollTo(0,0); // 切換 tab 時，回到頁面最頂端
   var allTabs=['note','cal','all','bb','stat','admin','walk'];
   allTabs.forEach(function(t){
     var elPanel = document.getElementById('tab-'+t);
