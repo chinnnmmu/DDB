@@ -428,6 +428,16 @@ body.sidebar-collapsed .app{margin-left:44px;}
   #tab-admin .admin-day-grid{grid-template-columns:repeat(2,1fr);}
   #tab-walk .sub-outputs-grid{grid-template-columns:1fr;}
 }
+/* ── 轉檔器 ── */
+#tab-tf .sub-panel>div{width:100%;}
+#tab-tf .etbl th{background:var(--card2);color:var(--text2);font-size:0.8rem;}
+#tab-tf .etbl td{font-size:0.875rem;}
+#tab-tf .etbl tr:nth-child(even) td{background:var(--card2);}
+#tab-tf .cv[contenteditable]:focus{background:var(--sky-light);outline:none;}
+#tab-tf .tf-warn{color:var(--danger);font-weight:700;}
+@media(max-width:960px){
+  #tab-tf .sub-panel>div[style*="grid"]{grid-template-columns:1fr!important;min-height:auto!important;}
+}
 </style>
 </head>
 <body>
@@ -993,8 +1003,8 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
   <!-- 對帳轉換 -->
   <div class="sub-panel active" id="tf-p-convert">
-    <div style="display:grid;grid-template-columns:340px 1fr;gap:12px;align-items:start;">
-      <div>
+    <div style="display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start;min-height:calc(100vh - 140px);">
+      <div style="display:flex;flex-direction:column;gap:10px;">
         <div class="card" style="padding:14px;">
           <div class="card-head" style="margin:-14px -14px 12px;padding:8px 14px;"><span class="card-title">✨ 工單資料輸入</span></div>
           <input type="text" id="tf-date" placeholder="日期（例如 3/19）" style="margin-bottom:8px;">
@@ -1042,7 +1052,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
   <!-- 配對管理 -->
   <div class="sub-panel" id="tf-p-mapping">
-    <div style="display:grid;grid-template-columns:280px 1fr;gap:12px;align-items:start;">
+    <div style="display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start;min-height:calc(100vh - 140px);">
       <div class="card" style="padding:14px;">
         <div class="card-head" style="margin:-14px -14px 12px;padding:8px 14px;"><span class="card-title">💼 經紀人名單 (GG)</span></div>
         <div id="tf-gg-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;"></div>
@@ -3535,6 +3545,28 @@ function tf_saveAunties() {
 function tf_parseLine(line, date) {
   var originalLine = line.trim();
   if(!originalLine || originalLine.includes('改休')) return null;
+
+  // ── 竹葉格式：38咪露｜1330｜三重江月3｜小陳｜1140/456 ──
+  if (/[｜|]/.test(originalLine)) {
+    var parts = originalLine.split(/[｜|]/).map(function(s){ return s.trim(); });
+    var price='', mm='', psCol2='', first=parts[0]||'';
+    var bm2=first.match(/[\(（](.*?)[\)）]/);
+    if(bm2){psCol2=bm2[1].trim();first=first.replace(/[\(（].*?[\)）]/g,'').trim();}
+    var pm2=first.match(/^(\d+)(.+)/);
+    if(pm2){price=String(parseInt(pm2[1])*10);mm=pm2[2].trim();}else{mm=first;}
+    var time2=(parts[1]||'').trim();
+    var place2=(parts[2]||'').trim();
+    var ee2=(parts[3]||'').trim();
+    var moneyStr=(parts[4]||'').trim();
+    var shou2='',writeCol2='';
+    var mMatch=moneyStr.match(/^(\d+)[\/／](\d+)$/);
+    if(mMatch){shou2=mMatch[1];writeCol2=mMatch[2];}else if(moneyStr){shou2=moneyStr;}
+    var gg2=tf_G.mmgg[mm]||'';
+    if(!gg2&&mm)tf_UM[mm]='';
+    return{date:date,ee:ee2,mm:mm,gg:gg2,time:time2,place:place2,psCol:psCol2,writeCol:writeCol2,price:price,shou:shou2,warn:!gg2};
+  }
+
+  // ── 原有空格格式 ──
   var psCol = '';
   var bm = originalLine.match(/[\(（](.*?)[\)）]/);
   if(bm) { psCol = bm[1].trim(); originalLine = originalLine.replace(/[\(（].*?[\)）]/g,' ').trim(); }
@@ -3594,9 +3626,14 @@ function tf_doConvert() {
   tf_CR=[]; tf_UM={}; var curDate=dateInput;
   raw.split('\n').forEach(function(rawLine) {
     var line=rawLine.trim();
-    if(!line||/^[📌📋【每日]/.test(line)) return;
-    var dm=line.match(/^(\d+\/\d+)/);
-    if(dm&&line.replace(/[一二三四五六日\s]/g,'').length<=6){curDate=dm[1];return;}
+    if(!line) return;
+    // 日期標題行：含日期數字且整行沒有竹葉分隔符（含 emoji 前綴如 📌6/26 五📅）
+    var dmAny=line.match(/(\d{1,2}\/\d{1,2})/);
+    if(dmAny && !/[｜|]/.test(line)) {
+      var stripped=line.replace(dmAny[0],'').replace(/[📌📋📅【每日一二三四五六日（週周）\s]/g,'').trim();
+      if(stripped.length<4){curDate=dmAny[1];return;}
+    }
+    if(/^[📌📋【每日]/.test(line)&&!/[｜|]/.test(line)) return;
     var p=tf_parseLine(line,curDate); if(!p) return;
     var sp=p.place.match(/(\d+)\+(\d+)/);
     if(sp) {
