@@ -828,6 +828,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
         oninput="adminAutoSave('week',this.value)"></textarea>
       <div class="btn-row">
         <button class="primary" onclick="adminConvertWeek()">⚡ 彙整週報</button>
+        <button onclick="adminSortWeekInput()">↕ 排序</button>
         <button class="subtle" onclick="adminClearWeekInput()">清除</button>
       </div>
     </div>
@@ -2818,8 +2819,8 @@ function parseMultiLine() {
   var NOTE_RE = /^(\d+[+＋]\d+|雙飛|二王|外帶|住家|無套內|無套外|口爆|顏射|毒龍|後門|SM|攝影|自慰秀|情趣|入珠)/;
   // 地址特徵：含市縣區路街巷號樓或超長且含數字
   var ADDR_RE = /[市縣區路街巷號樓棟]|^\d+號/;
-  // 時間 pattern：HH:MM 或 HHMM
-  var TIME_RE = /(\d{1,2}:\d{2}|\d{3,4})/;
+  // 時間 pattern：HH:MM（半形或全形冒號）或 HHMM
+  var TIME_RE = /(\d{1,2}[：:]\d{2}|\d{3,4})/;
   // 日期 pattern：M/D 或 MM/DD
   var DATE_RE = /^(\d{1,2})[\/\-](\d{1,2})/;
   // 週別去除
@@ -2840,7 +2841,7 @@ function parseMultiLine() {
       var dm = clean.match(DATE_RE);
       parsedDate = dm[1] + '/' + dm[2];
       dateFound = true;
-      var tm = clean.match(/(\d{1,2}:\d{2})/);
+      var tm = clean.match(/(\d{1,2}[：:]\d{2})/);
       if(!tm) tm = clean.match(/[^\d](\d{3,4})/) || clean.match(/^(\d{3,4})/);
       if(tm) parsedTime = tm[1];
       return;
@@ -3127,6 +3128,19 @@ function adminCopyOutput() {
   var text = document.getElementById('admin-outputDiv').textContent;
   if (!text || text.startsWith('（')) return;
   copyText(text, '✓ 已複製轉換結果');
+}
+
+function adminSortWeekInput() {
+  var ta = document.getElementById('admin-weekInput');
+  var seen = new Map();
+  ta.value.split('\n').map(function(l){ return l.trim(); }).filter(Boolean).forEach(function(line) {
+    var m = line.match(/^(\d+)\s*([^\s\d→➜\-→]+)/);
+    if (m) seen.set(m[2].trim(), {price: parseInt(m[1],10), line: line});
+    else seen.set('__'+line, {price:-1, line: line});
+  });
+  ta.value = Array.from(seen.values()).sort(function(a,b){ return b.price - a.price; }).map(function(x){ return x.line; }).join('\n');
+  adminAutoSave('week', ta.value);
+  toast('✓ 週報已依牌價排序');
 }
 
 function adminConvertWeek() {
