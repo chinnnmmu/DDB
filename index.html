@@ -865,7 +865,7 @@ input:focus {
   </div>
 </aside>
 
-<div id="cloud-loading-overlay">
+<div id="cloud-loading-overlay" class="hidden" style="display:none;">
   <div class="cloud-spinner"></div>
   <div class="cloud-loading-text" id="cloud-loading-text">☁ 正在從雲端載入最新資料…</div>
 </div>
@@ -1729,15 +1729,15 @@ function hideLoadingOverlay() {
 }
 
 function loadAllDataFromCloud(silent) {
-  if(!silent) {
-    var el = document.getElementById('cloud-loading-overlay');
-    if(el) { el.style.display=''; el.classList.remove('hidden'); }
-    setSyncStatus('syncing','載入中…');
-  }
   if(typeof google==='undefined'||!google.script||!google.script.run){
     hideLoadingOverlay();
     setSyncStatus('','');
     return;
+  }
+  if(!silent) {
+    var el = document.getElementById('cloud-loading-overlay');
+    if(el) { el.style.display=''; el.classList.remove('hidden'); }
+    setSyncStatus('syncing','載入中…');
   }
   // 10 秒超時保護，避免一直轉
   var cloudTimeout = setTimeout(function(){
@@ -3971,7 +3971,7 @@ function walkCopySub(i) {
 
 /* ── 班表資料載入已整合進 loadAllDataFromCloud，開頁時自動執行 ── */
 function loadAdminFromSheets() {
-  loadAllDataFromCloud();
+  // 雲端載入由 window.onload 統一呼叫 loadAllDataFromCloud()，此處不重複
 }
 
 // ==================== 轉檔器 (tf_*) ====================
