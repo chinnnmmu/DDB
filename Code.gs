@@ -189,19 +189,75 @@ function updateMapping(mmgg, ggList) {
   } catch(e) { return { success: false, message: e.message }; }
 }
 
-// 轉換結果 + 原始備份 寫入 Sheets
+// 轉換結果 + 原始備份 寫入 Sheets，同時合併進「工單」Sheet 實現雙向同步
 function saveToSheet(records, rawText, dateInput) {
   try {
+    var now = new Date().toLocaleString('zh-TW');
+
+    // 1. 寫入轉換紀錄
     var shR = getOrCreateSheet(SHEET_NAME_TF_RECORDS);
     if (shR.getLastRow() === 0) shR.appendRow(['日期','阿姨','妹妹','GG','時間','地點','PS','寫','牌價','M收','建立時間']);
-    var now = new Date().toLocaleString('zh-TW');
     (records || []).forEach(function(r) {
       shR.appendRow([r.date||'',r.ee||'',r.mm||'',r.gg||'',r.time||'',r.place||'',r.psCol||'',r.writeCol||'',r.price||'',r.shou||'',now]);
     });
+
+    // 2. 備份原始工單
     var shB = getOrCreateSheet(SHEET_NAME_TF_BACKUP);
     if (shB.getLastRow() === 0) shB.appendRow(['日期','備份時間','筆數','原始工單']);
     shB.appendRow([dateInput||'', now, (records||[]).length, rawText||'']);
+
+    // 3. 同步合併進「工單」Sheet（雙向通用）
+    _mergeTfRecordsToOrders(records || []);
+
     return { success: true };
+  } catch(e) { return { success: false, message: e.message }; }
+}
+
+// 將轉換紀錄合併進工單 Sheet（不重複）
+function _mergeTfRecordsToOrders(records) {
+  var shO = getOrCreateSheet(SHEET_NAME_ORDERS);
+  if (shO.getLastRow() === 0) {
+    shO.appendRow(['日期','牌','人名','時間地點','阿姨','實收','EE','退','備記','已結','結帳日','結帳金額','編號']);
+  }
+  // 讀現有工單建立 key set（日期+人名+時間地點 避免重複）
+  var existing = shO.getDataRange().getValues();
+  var keySet = {};
+  for (var i = 1; i < existing.length; i++) {
+    var k = String(existing[i][0])+'|'+String(existing[i][2])+'|'+String(existing[i][3]);
+    keySet[k] = true;
+  }
+  records.forEach(function(r) {
+    var placeStr = (r.time && r.place) ? (r.time + ' ' + r.place) : (r.time || r.place || '');
+    var k = (r.date||'')+'|'+(r.mm||'')+'|'+placeStr;
+    if (keySet[k]) return; // 已存在跳過
+    keySet[k] = true;
+    // EE 欄：牌價-M收（簡單估算），有寫欄則記在退
+    var pai = r.price ? String(parseInt(r.price)/10) : '';
+    var ee = (r.price && r.shou) ? String(parseInt(r.price) - parseInt(r.shou||0)) : '';
+    var note = [r.psCol||'', r.gg ? 'GG:'+r.gg : ''].filter(Boolean).join(' ');
+    shO.appendRow([
+      r.date||'', pai, r.mm||'', placeStr,
+      r.ee||'', r.shou||'', ee, r.writeCol||'',
+      note, 'N', '', '', 'tf_'+Date.now()+'_'+Math.random().toString(36).slice(2,6)
+    ]);
+  });
+}
+
+// 從「轉換紀錄」Sheet 手動同步進「工單」Sheet（App 呼叫用）
+function syncTfRecordsToOrders() {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_TF_RECORDS);
+    var data = sh.getDataRange().getValues();
+    if (data.length <= 1) return { success: true, count: 0 };
+    var records = [];
+    for (var i = 1; i < data.length; i++) {
+      var row = data[i];
+      records.push({ date:String(row[0]), ee:String(row[1]), mm:String(row[2]), gg:String(row[3]),
+                     time:String(row[4]), place:String(row[5]), psCol:String(row[6]),
+                     writeCol:String(row[7]), price:String(row[8]), shou:String(row[9]) });
+    }
+    _mergeTfRecordsToOrders(records);
+    return { success: true, count: records.length };
   } catch(e) { return { success: false, message: e.message }; }
 }
 

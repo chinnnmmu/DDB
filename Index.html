@@ -1102,6 +1102,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <div class="card" style="padding:14px;width:100%;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
         <span class="card-title">🗂️ 雲端原始工單備份</span>
+        <button class="btn btn-sky btn-sm" onclick="tf_syncToOrders()" style="margin-right:6px;">🔁 同步轉換紀錄→工單</button>
         <button class="btn btn-sage btn-sm" onclick="tf_loadHistory()">🔄 重新整理</button>
       </div>
       <div id="tf-history" style="max-height:70vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;">
@@ -3757,6 +3758,17 @@ function tf_clearP1() {
   document.getElementById('tf-uc').style.display='none';
   document.getElementById('tf-empty').style.display='';
   tf_CR=[];
+}
+
+function tf_syncToOrders() {
+  toast('同步中...');
+  google.script.run
+    .withSuccessHandler(function(res){
+      if(res&&res.success) toast('✅ 已同步 '+res.count+' 筆轉換紀錄到工單');
+      else toast('❌ 同步失敗：'+(res&&res.message||'未知錯誤'));
+    })
+    .withFailureHandler(function(e){ toast('❌ '+e.message); })
+    .syncTfRecordsToOrders();
 }
 
 function tf_loadHistory() {
