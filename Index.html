@@ -549,7 +549,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
           <div class="card-head"><span class="card-title">⚡ 快速輸入</span></div>
           <div style="padding:0.5rem">
             <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.4rem;">第1行可輸入日期（如 6/24），之後每行一筆工單。括號內容自動放備記。</div>
-            <textarea id="imp-raw" style="height:20rem;font-size:0.9375rem;font-family:var(--mono)" placeholder="6/24&#10;16莫凡 2200香格里拉2+1 加藤(V)320 128&#10;22江月 2200敦北住家2+1 H巨人(~)400 146"></textarea>
+            <textarea id="imp-raw" style="height:20rem;font-size:0.775rem;font-family:var(--mono)" placeholder="6/24&#10;16莫凡 2200香格里拉2+1 加藤(V)320 128&#10;22江月 2200敦北住家2+1 H巨人(~)400 146"></textarea>
             <div class="row-gap" style="margin-top:6px;">
               <button class="btn btn-sage" id="imp-btn">⚡ 匯入</button>
               <button class="btn btn-plain btn-sm" onclick="document.getElementById('imp-raw').value=''">清除</button>
@@ -616,12 +616,16 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
             <div class="tbl-wrap">
               <table class="etbl" id="etbl" style="display: table; min-width: 600px;">
-                <thead><tr>
-                  <th style="width:3.5rem">牌</th><th style="width:5.5rem; text-align:left; padding-left:0.4rem;">人名</th>
-                  <th style="width:8.5rem; text-align:left; padding-left:0.4rem; cursor:pointer;" onclick="SR('time')">時間地點</th>
-                  <th style="width:5rem; text-align:left; padding-left:0.4rem;">阿姨</th><th style="width:3.5rem">實收</th>
-                  <th style="width:3.5rem">EE</th><th style="width:3rem">退</th>
-                  <th style="width:6.5rem; text-align:left; padding-left:0.4rem;">備記</th><th style="width:5.5rem">狀態</th>
+                <thead id="etbl-head"><tr>
+                  <th class="sortable" style="width:3.5rem" onclick="SR('pai')" id="sh-pai">牌</th>
+                  <th class="sortable" style="width:5.5rem; text-align:left; padding-left:0.4rem;" onclick="SR('name')" id="sh-name">人名</th>
+                  <th class="sortable" style="width:8.5rem; text-align:left; padding-left:0.4rem;" onclick="SR('time')" id="sh-time">時間地點</th>
+                  <th class="sortable" style="width:5rem; text-align:left; padding-left:0.4rem;" onclick="SR('auntie')" id="sh-auntie">阿姨</th>
+                  <th class="sortable" style="width:3.5rem" onclick="SR('shi')" id="sh-shi">實收</th>
+                  <th class="sortable" style="width:3.5rem" onclick="SR('ee')" id="sh-ee">EE</th>
+                  <th class="sortable" style="width:3rem" onclick="SR('rebate')" id="sh-rebate">退</th>
+                  <th style="width:6.5rem; text-align:left; padding-left:0.4rem;">備記</th>
+                  <th style="width:5.5rem">狀態</th>
                   <th style="width:3rem">刪除</th>
                 </tr></thead>
                 <tbody id="etbody"></tbody>
@@ -2238,22 +2242,26 @@ function deleteWorkorderFromAll(dateKey, rowIndex) {
   }
 }
 
+var dailySortBy = '';
+var dailySortDir = {};
 function SR(by){
   var k = selKey();
   if(!k || !notes[k]) return;
-  sortDir[by] = sortDir[by] === 1 ? -1 : 1; 
-  if (by === 'time') {
-    notes[k].sort(function(a, b){ return (extractStartTime(a.place) - extractStartTime(b.place)) * sortDir[by]; });
-  } 
-  else if (by === 'name') {
-    notes[k].sort(function(a, b){
-      var av = (a.name || '').toLowerCase();
-      var bv = (b.name || '').toLowerCase();
-      return av < bv ? -sortDir[by] : av > bv ? sortDir[by] : 0;
-    });
-  }
+  if(dailySortBy === by) { dailySortDir[by] = dailySortDir[by] === 1 ? -1 : 1; }
+  else { dailySortBy = by; dailySortDir[by] = 1; }
+  var d = dailySortDir[by];
+  notes[k].sort(function(a,b){
+    var av, bv;
+    if(by==='time'){ return (extractStartTime(a.place)-extractStartTime(b.place))*d; }
+    if(by==='pai'||by==='shi'||by==='ee'||by==='rebate'){
+      av=parseFloat(a[by]||0)||0; bv=parseFloat(b[by]||0)||0; return (av-bv)*d;
+    }
+    av=(a[by]||'').toLowerCase(); bv=(b[by]||'').toLowerCase();
+    return av<bv?-d:av>bv?d:0;
+  });
   save(); RR();
 }
+function srArrow(col){ if(dailySortBy!==col)return ''; return dailySortDir[col]===1?' ↑':' ↓'; }
 
 function RR(){
   var hasD=!!selDate,k=selKey();
@@ -2338,7 +2346,14 @@ function RR(){
   
   var etbody = document.getElementById('etbody');
   if(etbody) etbody.innerHTML = html;
-  
+
+  // 更新排序箭頭
+  ['pai','name','time','auntie','shi','ee','rebate'].forEach(function(col){
+    var th=document.getElementById('sh-'+col); if(!th)return;
+    var base={pai:'牌',name:'人名',time:'時間地點',auntie:'阿姨',shi:'實收',ee:'EE',rebate:'退'}[col];
+    th.textContent=base+(dailySortBy===col?(dailySortDir[col]===1?' ↑':' ↓'):'');
+  });
+
   if(selR>=0 && selC>=0){
     var inp = document.getElementById('ci_'+selR+'_'+selC);
     if(inp){inp.focus(); inp.select();}
@@ -2557,23 +2572,38 @@ function updImpDates(){
 // 智能解析單行工單：16莫凡 2200香格里拉2+1 加藤(V)320 128
 function parseImpLine(line){
   line=line.trim(); if(!line) return null;
-  // 格式：{牌}{姓名} {時間}{地點} {阿姨}({備記}){實收} {EE}
-  // 括號內容 → 備記
+
+  // 竹葉格式：38咪露｜1330｜三重江月3｜小陳｜1140/456
+  if(/[｜|]/.test(line)){
+    var parts=line.split(/[｜|]/).map(function(s){return s.trim();});
+    var first=parts[0]||'', note2='';
+    first=first.replace(/[（(]([^)）]*)[)）]/g,function(_,n){note2=(note2?note2+' ':'')+n;return '';}).trim();
+    var pm=first.match(/^(\d+)(.+)/);
+    var pai2=pm?String(parseInt(pm[1])*10):'';
+    var name2=pm?pm[2].trim():first;
+    var time2=(parts[1]||'').trim();
+    var place2=(parts[2]||'').trim();
+    var auntie2=(parts[3]||'').trim();
+    var moneyStr=(parts[4]||'').trim();
+    var shi2='',ee2='';
+    var mm=moneyStr.match(/^(\d+)[\/／](\d+)$/);
+    if(mm){shi2=mm[1];ee2=mm[2];}else if(moneyStr){shi2=moneyStr;}
+    var placeStr=time2?(time2+' '+place2).trim():place2;
+    return {id:'r'+Date.now()+Math.random(),pai:pai2,name:name2,place:placeStr,auntie:auntie2,shi:shi2,rebate:'',ee:ee2,note:note2,settled:false,settledDate:'',settledAmount:''};
+  }
+
+  // 空格格式：{牌}{姓名} {時間}{地點} {阿姨}({備記}){實收} {EE}
   var note='';
   line=line.replace(/\(([^)]*)\)/g,function(_,n){note=(note?note+' ':'')+n;return '';});
 
-  // 拆出首段數字=牌，緊接中文/英=姓名
   var m=line.match(/^(\d+)([一-龥A-Za-z]+)\s+(.*)/);
   if(!m) return null;
   var pai=m[1], name=m[2], rest=m[3].trim();
 
-  // rest 末尾兩個純整數 = 實收、EE
   var numMatches=rest.match(/(\d+)\s+(\d+)$/);
   var shi='',ee='';
   if(numMatches){ shi=numMatches[1]; ee=numMatches[2]; rest=rest.slice(0,rest.length-numMatches[0].length).trim(); }
 
-  // rest 現在是：{時間}{地點} {阿姨} 或 {時間}{地點+阿姨}
-  // 若末段是中文/英文字串 → 阿姨
   var auntie='',place=rest;
   var lastWord=rest.match(/([一-龥A-Za-z]+)$/);
   if(lastWord && lastWord[0].length>=2 && !/\d/.test(lastWord[0])){
