@@ -628,18 +628,11 @@ body.sidebar-collapsed .app{margin-left:44px;}
               </div>
             </div>
 
-            <div style="padding:0.5rem; background:var(--card2); border-bottom:1px solid var(--border); display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-              <span style="font-size:0.875rem; color:var(--text2); font-weight:600;">🔍 篩選：</span>
-              <input id="filter-name" placeholder="人名..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
-              <input id="filter-auntie" placeholder="阿姨..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
-              <input id="filter-time" placeholder="時間..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
-              <select id="filter-status" style="width:100px; height:28px; font-size:0.8125rem;" onchange="applyWorkorderFilters()">
-                <option value="">全部狀態</option>
-                <option value="unsettled">未結清</option>
-                <option value="settled">已結清</option>
-              </select>
-              <button class="btn btn-plain btn-sm" onclick="clearWorkorderFilters()">清除篩選</button>
-            </div>
+            <!-- 篩選列已移除 -->
+            <input id="filter-name" type="hidden" value="">
+            <input id="filter-auntie" type="hidden" value="">
+            <input id="filter-time" type="hidden" value="">
+            <select id="filter-status" style="display:none;"><option value=""></option></select>
 
             <div class="tbl-wrap">
               <table class="etbl" id="etbl" style="display: table; min-width: 600px;">
