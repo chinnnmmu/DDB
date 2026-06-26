@@ -50,7 +50,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:0.
 .top-nav{display:none;}
 .app{padding-bottom:var(--bottom-h);overflow-x:hidden;min-width:0;}
 /* ── Sidebar ── */
-.sidebar{display:none;width:160px;flex-shrink:0;background:var(--card);border-right:1px solid var(--border);flex-direction:column;padding:16px 10px;z-index:1000;transition:background .3s,border-color .3s,width .2s;position:relative;}
+/* 左側選單：固定在左邊，佔滿整個高度 */
+.sidebar{display:none;position:fixed;top:0;left:0;bottom:0;width:160px;background:var(--card);border-right:1px solid var(--border);flex-direction:column;padding:16px 10px;z-index:1000;transition:background .3s,border-color .3s,width .2s,padding .2s;overflow-y:auto;}
 .sidebar-logo{font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--gold);margin-bottom:20px;padding-left:2px;}
 .sidebar-label{font-size:9px;font-weight:600;letter-spacing:.12em;color:var(--text3);margin-bottom:8px;padding-left:6px;text-transform:uppercase;}
 .sidebar-menu{display:flex;flex-direction:column;gap:2px;}
@@ -255,11 +256,12 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 .stat-btn-row { display: flex; gap: 0.4rem; margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px dashed var(--border); justify-content: flex-end; align-items: center; }
 
 @media(min-width:1024px){
-  .layout-wrapper{display:flex;align-items:stretch;min-height:100vh;width:100%;}
+  /* 桌面版：隱藏行動導覽，顯示側邊欄 */
   .bottom-nav{display:none;}
   .top-nav{display:none;}
-  .sidebar{display:flex;position:sticky;top:0;height:100vh;overflow-y:auto;}
-  .app{flex:1;min-width:0;padding-bottom:0 !important;padding-top:0 !important;margin-left:0 !important;max-width:100% !important;}
+  .sidebar{display:flex;}
+  /* 右側內容區塊：左邊界從側邊欄結束的地方開始，不重疊 */
+  .app{margin-left:160px;padding-bottom:0;padding-top:0;min-height:100vh;}
   .panel{padding:1rem;max-width:100%;}
   .wo-desktop{display:grid;grid-template-columns:260px 1fr;gap:0.6rem;align-items:start}
   .cal-col{position:sticky;top:1rem;align-self:start;display:flex;flex-direction:column;gap:0.4rem;width:100%}
@@ -267,8 +269,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
   #cal-card-el{border-radius:16px;padding:12px 16px;}
   .cloud-sync-badge{top:6px;right:8px;}
 }
-/* collapsed state */
-body.sidebar-collapsed .sidebar{width:44px !important;padding:16px 4px !important;}
+/* 收合狀態：選單縮窄，內容區塊左邊界也跟著縮 */
+body.sidebar-collapsed .sidebar{width:44px;padding:16px 4px;}
+body.sidebar-collapsed .app{margin-left:44px;}
 @media(max-width:1023px){
   .bottom-nav{display:flex}
   .top-nav{display:none}
@@ -415,7 +418,6 @@ body.sidebar-collapsed .sidebar{width:44px !important;padding:16px 4px !importan
 </head>
 <body>
 
-<div class="layout-wrapper">
 <aside class="sidebar" id="mainSidebar">
   <button class="sidebar-collapse-btn" id="sidebarToggle" onclick="toggleSidebar()" title="收合側邊欄">‹</button>
   <div class="sidebar-logo sidebar-expand-only">✦ DDB</div>
@@ -964,7 +966,6 @@ body.sidebar-collapsed .sidebar{width:44px !important;padding:16px 4px !importan
 
 
 </div>
-</div><!-- end layout-wrapper -->
 
 <nav class="bottom-nav">
   <button class="bnav-item" data-tab="note" onclick="ST('note')"><span class="bnav-icon">📝</span>便簽</button>
