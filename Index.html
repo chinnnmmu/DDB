@@ -1567,11 +1567,11 @@ function addMultiNote() {
   var newNote={id:Date.now(),text:'',color:'lavender',time:_noteNow()};
   multiNotes.unshift(newNote);
   saveMultiNotes(); renderMultiNoteList();
-  // 找空格子
-  for(var i=1;i<=3;i++){
-    var ed=document.getElementById('multi-editor'+i);
-    if(ed&&!ed.value.trim()){ ed.dataset.noteId=String(newNote.id); ed.focus(); return; }
-  }
+  // 直接放進第一格並 focus
+  var ed1=document.getElementById('multi-editor1');
+  if(ed1){ ed1.value=''; ed1.dataset.noteId=String(newNote.id); ed1.dataset.color='lavender'; ed1.focus(); }
+  document.getElementById('multi-time1').textContent=newNote.time;
+  _applySlotColor(1,'lavender');
 }
 
 function deleteNoteById(id) {
