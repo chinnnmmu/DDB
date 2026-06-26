@@ -1034,14 +1034,40 @@ function manualSaveToCloud() {
   saveAllDataToCloud();
 }
 
+// 收集班表資料欄位目前的值
+function collectKvData() {
+  var kvData = { day:'', week:'', note:'', db:'', walk:'' };
+  var eDay  = document.getElementById('admin-inputA');
+  var eWeek = document.getElementById('admin-weekInput');
+  var eNote = document.getElementById('admin-notepad');
+  var eDb   = document.getElementById('admin-db');
+  if (eDay)  kvData.day  = eDay.value  || '';
+  if (eWeek) kvData.week = eWeek.value || '';
+  if (eNote) kvData.note = eNote.value || '';
+  if (eDb)   kvData.db   = eDb.value   || '';
+  // 現走表資料
+  try {
+    if (typeof walkPresets !== 'undefined') {
+      var qr = document.getElementById('walk-quickRest');
+      var qf = document.getElementById('walk-quickFull');
+      kvData.walk = JSON.stringify({
+        presets: walkPresets,
+        quickRest: qr ? qr.value : '',
+        quickFull: qf ? qf.value : ''
+      });
+    }
+  } catch(e) {}
+  return kvData;
+}
+
+// 統一儲存所有資料至 Sheets（便簽 + 工單 + 班表資料）
 function saveAllDataToCloud() {
   if(typeof google==='undefined'||!google.script||!google.script.run) return;
   setSyncStatus('syncing','儲存中…');
-  // 系統一只傳輸輕量資料，嚴禁夾帶班表/轉檔大型資料
   var payload = {
-    action: 'saveAllData',
     multiNotes: JSON.parse(JSON.stringify(multiNotes || [])),
-    workOrders: JSON.parse(JSON.stringify(notes || {}))
+    workOrders: JSON.parse(JSON.stringify(notes || {})),
+    kvData: collectKvData()
   };
   google.script.run
     .withSuccessHandler(function(result) {
@@ -1124,6 +1150,30 @@ function loadAllDataFromCloud(silent) {
           try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
           try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
           cloudEmpty = false;
+        }
+        // 還原班表資料（KV：day/week/note/db/walk）
+        if (data && data.kvData && typeof data.kvData === 'object') {
+          var kv = data.kvData;
+          var eDay  = document.getElementById('admin-inputA');
+          var eWeek = document.getElementById('admin-weekInput');
+          var eNote = document.getElementById('admin-notepad');
+          var eDb   = document.getElementById('admin-db');
+          if (eDay  && kv.day)  { eDay.value  = kv.day;  try{RC();}catch(e){} }
+          if (eWeek && kv.week) { eWeek.value = kv.week; try{RW();}catch(e){} }
+          if (eNote && kv.note) { eNote.value = kv.note; }
+          if (eDb   && kv.db)   { eDb.value   = kv.db;   try{syncDbToBbRaw();}catch(e){} }
+          if (kv.walk) {
+            try {
+              var w = JSON.parse(kv.walk);
+              if (Array.isArray(w.presets) && w.presets.length === 4) {
+                walkPresets = w.presets; try{walkSyncTabNames();}catch(e){} try{walkRenderPresetSettings();}catch(e){}
+              }
+              var qr = document.getElementById('walk-quickRest');
+              var qf = document.getElementById('walk-quickFull');
+              if (qr && w.quickRest != null) qr.value = w.quickRest;
+              if (qf && w.quickFull != null) qf.value = w.quickFull;
+            } catch(e) {}
+          }
         }
         // 如果雲端是空的，查 localStorage 的便簽備份和舊版資料
         if (cloudEmpty) {
@@ -2739,17 +2789,14 @@ function showWalkStatus(msg) {
 }
 
 /* ── GAS Auto-Save (1.5s debounce) ── */
-var _adminSaveTimers = {};
+var _adminSaveTimer = null;
 function adminAutoSave(key, val) {
+  // 班表管理欄位改動後，1.5 秒 debounce 後統一存全部資料
   showAdminStatus('✎ 儲存中…', 0);
-  clearTimeout(_adminSaveTimers[key]);
-  _adminSaveTimers[key] = setTimeout(function() {
-    if (typeof google !== 'undefined' && google.script) {
-      google.script.run
-        .withSuccessHandler(function(){ showAdminStatus('✓ 已同步至 Sheets'); })
-        .withFailureHandler(function(e){ showAdminStatus('⚠ 儲存失敗：' + e.message); })
-        .save(key, val);
-    }
+  clearTimeout(_adminSaveTimer);
+  _adminSaveTimer = setTimeout(function() {
+    saveAllDataToCloud();
+    showAdminStatus('✓ 已同步至 Sheets');
   }, 1500);
 }
 
@@ -3035,16 +3082,9 @@ function walkSwitchPreset(idx) {
 function walkSaveToSheet() {
   walkSaveCurrentToState();
   for (var i=0;i<4;i++) walkPresets[i].name = walkGEl('walk-tabName'+i).value;
-  var json = JSON.stringify({presets:walkPresets, quickRest:walkGEl('walk-quickRest').value, quickFull:walkGEl('walk-quickFull').value});
-  if (typeof google !== 'undefined' && google.script) {
-    google.script.run
-      .withSuccessHandler(function(){ showWalkStatus('☁️ 已儲存至 Sheets'); })
-      .withFailureHandler(function(e){ showWalkStatus('⚠ 儲存失敗：' + e.message); })
-      .save('walk', json);
-  } else {
-    try { localStorage.setItem('walk-presets', json); } catch(e) {}
-    showWalkStatus('✓ 已暫存');
-  }
+  // 統一走 saveAllDataToCloud，一次存所有資料
+  saveAllDataToCloud();
+  showWalkStatus('☁️ 已儲存至 Sheets');
 }
 function walkResetAll() {
   if (!confirm('確定要恢復所有預設值嗎？')) return;
@@ -3136,36 +3176,9 @@ function walkCopySub(i) {
   copyText(v, '✅ 已複製「'+walkPresets[i].name+'」');
 }
 
-/* ── Load Admin Data from Sheets ── */
+/* ── 班表資料載入已整合進 loadAllDataFromCloud，開頁時自動執行 ── */
 function loadAdminFromSheets() {
-  if (typeof google === 'undefined' || !google.script) return;
-  google.script.run
-    .withSuccessHandler(function(data) {
-      if (data.day)  { var e=document.getElementById('admin-inputA'); if(e) e.value=data.day; }
-      if (data.week) { var e=document.getElementById('admin-weekInput'); if(e) e.value=data.week; }
-      if (data.note) { var e=document.getElementById('admin-notepad'); if(e) e.value=data.note; }
-      if (data.db)   {
-        var e=document.getElementById('admin-db'); if(e){ e.value=data.db; syncDbToBbRaw(); }
-      }
-      if (data.walk) {
-        try {
-          var w = JSON.parse(data.walk);
-          if (Array.isArray(w.presets) && w.presets.length===4) {
-            walkPresets = w.presets; walkSyncTabNames(); walkRenderPresetSettings();
-          }
-          var qr=document.getElementById('walk-quickRest'),qf=document.getElementById('walk-quickFull');
-          if(qr&&w.quickRest!=null) qr.value=w.quickRest;
-          if(qf&&w.quickFull!=null) qf.value=w.quickFull;
-        } catch(e) {}
-      } else {
-        var qr=document.getElementById('walk-quickRest'),qf=document.getElementById('walk-quickFull');
-        if(qr) qr.value='▫️ 今日改休 ➜\n35 妹妹名字';
-        if(qf) qf.value='▫️ 今日約滿 ➜\n｜無｜';
-      }
-      showAdminStatus('✓ 班表資料已載入');
-    })
-    .withFailureHandler(function(e){ showAdminStatus('⚠ 班表載入失敗：'+e.message); })
-    .loadAll();
+  loadAllDataFromCloud();
 }
 
 </script>
