@@ -120,6 +120,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose);bo
 .etbl{width:100%;border-collapse:collapse;font-size:0.875rem;table-layout:fixed}
 .nmenu-item{padding:9px 14px;font-size:13px;cursor:pointer;transition:background .12s;}
 .nmenu-item:hover{background:#f5f5f5;}
+.slot-menu{position:absolute;right:0;top:100%;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:50;min-width:130px;overflow:hidden;white-space:nowrap;}
 .etbl thead{position:sticky;top:0;z-index:50;}
 .etbl th{text-align:center;padding:0.5rem 0.375rem;font-size:0.8125rem;color:var(--text2);font-weight:600;background:var(--card2);border:1px solid var(--border);white-space:nowrap;vertical-align:middle;cursor:default;user-select:none;}
 .etbl th.sortable{cursor:pointer;transition:background-color 0.15s ease;}
@@ -488,28 +489,67 @@ body.sidebar-collapsed .app{margin-left:44px;}
 <div class="app">
 
 <div id="tab-note" class="panel">
-  <!-- 搜尋 + 新增 -->
-  <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;">
-    <input type="text" id="note-search" placeholder="🔍 搜尋便簽..." style="flex:1;max-width:280px;" oninput="renderNoteGrid()">
-    <button class="btn btn-rose" onclick="openNoteEdit(null)">＋ 新增</button>
-  </div>
-  <!-- 卡片格線 -->
-  <div id="note-grid" style="columns:3 240px;column-gap:12px;"></div>
-
-  <!-- 編輯 Modal -->
-  <div id="note-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeNoteEdit()">
-    <div id="note-modal-box" style="border-radius:14px;width:min(92vw,520px);padding:18px;box-shadow:0 8px 32px rgba(0,0,0,.22);" onclick="event.stopPropagation()">
-      <div id="note-modal-ts" style="font-size:11.5px;color:#888;margin-bottom:6px;"></div>
-      <textarea id="note-modal-ta" style="width:100%;min-height:260px;font-size:13.5px;font-family:var(--mono);resize:vertical;border:1px solid var(--border);border-radius:8px;padding:10px;line-height:1.65;background:transparent;" placeholder="輸入便簽內容..."></textarea>
-      <!-- 換色列 -->
-      <div style="display:flex;gap:7px;margin-top:10px;align-items:center;">
-        <span style="font-size:12px;color:#888;">色彩：</span>
-        <div id="note-color-row" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+  <div style="padding:0.4rem;height:calc(100vh - 16px);display:flex;flex-direction:column;">
+    <div style="display:flex;gap:10px;flex:1;min-height:0;">
+      <!-- 左側清單 -->
+      <div style="width:180px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.04);flex-shrink:0;">
+        <div style="padding:6px 8px;background:#E8F0F8;border-bottom:1px solid var(--border);display:flex;gap:6px;align-items:center;">
+          <input type="text" id="multi-note-search" placeholder="搜尋..." style="flex:1;min-width:0;padding:5px 6px;font-size:12px;border:1px solid var(--border);border-radius:6px;" onkeyup="filterMultiNoteList()">
+          <button class="btn btn-sage" onclick="addMultiNote()" style="padding:4px 8px;font-size:12px;white-space:nowrap;flex-shrink:0;">＋</button>
+        </div>
+        <div id="multi-note-list" style="flex:1;overflow-y:auto;padding:6px;font-size:13px;"></div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end;">
-        <button class="btn btn-rose-outline btn-sm" id="note-del-btn" onclick="deleteNoteEdit()">🗑 刪除</button>
-        <button class="btn btn-plain btn-sm" onclick="closeNoteEdit()">取消</button>
-        <button class="btn btn-rose" onclick="saveNoteEdit()">💾 儲存</button>
+      <!-- 右側 3 格 -->
+      <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-width:0;">
+        <div id="nslot-1" style="border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);border:2px solid #c8c0d8;background:#ede7f6;">
+          <div style="padding:7px 10px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;flex-shrink:0;background:#e2d9f3;color:#4a3a6a;">
+            <span id="multi-time1" style="flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">💜 格子 1</span>
+            <div style="position:relative;flex-shrink:0;">
+              <button onclick="toggleSlotMenu(1)" style="background:none;border:none;cursor:pointer;font-size:16px;color:rgba(0,0,0,.4);padding:0 4px;line-height:1;">···</button>
+              <div id="slot-menu-1" class="slot-menu" style="display:none;">
+                <div class="nmenu-item" onclick="saveMultiNote(1)">💾 儲存</div>
+                <div class="nmenu-item" onclick="openSlotColorPicker(1)">🎨 變更色彩</div>
+                <div class="nmenu-item" onclick="copySlot(1)">📋 複製</div>
+                <div class="nmenu-item" style="color:#e53935;" onclick="clearSlot(1)">🗑 清除</div>
+              </div>
+            </div>
+          </div>
+          <!-- 換色列（隱藏，展開時顯示） -->
+          <div id="slot-colors-1" style="display:none;padding:6px 10px;gap:6px;flex-wrap:wrap;background:rgba(255,255,255,.5);border-bottom:1px solid rgba(0,0,0,.08);"></div>
+          <textarea id="multi-editor1" style="flex:1;padding:10px;border:none;font-size:13.5px;line-height:1.55;resize:none;outline:none;background:transparent;color:var(--text);" placeholder="第1個行程..."></textarea>
+        </div>
+        <div id="nslot-2" style="border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);border:2px solid #e8b8c4;background:#fce4ec;">
+          <div style="padding:7px 10px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;flex-shrink:0;background:#f8d0de;color:#6a2a3a;">
+            <span id="multi-time2" style="flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">🌹 格子 2</span>
+            <div style="position:relative;flex-shrink:0;">
+              <button onclick="toggleSlotMenu(2)" style="background:none;border:none;cursor:pointer;font-size:16px;color:rgba(0,0,0,.4);padding:0 4px;line-height:1;">···</button>
+              <div id="slot-menu-2" class="slot-menu" style="display:none;">
+                <div class="nmenu-item" onclick="saveMultiNote(2)">💾 儲存</div>
+                <div class="nmenu-item" onclick="openSlotColorPicker(2)">🎨 變更色彩</div>
+                <div class="nmenu-item" onclick="copySlot(2)">📋 複製</div>
+                <div class="nmenu-item" style="color:#e53935;" onclick="clearSlot(2)">🗑 清除</div>
+              </div>
+            </div>
+          </div>
+          <div id="slot-colors-2" style="display:none;padding:6px 10px;gap:6px;flex-wrap:wrap;background:rgba(255,255,255,.5);border-bottom:1px solid rgba(0,0,0,.08);"></div>
+          <textarea id="multi-editor2" style="flex:1;padding:10px;border:none;font-size:13.5px;line-height:1.55;resize:none;outline:none;background:transparent;color:var(--text);" placeholder="第2個行程..."></textarea>
+        </div>
+        <div id="nslot-3" style="border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);border:2px solid #a8d4b8;background:#d8f0e4;">
+          <div style="padding:7px 10px;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;flex-shrink:0;background:#c4e8d4;color:#2a5a40;">
+            <span id="multi-time3" style="flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">🌿 格子 3</span>
+            <div style="position:relative;flex-shrink:0;">
+              <button onclick="toggleSlotMenu(3)" style="background:none;border:none;cursor:pointer;font-size:16px;color:rgba(0,0,0,.4);padding:0 4px;line-height:1;">···</button>
+              <div id="slot-menu-3" class="slot-menu" style="display:none;">
+                <div class="nmenu-item" onclick="saveMultiNote(3)">💾 儲存</div>
+                <div class="nmenu-item" onclick="openSlotColorPicker(3)">🎨 變更色彩</div>
+                <div class="nmenu-item" onclick="copySlot(3)">📋 複製</div>
+                <div class="nmenu-item" style="color:#e53935;" onclick="clearSlot(3)">🗑 清除</div>
+              </div>
+            </div>
+          </div>
+          <div id="slot-colors-3" style="display:none;padding:6px 10px;gap:6px;flex-wrap:wrap;background:rgba(255,255,255,.5);border-bottom:1px solid rgba(0,0,0,.08);"></div>
+          <textarea id="multi-editor3" style="flex:1;padding:10px;border:none;font-size:13.5px;line-height:1.55;resize:none;outline:none;background:transparent;color:var(--text);" placeholder="第3個行程..."></textarea>
+        </div>
       </div>
     </div>
   </div>
@@ -1403,148 +1443,162 @@ function initAutoSync() {
   }
 }
 
-// ===== 便簽 Keep 風格 =====
+// ===== 便簽功能 =====
 var NOTE_COLORS = [
-  {key:'white', bg:'#ffffff', border:'#e0d6cc', label:'白'},
-  {key:'pink',  bg:'#fce4ec', border:'#f48fb1', label:'粉紅'},
-  {key:'peach', bg:'#ffe0b2', border:'#ffb74d', label:'橘'},
-  {key:'yellow',bg:'#fff9c4', border:'#f9d71c', label:'黃'},
-  {key:'mint',  bg:'#ccf6e0', border:'#66c99a', label:'薄荷'},
-  {key:'sky',   bg:'#e1f0fb', border:'#90caf9', label:'天藍'},
-  {key:'lavender',bg:'#ede7f6', border:'#b39ddb', label:'薰衣草'},
-  {key:'rose',  bg:'#fce4f3', border:'#f48dce', label:'玫瑰'}
+  {key:'lavender', bg:'#ede7f6', border:'#c8c0d8', hd:'#e2d9f3', txt:'#4a3a6a'},
+  {key:'rose',     bg:'#fce4ec', border:'#e8b8c4', hd:'#f8d0de', txt:'#6a2a3a'},
+  {key:'mint',     bg:'#d8f0e4', border:'#a8d4b8', hd:'#c4e8d4', txt:'#2a5a40'},
+  {key:'yellow',   bg:'#fff9c4', border:'#f0d060', hd:'#f5e87a', txt:'#5a4a00'},
+  {key:'sky',      bg:'#e1f0fb', border:'#90caf9', hd:'#cce4f8', txt:'#1a4a6a'},
+  {key:'peach',    bg:'#ffe0b2', border:'#ffb74d', hd:'#ffd08a', txt:'#6a3a00'},
+  {key:'pink',     bg:'#fce4f3', border:'#f0a0d0', hd:'#f8cce8', txt:'#6a0a4a'},
+  {key:'white',    bg:'#ffffff', border:'#e0d6cc', hd:'#f5f0ea', txt:'#4a3a2a'}
 ];
-var _noteEditId = null;
-var _noteEditColor = 'white';
 
-function _noteNow() {
+function _noteNow(){
   return new Date().toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
 }
 
-function renderNoteGrid() {
-  var grid = document.getElementById('note-grid');
-  if(!grid) return;
-  var q = (document.getElementById('note-search')||{}).value||'';
-  var filtered = q ? multiNotes.filter(function(n){ return (n.text||'').toLowerCase().includes(q.toLowerCase()); }) : multiNotes;
+function _applySlotColor(num, key) {
+  var col = NOTE_COLORS.find(function(c){ return c.key===key; }) || NOTE_COLORS[0];
+  var slot = document.getElementById('nslot-'+num);
+  if(!slot) return;
+  slot.style.background = col.bg;
+  slot.style.borderColor = col.border;
+  var hd = slot.querySelector('div');
+  if(hd){ hd.style.background=col.hd; hd.style.color=col.txt; }
+  // 記在 editor 上
+  var ed = document.getElementById('multi-editor'+num);
+  if(ed) ed.dataset.color = key;
+}
 
-  grid.innerHTML = filtered.map(function(n) {
-    var col = NOTE_COLORS.find(function(c){ return c.key===(n.color||'white'); }) || NOTE_COLORS[0];
-    var lines = (n.text||'').split('\n').map(function(l){
-      return '<div style="white-space:pre-wrap;word-break:break-all;">'+escH(l)+'</div>';
+function toggleSlotMenu(num) {
+  [1,2,3].forEach(function(n){
+    if(n!==num){ var m=document.getElementById('slot-menu-'+n); if(m)m.style.display='none'; }
+  });
+  var menu = document.getElementById('slot-menu-'+num);
+  if(menu) menu.style.display = menu.style.display==='none'?'block':'none';
+}
+document.addEventListener('click', function(e){
+  if(!e.target.closest||!e.target.closest('[id^="slot-menu-"]')&&!e.target.closest('button[onclick^="toggleSlotMenu"]'))
+    [1,2,3].forEach(function(n){ var m=document.getElementById('slot-menu-'+n); if(m)m.style.display='none'; });
+});
+
+function openSlotColorPicker(num) {
+  [1,2,3].forEach(function(n){ var m=document.getElementById('slot-menu-'+n); if(m)m.style.display='none'; });
+  var row = document.getElementById('slot-colors-'+num);
+  if(!row) return;
+  var ed = document.getElementById('multi-editor'+num);
+  var cur = (ed&&ed.dataset.color)||'lavender';
+  if(row.style.display==='none'||!row.style.display){
+    row.style.display='flex';
+    row.innerHTML = NOTE_COLORS.map(function(c){
+      var sel = c.key===cur;
+      return '<div onclick="pickSlotColor('+num+',\''+c.key+'\')" title="'+c.key+'" style="width:20px;height:20px;border-radius:50%;background:'+c.bg+';border:2px solid '+(sel?'#333':c.border)+';cursor:pointer;outline:'+(sel?'2px solid #333':'none')+';outline-offset:1px;"></div>';
     }).join('');
-    return '<div class="ncard" style="background:'+col.bg+';border:1.5px solid '+col.border+';border-radius:12px;padding:12px 12px 8px;margin-bottom:12px;break-inside:avoid;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.07);position:relative;" onclick="openNoteEdit(\''+n.id+'\')">'
-      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px;">'
-      +'<div style="font-size:12px;color:rgba(0,0,0,.45);margin-bottom:6px;line-height:1.3;">'+(n.time||'')+'</div>'
-      +'<button onclick="event.stopPropagation();toggleNoteMenu(\''+n.id+'\')" style="background:none;border:none;cursor:pointer;font-size:18px;color:rgba(0,0,0,.4);padding:0 2px;line-height:1;">···</button>'
-      +'</div>'
-      +'<div style="font-size:13px;line-height:1.6;color:#2d2118;">'+lines+'</div>'
-      +'<div id="nmenu-'+n.id+'" style="display:none;position:absolute;right:10px;top:32px;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:50;min-width:140px;overflow:hidden;">'
-      +'<div class="nmenu-item" onclick="event.stopPropagation();openColorPicker(\''+n.id+'\')">🎨 變更色彩</div>'
-      +'<div class="nmenu-item" onclick="event.stopPropagation();copyNote(\''+n.id+'\')">📋 複製到剪貼簿</div>'
-      +'<div class="nmenu-item" style="color:#e53935;" onclick="event.stopPropagation();deleteNoteById(\''+n.id+'\')">🗑 刪除</div>'
-      +'</div>'
+  } else {
+    row.style.display='none';
+  }
+}
+
+function pickSlotColor(num, key) {
+  _applySlotColor(num, key);
+  var row = document.getElementById('slot-colors-'+num);
+  var col = NOTE_COLORS.find(function(c){ return c.key===key; })||NOTE_COLORS[0];
+  if(row) row.querySelectorAll('div').forEach(function(d){
+    var isS = d.title===key;
+    d.style.borderColor = isS?'#333':col.border;
+    d.style.outline = isS?'2px solid #333':'none';
+  });
+  // 順便更新已儲存的 note color
+  var ed = document.getElementById('multi-editor'+num);
+  if(ed&&ed.dataset.noteId){
+    var n = multiNotes.find(function(x){ return String(x.id)===ed.dataset.noteId; });
+    if(n){ n.color=key; saveMultiNotes(); renderMultiNoteList(); }
+  }
+}
+
+function copySlot(num) {
+  var ed = document.getElementById('multi-editor'+num);
+  if(!ed||!ed.value.trim()){ toast('格子是空的'); return; }
+  navigator.clipboard.writeText(ed.value).then(function(){ toast('✓ 已複製'); }).catch(function(){ toast('複製失敗'); });
+  [1,2,3].forEach(function(n){ var m=document.getElementById('slot-menu-'+n); if(m)m.style.display='none'; });
+}
+
+function clearSlot(num) {
+  var ed = document.getElementById('multi-editor'+num);
+  if(ed){ ed.value=''; delete ed.dataset.noteId; }
+  document.getElementById('multi-time'+num).textContent = ['💜 格子 1','🌹 格子 2','🌿 格子 3'][num-1];
+  [1,2,3].forEach(function(n){ var m=document.getElementById('slot-menu-'+n); if(m)m.style.display='none'; });
+}
+
+// ===== 多便簽清單 =====
+function renderMultiNoteList(filter) {
+  var container = document.getElementById('multi-note-list');
+  if(!container) return;
+  var q = filter||'';
+  var filtered = q ? multiNotes.filter(function(n){ return (n.text||'').toLowerCase().includes(q.toLowerCase()); }) : multiNotes;
+  container.innerHTML = filtered.map(function(n, i){
+    var col = NOTE_COLORS.find(function(c){ return c.key===(n.color||'lavender'); })||NOTE_COLORS[0];
+    var preview = (n.text||'').split('\n').slice(0,2).join(' ').slice(0,40);
+    return '<div onclick="loadNoteToSlot('+i+')" style="padding:7px 9px;margin-bottom:4px;background:'+col.bg+';border:1px solid '+col.border+';border-radius:7px;cursor:pointer;font-size:12px;line-height:1.4;">'
+      +'<div style="font-size:10.5px;color:rgba(0,0,0,.4);margin-bottom:2px;">'+(n.time||'')+'</div>'
+      +'<div style="color:#2d2118;">'+preview+'</div>'
       +'</div>';
   }).join('');
 }
 
-function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function toggleNoteMenu(id) {
-  // close all others
-  document.querySelectorAll('[id^="nmenu-"]').forEach(function(el){
-    if(el.id !== 'nmenu-'+id) el.style.display='none';
-  });
-  var m = document.getElementById('nmenu-'+id);
-  if(m) m.style.display = m.style.display==='none'?'block':'none';
-}
-document.addEventListener('click', function(){ document.querySelectorAll('[id^="nmenu-"]').forEach(function(el){el.style.display='none';}); });
-
-function openNoteEdit(id) {
-  _noteEditId = id;
-  var n = id ? multiNotes.find(function(x){ return String(x.id)===String(id); }) : null;
-  _noteEditColor = (n&&n.color)||'white';
-  var col = NOTE_COLORS.find(function(c){ return c.key===_noteEditColor; })||NOTE_COLORS[0];
-  var box = document.getElementById('note-modal-box');
-  box.style.background = col.bg;
-  box.style.border = '2px solid '+col.border;
-  document.getElementById('note-modal-ts').textContent = n?(n.time||''):'';
-  document.getElementById('note-modal-ta').value = n?(n.text||''):'';
-  document.getElementById('note-modal-ta').style.borderColor = col.border;
-  var delBtn = document.getElementById('note-del-btn');
-  if(delBtn) delBtn.style.display = id?'inline-flex':'none';
-  _renderColorRow();
-  var modal = document.getElementById('note-modal');
-  modal.style.display = 'flex';
-  setTimeout(function(){ document.getElementById('note-modal-ta').focus(); },80);
+function filterMultiNoteList() {
+  renderMultiNoteList(document.getElementById('multi-note-search').value);
 }
 
-function _renderColorRow() {
-  var row = document.getElementById('note-color-row');
-  if(!row) return;
-  row.innerHTML = NOTE_COLORS.map(function(c){
-    var sel = c.key===_noteEditColor;
-    return '<div onclick="pickNoteColor(\''+c.key+'\')" title="'+c.label+'" style="width:22px;height:22px;border-radius:50%;background:'+c.bg+';border:2.5px solid '+(sel?'#333':c.border)+';cursor:pointer;box-shadow:'+(sel?'0 0 0 2px #333':'none')+';"></div>';
-  }).join('');
-}
-
-function pickNoteColor(key) {
-  _noteEditColor = key;
-  var col = NOTE_COLORS.find(function(c){ return c.key===key; })||NOTE_COLORS[0];
-  var box = document.getElementById('note-modal-box');
-  box.style.background = col.bg;
-  box.style.border = '2px solid '+col.border;
-  document.getElementById('note-modal-ta').style.borderColor = col.border;
-  _renderColorRow();
-}
-
-function openColorPicker(id) {
-  openNoteEdit(id); // 直接開編輯框就可以換色
-}
-
-function closeNoteEdit() {
-  document.getElementById('note-modal').style.display = 'none';
-  _noteEditId = null;
-}
-
-function saveNoteEdit() {
-  var text = document.getElementById('note-modal-ta').value.trim();
-  if(!text){ toast('便簽不能是空的'); return; }
-  if(_noteEditId) {
-    var n = multiNotes.find(function(x){ return String(x.id)===String(_noteEditId); });
-    if(n){ n.text=text; n.color=_noteEditColor; n.time=_noteNow(); }
-  } else {
-    multiNotes.unshift({ id:Date.now(), text:text, color:_noteEditColor, time:_noteNow() });
+function loadNoteToSlot(idx) {
+  var n = multiNotes[idx]; if(!n) return;
+  for(var i=1;i<=3;i++){
+    var ed=document.getElementById('multi-editor'+i);
+    if(ed&&!ed.value.trim()){
+      ed.value=n.text||''; ed.dataset.noteId=String(n.id); ed.dataset.color=n.color||'lavender';
+      document.getElementById('multi-time'+i).textContent=n.time||'';
+      _applySlotColor(i, n.color||'lavender');
+      return;
+    }
   }
-  saveMultiNotes();
-  renderNoteGrid();
-  closeNoteEdit();
-  toast('✓ 便簽已儲存');
+  // 全滿就放第一格
+  var ed1=document.getElementById('multi-editor1');
+  ed1.value=n.text||''; ed1.dataset.noteId=String(n.id); ed1.dataset.color=n.color||'lavender';
+  document.getElementById('multi-time1').textContent=n.time||'';
+  _applySlotColor(1, n.color||'lavender');
 }
 
-function deleteNoteEdit() {
-  if(!_noteEditId) return;
-  deleteNoteById(_noteEditId);
-  closeNoteEdit();
+function addMultiNote() {
+  var newNote={id:Date.now(),text:'',color:'lavender',time:_noteNow()};
+  multiNotes.unshift(newNote);
+  saveMultiNotes(); renderMultiNoteList();
+  // 找空格子
+  for(var i=1;i<=3;i++){
+    var ed=document.getElementById('multi-editor'+i);
+    if(ed&&!ed.value.trim()){ ed.dataset.noteId=String(newNote.id); ed.focus(); return; }
+  }
 }
 
-function deleteNoteById(id) {
-  multiNotes = multiNotes.filter(function(n){ return String(n.id)!==String(id); });
-  saveMultiNotes();
-  renderNoteGrid();
-  toast('✓ 便簽已刪除');
+function saveMultiNote(num) {
+  var ed=document.getElementById('multi-editor'+num);
+  var text=(ed&&ed.value)||'';
+  if(!text.trim()){ toast('格子是空的'); return; }
+  var noteId=ed&&ed.dataset.noteId;
+  var color=ed&&ed.dataset.color||'lavender';
+  var existing=noteId?multiNotes.find(function(n){ return String(n.id)===noteId; }):null;
+  if(existing){ existing.text=text; existing.color=color; existing.time=_noteNow(); }
+  else{
+    var nn={id:Date.now(),text:text,color:color,time:_noteNow()};
+    multiNotes.unshift(nn);
+    if(ed) ed.dataset.noteId=String(nn.id);
+  }
+  document.getElementById('multi-time'+num).textContent=_noteNow();
+  saveMultiNotes(); renderMultiNoteList();
+  toast('✓ 格子 '+num+' 已儲存');
+  [1,2,3].forEach(function(n){ var m=document.getElementById('slot-menu-'+n); if(m)m.style.display='none'; });
 }
-
-function copyNote(id) {
-  var n = multiNotes.find(function(x){ return String(x.id)===String(id); });
-  if(!n) return;
-  navigator.clipboard.writeText(n.text||'').then(function(){ toast('✓ 已複製到剪貼簿'); }).catch(function(){ toast('複製失敗'); });
-}
-
-// 相容舊呼叫
-function renderMultiNoteList(){ renderNoteGrid(); }
-function filterMultiNoteList(){ renderNoteGrid(); }
-function addMultiNote(){ openNoteEdit(null); }
-function saveMultiNote(){ toast('請直接點卡片編輯'); }
 
 // ===== 工單篩選和刪除功能 =====
 function applyWorkorderFilters() {
