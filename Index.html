@@ -1029,7 +1029,10 @@ function save(){
 }
 function saveS(){try{localStorage.setItem(SNK,JSON.stringify(stickies));}catch(e){}}
 var _notesSyncTimer = null;
+var MULTI_NOTES_LS_KEY = 'ddb-multi-notes';
 function saveMultiNotes(){
+  // 先存 localStorage 當保險
+  try{ localStorage.setItem(MULTI_NOTES_LS_KEY, JSON.stringify(multiNotes)); }catch(e){}
   clearTimeout(_notesSyncTimer);
   _notesSyncTimer = setTimeout(function(){ saveAllDataToCloud(); }, 800);
 }
@@ -1102,7 +1105,14 @@ function loadAllDataFromCloud(silent) {
       try {
         var cloudEmpty = true;
         if (data && data.multiNotes && Array.isArray(data.multiNotes) && data.multiNotes.length > 0) {
+          // 30秒靜音刷新時，先把當前編輯器的資料合併進去再覆蓋
+          if (silent) { syncEditorsToNotes(); }
           multiNotes = data.multiNotes;
+          // 如果 localStorage 有更多筆，用 localStorage（避免雲端存舊了）
+          try {
+            var lsN = JSON.parse(localStorage.getItem(MULTI_NOTES_LS_KEY)||'null');
+            if (lsN && Array.isArray(lsN) && lsN.length > multiNotes.length) { multiNotes = lsN; }
+          } catch(e){}
           renderMultiNoteList();
           cloudEmpty = false;
         }
@@ -1112,21 +1122,21 @@ function loadAllDataFromCloud(silent) {
           try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
           cloudEmpty = false;
         }
-        // 如果雲端是空的，嘗試從 localStorage 搬移舊資料
-        if (cloudEmpty && !localStorage.getItem('ddb-migrated')) {
+        // 如果雲端是空的，查 localStorage 的便簽備份和舊版資料
+        if (cloudEmpty) {
           var lsNotes = null, lsOrders = null;
-          try { lsNotes = JSON.parse(localStorage.getItem('ddb9s') || 'null'); } catch(e){}
-          try { lsOrders = JSON.parse(localStorage.getItem('ddb9') || 'null'); } catch(e){}
-          if (lsNotes || lsOrders) {
-            if (Array.isArray(lsNotes) && lsNotes.length) { multiNotes = lsNotes; renderMultiNoteList(); }
-            if (lsOrders && typeof lsOrders === 'object') {
-              notes = lsOrders;
-              try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
-              try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
-            }
-            localStorage.setItem('ddb-migrated', '1');
+          try { lsNotes = JSON.parse(localStorage.getItem(MULTI_NOTES_LS_KEY)||'null'); } catch(e){}
+          if (!lsNotes) { try { lsNotes = JSON.parse(localStorage.getItem('ddb9s')||'null'); } catch(e){} }
+          try { lsOrders = JSON.parse(localStorage.getItem('ddb9')||'null'); } catch(e){}
+          if (lsNotes && Array.isArray(lsNotes) && lsNotes.length) { multiNotes = lsNotes; renderMultiNoteList(); }
+          if (lsOrders && typeof lsOrders === 'object' && Object.keys(lsOrders).length) {
+            notes = lsOrders;
+            try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
+            try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
+          }
+          if ((lsNotes && lsNotes.length) || lsOrders) {
             saveAllDataToCloud();
-            toast('✓ 已將本機舊資料搬移到雲端');
+            if(!silent) toast('✓ 已將本機備份搬移到雲端');
           }
         }
       } catch(handlerErr) { console.error('loadAllData handler:', handlerErr); }
