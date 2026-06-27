@@ -1054,8 +1054,9 @@ body.sidebar-collapsed .app{margin-left:44px;}
               <tbody id="tf-rtb"></tbody>
             </table>
           </div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-sky" style="flex:1;" onclick="tf_copyXL()">📋 複製 Excel 格式</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-sky" style="flex:1;" onclick="tf_copyXL()">📋 複製 Excel 格式 (10欄)</button>
+            <button class="btn btn-sage" style="flex:1;" onclick="tf_copyForViewer()">🔐 複製→看的檔案 (17欄)</button>
             <button class="btn btn-rose" style="flex:1;" onclick="tf_saveToCloud()">🚀 寫入雲端備份</button>
           </div>
         </div>
@@ -3783,6 +3784,31 @@ function tf_copyXL() {
   var text=tf_CR.map(function(r){return[r.date,r.ee,r.mm,r.gg,r.time,r.place,r.psCol||'',r.writeCol,r.price,r.shou].join('\t');}).join('\n');
   var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
   toast('✅ 已複製 Excel 格式');
+}
+
+function tf_copyForViewer() {
+  var text=tf_CR.map(function(r){
+    var price=parseFloat(r.price)||0;
+    var mRec=parseFloat(r.shou)||0;
+    var ggRefund=0;
+    for(var i=0;i<BOSS_REFUND_TABLE.length;i++){
+      var rt=BOSS_REFUND_TABLE[i];
+      if(price>=rt[0]&&price<=rt[1]){ggRefund=rt[2];break;}
+    }
+    var gBack,eePay,sProfit,ox;
+    if(price===0){gBack=mRec;eePay=mRec;sProfit=0;ox='';}
+    else{
+      gBack=Math.round(mRec-(price*0.5+ggRefund));
+      eePay=Math.round(mRec-price*0.6);
+      sProfit=Math.round(price*0.1-ggRefund);
+      ox=Math.abs(gBack-(eePay+sProfit))<1?'✅ OK':'❌ 異常';
+    }
+    return[r.date,r.ee,r.mm,r.gg,r.time,r.place,r.psCol||'',r.writeCol,r.price,r.shou,
+      price?ggRefund:'',price||mRec?gBack:'',price||mRec?eePay:'',price?sProfit:'',price?ox:'',
+      r.cycle||'',r.col2||''].join('\t');
+  }).join('\n');
+  var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+  toast('✅ 已複製 17 欄，可直接貼到看的檔案');
 }
 
 function tf_saveToCloud() {
