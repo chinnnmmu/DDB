@@ -1501,11 +1501,13 @@ function load(){
   multiNotes=[];
 }
 var _cloudSaveTimer = null;
+var _cloudSaveRetries = 0;
 var ORDERS_LS_KEY = 'ddb-work-orders';
 function save(){
   // 立即存到 localStorage，避免重整遺失
   try{ localStorage.setItem(ORDERS_LS_KEY, JSON.stringify({ts: Date.now(), data: notes})); }catch(e){}
   clearTimeout(_cloudSaveTimer);
+  _cloudSaveRetries = 0;
   _cloudSaveTimer = setTimeout(function(){
     saveAllDataToCloud();
   }, 800);
@@ -1554,6 +1556,10 @@ function collectKvData() {
 // 統一儲存所有資料至 Sheets（便簽 + 工單 + 班表資料）
 function saveAllDataToCloud() {
   if(typeof google==='undefined'||!google.script||!google.script.run) return;
+  // 防止把空資料存上去蓋掉雲端
+  var hasNotes = notes && Object.keys(notes).length > 0;
+  var hasMulti = multiNotes && multiNotes.length > 0;
+  if (!hasNotes && !hasMulti) return;
   setSyncStatus('syncing','儲存中…');
   var payload = {
     multiNotes: JSON.parse(JSON.stringify(multiNotes || [])),
@@ -1562,20 +1568,31 @@ function saveAllDataToCloud() {
   };
   google.script.run
     .withSuccessHandler(function(result) {
-      if (result.success) {
+      if (result && result.success) {
+        _cloudSaveRetries = 0;
         setSyncStatus('ok','已儲存');
         setTimeout(function(){ setSyncStatus('',''); }, 2500);
       } else {
-        setSyncStatus('err','失敗');
-        toast('同步失敗：' + result.message);
+        _retryCloudSave();
       }
     })
     .withFailureHandler(function(error) {
-      console.error(error);
-      setSyncStatus('err','失敗');
-      toast('同步發生錯誤');
+      console.error('saveAllData error:', error);
+      _retryCloudSave();
     })
     .saveAllData(payload);
+}
+
+function _retryCloudSave() {
+  _cloudSaveRetries = (_cloudSaveRetries || 0) + 1;
+  if (_cloudSaveRetries <= 3) {
+    setSyncStatus('syncing', '重試 ' + _cloudSaveRetries + '/3…');
+    setTimeout(saveAllDataToCloud, _cloudSaveRetries * 4000);
+  } else {
+    _cloudSaveRetries = 0;
+    setSyncStatus('err', '失敗');
+    toast('⚠ 雲端同步失敗，資料已保留在本機');
+  }
 }
 
 function setSyncStatus(state, label) {
@@ -1689,12 +1706,11 @@ function loadAllDataFromCloud(silent) {
             } catch(e) {}
           }
         }
-        // 如果雲端是空的，查 localStorage 的便簽備份和舊版資料
+        // 雲端是空的 → 用本機資料，並馬上補傳到雲端
         if (cloudEmpty) {
           var lsNotes = null, lsOrders = null;
           try { lsNotes = JSON.parse(localStorage.getItem(MULTI_NOTES_LS_KEY)||'null'); } catch(e){}
           if (!lsNotes) { try { lsNotes = JSON.parse(localStorage.getItem('ddb9s')||'null'); } catch(e){} }
-          // 先用新 key，再試舊 key
           try {
             var lsRaw2 = JSON.parse(localStorage.getItem(ORDERS_LS_KEY)||'null');
             if (lsRaw2 && lsRaw2.data) lsOrders = lsRaw2.data;
@@ -1706,10 +1722,22 @@ function loadAllDataFromCloud(silent) {
             try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
             try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
           }
-          if ((lsNotes && lsNotes.length) || lsOrders) {
-            saveAllDataToCloud();
+          // 本機有資料但雲端沒有 → 立刻補傳（不管是 silent 還是首次載入）
+          if ((lsNotes && lsNotes.length) || (lsOrders && Object.keys(lsOrders).length)) {
+            _cloudSaveRetries = 0;
+            setTimeout(saveAllDataToCloud, 1000);
             if(!silent) toast('✓ 已將本機備份搬移到雲端');
           }
+        }
+        // 額外保護：即使雲端有資料，如果本機有更多工單，也補傳
+        if (!cloudEmpty && notes && Object.keys(notes).length > 0) {
+          try {
+            var lsCheck = JSON.parse(localStorage.getItem(ORDERS_LS_KEY)||'null');
+            if (lsCheck && lsCheck.ts && lsCheck.ts > Date.now() - 60000) {
+              // 本機 1 分鐘內有存過，確保雲端是最新的
+              setTimeout(saveAllDataToCloud, 2000);
+            }
+          } catch(e){}
         }
       } catch(handlerErr) { console.error('loadAllData handler:', handlerErr); }
       hideLoadingOverlay();
@@ -3317,7 +3345,7 @@ window.onload=function(){
   loadAllDataFromCloud();
 
   // ★ 每 30 秒自動重新抓雲端資料，讓多人同時使用時畫面保持最新
-  setInterval(function(){ loadAllDataFromCloud(true); }, 30000);
+  setInterval(function(){ loadAllDataFromCloud(true); }, 60000);
 
   // Admin panel init
   adminRenderWeekGrid();
