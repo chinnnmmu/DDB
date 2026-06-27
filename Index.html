@@ -4126,8 +4126,8 @@ function tf_calcRow(r) {
   var price=parseFloat(r.price)||0;
   var mRec=parseFloat(r.shou)||0;
   var ggRefund=0;
-  for(var i=0;i<BOSS_REFUND_TABLE.length;i++){
-    var rt=BOSS_REFUND_TABLE[i];
+  for(var i=0;i<V4_REFUND_TABLE.length;i++){
+    var rt=V4_REFUND_TABLE[i];
     if(price>=rt[0]&&price<=rt[1]){ggRefund=rt[2];break;}
   }
   var gBack,eePay,sProfit,ox;
@@ -4398,8 +4398,8 @@ function v4_saveToLocal(){
   };
   if(IS_GAS){
     google.script.run
-      .withSuccessHandler(function(){showSyncStatus('✅ 帳目已同步',true);})
-      .withFailureHandler(function(e){showSyncStatus('❌ 同步失敗',false);})
+      .withSuccessHandler(function(){setSyncStatus('ok','帳目已同步');setTimeout(function(){setSyncStatus('','');},2500);})
+      .withFailureHandler(function(e){setSyncStatus('err','同步失敗');})
       .saveBossData(JSON.stringify(payload));
   } else {
     try{localStorage.setItem('boss_v4_data',JSON.stringify(payload));}catch(e){}
