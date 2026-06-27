@@ -13,6 +13,17 @@ function doGet(e) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
+// ---- 工具：將 Date 物件或任意日期字串格式化為 YYYY/MM/DD ----
+function formatDateKey(val) {
+  if (!val) return '';
+  var d = (val instanceof Date) ? val : new Date(val);
+  if (isNaN(d.getTime())) return String(val); // 無法解析就原樣返回
+  var y = d.getFullYear();
+  var m = d.getMonth() + 1;
+  var day = d.getDate();
+  return y + '/' + (m < 10 ? '0' : '') + m + '/' + (day < 10 ? '0' : '') + day;
+}
+
 // ---- 工具：取得或建立 Sheet ----
 function getOrCreateSheet(name) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -116,7 +127,7 @@ function loadAllData() {
         var tfRecs = [];
         for (var ti = 1; ti < rData2.length; ti++) {
           var tr = rData2[ti];
-          tfRecs.push({ date:String(tr[0]), ee:String(tr[1]), mm:String(tr[2]), gg:String(tr[3]),
+          tfRecs.push({ date:formatDateKey(tr[0]), ee:String(tr[1]), mm:String(tr[2]), gg:String(tr[3]),
                         time:String(tr[4]), place:String(tr[5]), psCol:String(tr[6]),
                         writeCol:String(tr[7]), price:String(tr[8]), shou:String(tr[9]) });
         }
@@ -127,7 +138,7 @@ function loadAllData() {
     if (oData.length > 1) {
       for (var j = 1; j < oData.length; j++) {
         var r = oData[j];
-        var dateKey = String(r[0]);
+        var dateKey = formatDateKey(r[0]);
         if (!dateKey) continue;
         if (!result.workOrders[dateKey]) result.workOrders[dateKey] = [];
         result.workOrders[dateKey].push({
@@ -239,7 +250,7 @@ function _mergeTfRecordsToOrders(records) {
   var existing = shO.getDataRange().getValues();
   var keySet = {};
   for (var i = 1; i < existing.length; i++) {
-    var k = String(existing[i][0])+'|'+String(existing[i][2])+'|'+String(existing[i][3]);
+    var k = formatDateKey(existing[i][0])+'|'+String(existing[i][2])+'|'+String(existing[i][3]);
     keySet[k] = true;
   }
   records.forEach(function(r) {
@@ -268,7 +279,7 @@ function syncTfRecordsToOrders() {
     var records = [];
     for (var i = 1; i < data.length; i++) {
       var row = data[i];
-      records.push({ date:String(row[0]), ee:String(row[1]), mm:String(row[2]), gg:String(row[3]),
+      records.push({ date:formatDateKey(row[0]), ee:String(row[1]), mm:String(row[2]), gg:String(row[3]),
                      time:String(row[4]), place:String(row[5]), psCol:String(row[6]),
                      writeCol:String(row[7]), price:String(row[8]), shou:String(row[9]) });
     }
