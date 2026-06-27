@@ -719,6 +719,13 @@ body.sidebar-collapsed .app{margin-left:44px;}
             </div>
 
             <div id="quick-add-wrap" style="padding: 0.8rem; background: var(--card2); border-bottom: 1px solid var(--border);">
+              <!-- 智能解析單行輸入 -->
+              <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center;">
+                <input id="qa-smart" placeholder="✨ 智能輸入：16莫凡 2200香格里拉 加藤 320 128（Enter 新增）" style="flex:1;font-size:0.8125rem;" onkeydown="if(event.key==='Enter'){submitQaSmart();}" oninput="previewQaSmart()">
+                <button class="btn btn-sage btn-sm" onclick="submitQaSmart()">⚡ 新增</button>
+              </div>
+              <div id="qa-smart-preview" style="font-size:0.75rem;color:var(--text3);min-height:1rem;margin-bottom:6px;padding:0 2px;"></div>
+              <div style="border-top:1px dashed var(--border);margin-bottom:8px;"></div>
               <div class="qa-fields">
                 <input id="qa-pai" class="qa-pai" placeholder="牌價" type="number" oninput="previewQaEE()" onkeydown="if(event.key==='Enter') submitQa(true)">
                 <input id="qa-name" class="qa-name" placeholder="人名" onkeydown="if(event.key==='Enter') submitQa(true)">
@@ -3178,6 +3185,35 @@ function jumpDate(){
   else if(pts.length === 3) { y = parseInt(pts[0],10); m = parseInt(pts[1],10)-1; d = parseInt(pts[2],10); }
   else return;
   if(!isNaN(m) && !isNaN(d)) { SD(y,m,d); document.getElementById('jump-date').value=''; }
+}
+
+function previewQaSmart(){
+  var raw = document.getElementById('qa-smart').value.trim();
+  var el = document.getElementById('qa-smart-preview');
+  if(!raw){ el.textContent=''; return; }
+  var parsed = parseImpLine(raw);
+  if(!parsed){ el.textContent='⚠️ 無法解析，請確認格式'; el.style.color='var(--rose)'; return; }
+  var ee = calculateEE(parsed.pai, parsed.shi, parsed.rebate);
+  el.style.color='var(--text3)';
+  el.textContent = '牌:'+parsed.pai+' 人:'+parsed.name+' 地:'+parsed.place+' 姨:'+parsed.auntie+' 收:'+parsed.shi+' EE:'+ee+(parsed.note?' 備:'+parsed.note:'');
+}
+
+function submitQaSmart(){
+  if(!selDate){ toast('請先選擇日期'); return; }
+  var raw = document.getElementById('qa-smart').value.trim();
+  if(!raw) return;
+  var parsed = parseImpLine(raw);
+  if(!parsed){ toast('⚠️ 無法解析'); return; }
+  var k = selKey();
+  if(!notes[k]) notes[k] = [];
+  var ee = calculateEE(parsed.pai, parsed.shi, parsed.rebate);
+  parsed.ee = ee;
+  notes[k].push(parsed);
+  save(); RR(); RC(); RW(); renderUnpaidDashboard(); renderAllOrders();
+  document.getElementById('qa-smart').value = '';
+  document.getElementById('qa-smart-preview').textContent = '';
+  document.getElementById('qa-smart').focus();
+  toast('✓ 已新增');
 }
 
 function previewQaEE() {
