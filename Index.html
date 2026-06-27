@@ -446,6 +446,116 @@ body.sidebar-collapsed .app{margin-left:44px;}
 #tab-tf .etbl tr:nth-child(even) td{background:var(--card2);}
 #tab-tf .cv[contenteditable]:focus{background:var(--sky-light);outline:none;}
 #tab-tf .tf-warn{color:var(--danger);font-weight:700;}
+
+/* ── v4 Boss App (scoped) ── */
+#tab-boss{--v4-pink:#E8A8C4;--v4-purple:#D4B5F4;--v4-green:#B8E6D5;--v4-peach:#F5C89A;--v4-lavender:#E8D5F2;--v4-ee:#A382CA;--v4-ee-bg:#F4F0F9;--v4-blue:#7AAAD4;--v4-blue-bg:#F0F6FB;--v4-surf:#ffffff;--v4-surf2:#FDFBFC;--v4-sh:0 4px 16px rgba(212,181,244,.15);--v4-sh-lg:0 10px 30px rgba(212,181,244,.25);--v4-r:16px;--v4-r-sm:8px;--v4-acc:#C07092;--v4-acc-light:#FDF4F8;}
+#tab-boss .v4-page{display:none;}
+#tab-boss .v4-page.active{display:block;animation:pageIn .25s ease forwards;}
+#tab-boss .v4-nav{display:flex;gap:0;background:var(--v4-surf);border:1px solid var(--border);border-radius:var(--v4-r);overflow:hidden;margin-bottom:14px;box-shadow:var(--v4-sh);flex-wrap:wrap;}
+#tab-boss .v4-nav-btn{flex:1;min-width:80px;padding:10px 6px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);border:none;background:transparent;font-family:var(--font);transition:all .15s;border-right:1px solid var(--border);}
+#tab-boss .v4-nav-btn:last-child{border-right:none;}
+#tab-boss .v4-nav-btn.active{background:var(--v4-pink);color:#fff;}
+#tab-boss .v4-nav-btn:not(.active):hover{background:var(--v4-acc-light);color:var(--v4-acc);}
+#tab-boss .v4-sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+#tab-boss .v4-sum-card{border-radius:16px;padding:18px 20px;box-shadow:var(--v4-sh);display:flex;flex-direction:column;align-items:center;text-align:center;}
+#tab-boss .v4-sum-label{font-size:11px;font-weight:700;opacity:.85;margin-bottom:6px;}
+#tab-boss .v4-sum-amt{font-size:24px;font-weight:800;color:#fff;line-height:1;}
+#tab-boss .v4-sc-pink{background:var(--v4-pink);}
+#tab-boss .v4-sc-green{background:var(--v4-green);}
+#tab-boss .v4-sc-purple{background:var(--v4-purple);}
+#tab-boss .v4-sc-peach{background:var(--v4-peach);}
+#tab-boss .v4-sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:20px;background:var(--v4-surf);padding:12px 18px;border-radius:var(--v4-r);border:1px solid var(--border);}
+#tab-boss .v4-sec-title{font-size:14px;font-weight:800;color:var(--text);}
+#tab-boss .v4-badge{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:2px 10px;font-size:11px;color:var(--text2);font-weight:600;margin-left:6px;}
+#tab-boss .v4-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+#tab-boss .v4-person-card{background:var(--v4-surf);border-radius:var(--v4-r);border:1px solid var(--border);box-shadow:var(--v4-sh);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s;}
+#tab-boss .v4-person-card:hover{transform:translateY(-4px);box-shadow:var(--v4-sh-lg);border-color:var(--v4-purple);}
+#tab-boss .v4-card-hdr{padding:12px 16px;border-bottom:1px solid var(--bg);display:flex;justify-content:space-between;align-items:center;}
+#tab-boss .v4-card-name{font-size:15px;font-weight:800;}
+#tab-boss .v4-prev-wrap{display:flex;align-items:center;gap:4px;background:var(--bg);padding:3px 7px;border-radius:7px;}
+#tab-boss .v4-prev-lbl{font-size:10px;color:var(--text3);font-weight:700;}
+#tab-boss .v4-prev-inp{width:60px;text-align:right;border:none;font-size:12px;font-weight:800;font-family:var(--font);background:transparent;color:var(--rose);cursor:text;}
+#tab-boss .v4-prev-inp:focus{outline:none;border-bottom:1px solid var(--v4-pink);}
+#tab-boss .v4-card-body{flex:1;}
+#tab-boss .v4-date-row{display:flex;align-items:flex-start;padding:9px 16px;cursor:pointer;border-bottom:1px solid var(--bg);transition:background .15s;gap:7px;user-select:none;}
+#tab-boss .v4-date-row:hover{background:var(--v4-acc-light);}
+#tab-boss .v4-dr-date{font-size:12px;font-weight:700;color:var(--text2);min-width:64px;flex-shrink:0;}
+#tab-boss .v4-dr-mms{flex:1;font-size:12px;color:var(--text2);white-space:normal;word-break:break-all;line-height:1.5;}
+#tab-boss .v4-dr-right{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+#tab-boss .v4-dr-amt{font-size:13px;font-weight:800;}
+#tab-boss .v4-dr-arrow{color:var(--text3);font-size:10px;transition:transform .2s;}
+#tab-boss .v4-date-row.open .v4-dr-arrow{transform:rotate(90deg);}
+#tab-boss .v4-detail{display:none;background:var(--v4-surf2);border-bottom:1px solid var(--border);padding:7px 16px 10px 24px;}
+#tab-boss .v4-detail.show{display:block;}
+#tab-boss .v4-det-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px dashed var(--border);font-size:11.5px;gap:7px;}
+#tab-boss .v4-det-row:last-child{border-bottom:none;}
+#tab-boss .v4-det-mm{font-weight:800;}
+#tab-boss .v4-det-meta{font-size:10px;color:var(--text3);margin-top:2px;}
+#tab-boss .v4-det-amt{font-weight:800;font-size:12px;flex-shrink:0;}
+#tab-boss .v4-card-foot{padding:16px;display:flex;flex-direction:column;gap:12px;}
+#tab-boss .v4-foot-total{display:flex;justify-content:space-between;align-items:flex-end;}
+#tab-boss .v4-foot-lbl{font-size:12px;font-weight:800;color:var(--text2);}
+#tab-boss .v4-foot-amt{font-size:26px;font-weight:800;line-height:1;}
+#tab-boss .v4-pay-btn{background:var(--v4-pink);color:#fff;border:none;border-radius:10px;padding:10px 0;width:100%;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .2s;font-family:var(--font);}
+#tab-boss .v4-pay-btn:hover{opacity:.9;}
+#tab-boss .v4-sort-bar{display:flex;align-items:center;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:2px 5px;}
+#tab-boss .v4-sort-btn{padding:3px 9px;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);background:transparent;color:var(--text2);}
+#tab-boss .v4-sort-btn.active{background:var(--v4-pink);color:#fff;}
+#tab-boss .v4-view-toggle{display:inline-flex;border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+#tab-boss .v4-vt-btn{padding:5px 12px;font-size:11px;font-weight:700;border:none;background:transparent;cursor:pointer;color:var(--text3);border-right:1px solid var(--border);font-family:var(--font);}
+#tab-boss .v4-vt-btn:last-child{border-right:none;}
+#tab-boss .v4-vt-btn.active{background:var(--v4-pink);color:#fff;}
+#tab-boss .v4-filter-tabs{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+#tab-boss .v4-filter-tab{padding:5px 14px;border-radius:18px;border:1px solid var(--border);background:var(--v4-surf);font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);font-family:var(--font);}
+#tab-boss .v4-filter-tab.active{background:var(--v4-pink);color:#fff;border-color:var(--v4-pink);}
+#tab-boss .v4-pay-list{background:var(--v4-surf);border-radius:var(--v4-r);border:1px solid var(--border);box-shadow:var(--v4-sh);overflow:hidden;}
+#tab-boss .v4-pay-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--bg);gap:10px;font-size:12px;}
+#tab-boss .v4-pay-row:last-child{border-bottom:none;}
+#tab-boss .v4-pay-dir{min-width:50px;text-align:center;border-radius:5px;padding:3px 5px;font-size:10.5px;font-weight:800;}
+#tab-boss .v4-dir-in{background:var(--rose-light);color:var(--rose);}
+#tab-boss .v4-dir-out{background:var(--sage-light);color:var(--sage);}
+#tab-boss .v4-xls-wrap{background:var(--v4-surf);border-radius:var(--v4-r);border:1px solid var(--border);box-shadow:var(--v4-sh);overflow:auto;max-height:72vh;}
+#tab-boss .v4-xls-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1200px;}
+#tab-boss .v4-xls-tbl th{position:sticky;top:0;background:var(--v4-surf2);z-index:5;padding:9px 8px;border-bottom:2px solid var(--border);border-right:1px solid var(--border);text-align:left;color:var(--text2);font-weight:800;}
+#tab-boss .v4-xls-tbl td{padding:7px 8px;border-bottom:1px solid var(--bg);border-right:1px solid var(--bg);}
+#tab-boss .v4-xls-tbl tr:hover{background:var(--v4-acc-light);}
+#tab-boss .v4-ed-cell:focus{outline:2px solid var(--v4-pink);background:#fff;}
+#tab-boss .v4-led-tab{padding:7px 16px;border-radius:18px;border:1px solid var(--border);background:var(--v4-surf);font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);font-family:var(--font);}
+#tab-boss .v4-led-tab.active{background:var(--v4-pink);color:#fff;border-color:var(--v4-pink);}
+#tab-boss .v4-led-sum{background:var(--v4-surf);border-radius:14px;border:1px solid var(--border);padding:12px 18px;flex:1;min-width:110px;}
+#tab-boss .v4-led-lbl{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:700;}
+#tab-boss .v4-led-val{font-size:19px;font-weight:800;}
+#tab-boss .v4-led-wrap{background:var(--v4-surf);border-radius:var(--v4-r);border:1px solid var(--border);overflow:hidden;}
+#tab-boss .v4-led-row{display:grid;grid-template-columns:78px 1fr 78px 78px 88px 88px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--bg);font-size:12px;gap:7px;}
+#tab-boss .v4-led-row.hdr{background:var(--v4-surf2);font-weight:800;color:var(--text2);border-bottom:1px solid var(--border);}
+#tab-boss .v4-pay-details{border-bottom:1px solid var(--border);}
+#tab-boss .v4-pay-details summary{padding:9px 16px;font-size:11px;font-weight:800;cursor:pointer;color:var(--text2);background:#fbf9fd;list-style:none;display:flex;justify-content:space-between;}
+#tab-boss .v4-pay-details summary::-webkit-details-marker{display:none;}
+#tab-boss .v4-qs-btn{font-size:10px;padding:3px 9px;border-radius:5px;border:1px solid var(--v4-pink);background:var(--v4-acc-light);color:var(--v4-acc);cursor:pointer;font-weight:800;font-family:var(--font);}
+#tab-boss .v4-qs-btn:hover{background:var(--v4-pink);color:#fff;}
+#tab-boss .v4-tag-ee{display:inline-block;font-size:10px;font-weight:800;background:var(--v4-ee-bg);color:var(--v4-ee);border-radius:5px;padding:1px 5px;margin-left:5px;}
+#tab-boss .v4-owing-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+#tab-boss .v4-owing-panel{background:var(--v4-surf);border-radius:var(--v4-r);border:1px solid var(--border);box-shadow:var(--v4-sh);overflow:hidden;}
+#tab-boss .v4-owing-hdr{padding:11px 15px;border-bottom:1px solid var(--border);font-weight:800;font-size:13px;background:var(--v4-surf2);}
+#tab-boss .v4-owing-row{display:flex;align-items:center;justify-content:space-between;padding:9px 15px;border-bottom:1px solid var(--bg);font-size:12px;cursor:pointer;transition:background .12s;}
+#tab-boss .v4-owing-row:hover{background:var(--v4-acc-light);}
+#tab-boss .text-red{color:var(--rose)!important;}
+#tab-boss .text-green{color:var(--sage)!important;}
+#tab-boss .text-orange{color:var(--peach)!important;}
+#tab-boss .v4-mapping-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:8px;}
+#tab-boss .v4-map-row{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:7px;padding:5px 8px;font-size:12px;}
+#tab-boss .v4-map-mm{font-weight:700;min-width:50px;}
+#tab-boss .v4-map-inp{flex:1;height:26px;font-size:12px;border:1px solid var(--border);border-radius:5px;padding:0 6px;background:var(--card);color:var(--text);}
+#tab-boss .v4-day-tbl{background:var(--v4-surf);border-radius:var(--v4-r);border:1px solid var(--border);box-shadow:var(--v4-sh);overflow:hidden;}
+#tab-boss .v4-day-tbl-hdr{padding:11px 15px;border-bottom:1px solid var(--border);font-weight:800;font-size:13px;background:var(--v4-surf2);display:flex;justify-content:space-between;}
+#tab-boss .v4-day-row{display:flex;align-items:center;justify-content:space-between;padding:7px 15px;border-bottom:1px solid var(--bg);font-size:12px;}
+#tab-boss .v4-company-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;}
+@media(max-width:768px){
+  #tab-boss .v4-sum-grid{grid-template-columns:1fr 1fr;}
+  #tab-boss .v4-company-grid,#tab-boss .v4-owing-grid{grid-template-columns:1fr;}
+  #tab-boss .v4-cards-grid{grid-template-columns:1fr;}
+  #tab-boss .v4-led-row{grid-template-columns:60px 1fr 60px 60px 70px 70px;}
+}
 @media(max-width:960px){
   #tab-tf .sub-panel>div[style*="grid"]{grid-template-columns:1fr!important;min-height:auto!important;}
 }
@@ -1157,50 +1267,162 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <div id="boss-pw-err" style="color:var(--danger);font-size:12px;min-height:16px;"></div>
     <div style="font-size:11px;color:var(--text3);margin-top:8px;">首次使用請輸入 <b>0000</b> 並可在帳目頁修改</div>
   </div>
-  <div id="boss-content" style="display:none;padding:16px;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-      <span style="font-size:18px;font-weight:700;color:var(--accent);">🔐 老闆帳目</span>
-      <select id="boss-date-sel" onchange="renderBossLedger()" style="padding:4px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:13px;">
-        <option value="all">全部日期</option>
-      </select>
-      <button onclick="renderBossLedger()" style="padding:4px 12px;background:var(--sage);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);">重新整理</button>
-      <button onclick="bossCopyTable()" style="padding:4px 12px;background:var(--rose);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);">複製表格</button>
+  <div id="boss-content" style="display:none;padding:12px;">
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+      <span style="font-size:16px;font-weight:800;color:var(--accent);">🔐 老闆帳目</span>
+      <button onclick="v4_refreshAll()" style="padding:4px 12px;background:var(--sage);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);">🔄 重新整理</button>
+      <button onclick="v4_exportData()" style="padding:4px 12px;background:var(--sky);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);">📤 備份</button>
+      <details style="font-size:12px;">
+        <summary style="color:var(--text3);cursor:pointer;">修改密碼</summary>
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+          <input type="password" id="boss-new-pw" placeholder="新密碼" style="padding:5px 9px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:13px;width:120px;">
+          <input type="password" id="boss-new-pw2" placeholder="確認" style="padding:5px 9px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:13px;width:120px;">
+          <button onclick="bossChangePw()" style="padding:5px 12px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);">更改</button>
+          <span id="boss-pw-change-msg" style="font-size:12px;align-self:center;"></span>
+        </div>
+      </details>
       <button onclick="bossLock()" style="padding:4px 12px;background:var(--card2);color:var(--text2);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);margin-left:auto;">🔒 鎖定</button>
     </div>
-    <!-- 密碼修改 -->
-    <details style="margin-bottom:12px;">
-      <summary style="font-size:12px;color:var(--text3);cursor:pointer;padding:4px 0;">修改密碼</summary>
-      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-        <input type="password" id="boss-new-pw" placeholder="新密碼" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:13px;width:140px;">
-        <input type="password" id="boss-new-pw2" placeholder="確認新密碼" style="padding:6px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:13px;width:140px;">
-        <button onclick="bossChangePw()" style="padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;font-family:var(--font);">更改</button>
-        <span id="boss-pw-change-msg" style="font-size:12px;align-self:center;"></span>
+    <!-- v4 Navigation -->
+    <div class="v4-nav">
+      <button class="v4-nav-btn active" id="v4-nav-company" onclick="v4_switchPage('company',this)">🏢 公司總覽</button>
+      <button class="v4-nav-btn" id="v4-nav-accounts" onclick="v4_switchPage('accounts',this)">📊 帳務管理</button>
+      <button class="v4-nav-btn" id="v4-nav-payment" onclick="v4_switchPage('payment',this)">💳 付款紀錄</button>
+      <button class="v4-nav-btn" id="v4-nav-data" onclick="v4_switchPage('data',this)">📁 數據資料庫</button>
+      <button class="v4-nav-btn" id="v4-nav-ledger" onclick="v4_switchPage('ledger',this)">📒 小帳本</button>
+      <button class="v4-nav-btn" id="v4-nav-settings" onclick="v4_switchPage('settings',this)">⚙️ 設定</button>
+    </div>
+    <!-- Week selector -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;" id="v4-week-sel-row"></div>
+    <!-- Pages -->
+    <div id="v4-page-company" class="v4-page active"></div>
+    <div id="v4-page-accounts" class="v4-page">
+      <div class="v4-filter-tabs">
+        <button class="v4-filter-tab active" onclick="v4_switchAccTab('agent',this)">💼 經紀帳務</button>
+        <button class="v4-filter-tab" onclick="v4_switchAccTab('aunty',this)">🌸 阿姨帳務</button>
       </div>
-    </details>
-    <!-- 匯總 -->
-    <div id="boss-summary" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;"></div>
-    <!-- 表格 -->
-    <div style="overflow-x:auto;">
-      <table id="boss-table" style="width:100%;border-collapse:collapse;font-size:13px;font-family:var(--font);">
-        <thead>
-          <tr style="background:var(--card2);color:var(--text2);">
-            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;">日期</th>
-            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">人名</th>
-            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">阿姨</th>
-            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);">時間地點</th>
-            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);">牌價</th>
-            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);">實收</th>
-            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);">寫</th>
-            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);color:var(--gold);">經退</th>
-            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);color:var(--accent);">G回</th>
-            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);color:var(--rose);">EE$</th>
-            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border);color:var(--sage);">S</th>
-            <th style="padding:6px 8px;text-align:center;border-bottom:1px solid var(--border);">對帳</th>
-          </tr>
-        </thead>
-        <tbody id="boss-tbody"></tbody>
-        <tfoot id="boss-tfoot"></tfoot>
-      </table>
+      <div id="v4-accounts-agent"></div>
+      <div id="v4-accounts-aunty" style="display:none;">
+        <div class="v4-filter-tabs" id="v4-aunty-filter-tabs">
+          <button class="v4-filter-tab active" onclick="v4_setAuntyFilter('all',this)">全部</button>
+          <button class="v4-filter-tab" onclick="v4_setAuntyFilter('day',this)">日結</button>
+          <button class="v4-filter-tab" onclick="v4_setAuntyFilter('wk',this)">週結</button>
+          <button class="v4-filter-tab" onclick="v4_setAuntyFilter('mo',this)">月結</button>
+        </div>
+        <div id="v4-aunty-content"></div>
+      </div>
+    </div>
+    <div id="v4-page-payment" class="v4-page"><div id="v4-payment-content"></div></div>
+    <div id="v4-page-data" class="v4-page">
+      <div class="v4-sec-hdr">
+        <div class="v4-sec-title">原始資料庫 <span class="v4-badge" id="v4-raw-count">0 筆</span></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-plain btn-sm" onclick="v4_generateAndRefresh()">🔄 從工單重新生成</button>
+          <button class="btn btn-sage btn-sm" onclick="v4_saveDataChanges()">💾 儲存修改</button>
+        </div>
+      </div>
+      <div class="v4-xls-wrap" id="v4-xls-container"></div>
+    </div>
+    <div id="v4-page-ledger" class="v4-page">
+      <div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;" id="v4-led-tabs"></div>
+      <div id="v4-led-content"></div>
+    </div>
+    <div id="v4-page-settings" class="v4-page">
+      <div class="v4-sec-hdr"><div class="v4-sec-title">⚙️ 設定</div></div>
+      <!-- GG Mapping -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text);">🔗 人名 → GG 對映 <span style="font-size:11px;font-weight:400;color:var(--text3);">(工單人名對應到哪位經紀)</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">只顯示工單中出現過、但尚未設定GG的人名</div>
+        <div id="v4-mmgg-unknown" style="background:var(--rose-light);border:1px solid var(--rose-border);border-radius:7px;padding:8px 12px;font-size:12px;color:var(--rose);font-weight:600;margin-bottom:8px;display:none;"></div>
+        <div id="v4-mmgg-grid" class="v4-mapping-grid"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn btn-sage btn-sm" onclick="v4_saveMmgg()">💾 儲存對映</button>
+          <button class="btn btn-plain btn-sm" onclick="v4_renderMmggGrid()">🔄 重新整理</button>
+        </div>
+      </div>
+      <!-- Auntie Bonus -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text);">🌸 阿姨額外退款加成 <span style="font-size:11px;font-weight:400;color:var(--text3);">(+3 或 +5 等加到經退)</span></div>
+        <div id="v4-bonus-grid" class="v4-mapping-grid"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn btn-sage btn-sm" onclick="v4_saveAuntieBonus()">💾 儲存加成</button>
+        </div>
+      </div>
+      <!-- Wallets -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;">🏦 資金帳戶</div>
+        <input type="text" id="v4-wallets-inp" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);font-size:13px;" placeholder="用逗號分隔，如：我,男友,玉山銀行">
+        <button class="btn btn-sage btn-sm" style="margin-top:7px;" onclick="v4_saveWallets()">儲存帳戶</button>
+      </div>
+      <!-- Auntie cycles -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;">📋 阿姨結算週期</div>
+        <div id="v4-cycle-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:4px;"></div>
+        <button class="btn btn-sage btn-sm" style="margin-top:10px;" onclick="v4_saveCycles()">儲存週期</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- v4 Payment Modal -->
+<div id="v4-payment-modal" style="display:none;position:fixed;inset:0;background:rgba(74,64,77,.5);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(3px);" onclick="if(event.target===this)v4_closePayModal()">
+  <div style="background:#fff;width:90%;max-width:420px;border-radius:20px;box-shadow:0 10px 30px rgba(212,181,244,.3);overflow:hidden;">
+    <div style="padding:16px 20px;border-bottom:1px solid #E8D5F2;display:flex;justify-content:space-between;align-items:center;background:#FDFBFC;">
+      <h3 id="v4-pay-modal-title" style="font-size:14px;font-weight:800;">記帳</h3>
+      <button onclick="v4_closePayModal()" style="border:none;background:transparent;font-size:18px;cursor:pointer;color:#B5ABB7;">✕</button>
+    </div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">對象</label><input type="text" id="v4-pay-name" style="width:100%;padding:9px 11px;border:1px solid #E8D5F2;border-radius:8px;font-size:14px;font-weight:700;margin-top:5px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">方向</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:5px;">
+          <button id="v4-pdt-in" onclick="v4_setPayDir('in')" style="padding:9px;border-radius:9px;border:2px solid #E8D5F2;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">📥 收進來</button>
+          <button id="v4-pdt-out" onclick="v4_setPayDir('out')" style="padding:9px;border-radius:9px;border:2px solid #E8D5F2;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">📤 付出去</button>
+        </div>
+      </div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">日期</label><input type="date" id="v4-pay-date" style="width:100%;padding:9px 11px;border:1px solid #E8D5F2;border-radius:8px;font-size:13px;margin-top:5px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">金額</label><input type="number" id="v4-pay-amount" inputmode="numeric" style="width:100%;padding:10px;border:1px solid #E8D5F2;border-radius:8px;font-size:20px;font-weight:800;text-align:right;margin-top:5px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">付款方式</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:5px;">
+          <button id="v4-pm-cash" onclick="v4_setPayMethod('現金')" style="padding:9px;border-radius:9px;border:2px solid #E8D5F2;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);">💵 現金</button>
+          <button id="v4-pm-jko" onclick="v4_setPayMethod('街口')" style="padding:9px;border-radius:9px;border:2px solid #E8D5F2;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);">📱 街口</button>
+          <button id="v4-pm-bank" onclick="v4_setPayMethod('轉帳')" style="padding:9px;border-radius:9px;border:2px solid #E8D5F2;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);">🏦 轉帳</button>
+          <button id="v4-pm-cash2" onclick="v4_setPayMethod('現金存款')" style="padding:9px;border-radius:9px;border:2px solid #E8D5F2;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);">🏧 無卡存</button>
+        </div>
+        <input type="hidden" id="v4-pay-method" value="現金">
+      </div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">資金對象</label>
+        <div id="v4-pay-receiver-btns" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;"></div>
+      </div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">備註</label><input type="text" id="v4-pay-note" style="width:100%;padding:9px 11px;border:1px solid #E8D5F2;border-radius:8px;font-size:13px;margin-top:5px;"></div>
+      <input type="hidden" id="v4-pay-dir" value="in">
+      <input type="hidden" id="v4-pay-edit-idx" value="-1">
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #E8D5F2;display:flex;justify-content:flex-end;gap:9px;background:#FDFBFC;">
+      <button onclick="v4_closePayModal()" style="padding:8px 16px;border:1px solid #E8D5F2;border-radius:9px;background:transparent;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:600;">取消</button>
+      <button onclick="v4_submitPayment()" style="padding:8px 20px;background:#E8A8C4;color:#fff;border:none;border-radius:9px;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:800;">確認</button>
+    </div>
+  </div>
+</div>
+
+<!-- v4 Ledger Modal -->
+<div id="v4-led-modal" style="display:none;position:fixed;inset:0;background:rgba(74,64,77,.5);z-index:2000;align-items:center;justify-content:center;" onclick="if(event.target===this)v4_closeLedModal()">
+  <div style="background:#fff;width:90%;max-width:360px;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(212,181,244,.3);">
+    <div style="padding:16px 20px;border-bottom:1px solid #E8D5F2;display:flex;justify-content:space-between;align-items:center;background:#FDFBFC;">
+      <h3 id="v4-led-modal-title" style="font-size:14px;font-weight:800;">新增流水</h3>
+      <button onclick="v4_closeLedModal()" style="border:none;background:transparent;font-size:18px;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">日期</label><input type="date" id="v4-led-date" style="width:100%;padding:9px 11px;border:1px solid #E8D5F2;border-radius:8px;font-size:13px;margin-top:5px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">明細</label><input type="text" id="v4-led-note" style="width:100%;padding:9px 11px;border:1px solid #E8D5F2;border-radius:8px;font-size:13px;margin-top:5px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">收入</label><input type="number" id="v4-led-in" style="width:100%;padding:9px 11px;border:1px solid #E8D5F2;border-radius:8px;font-size:16px;font-weight:800;margin-top:5px;"></div>
+      <div><label style="font-size:11px;font-weight:700;color:#7D7380;">支出</label><input type="number" id="v4-led-out" style="width:100%;padding:9px 11px;border:1px solid #E8D5F2;border-radius:8px;font-size:16px;font-weight:800;margin-top:5px;"></div>
+      <input type="hidden" id="v4-led-name" value="">
+      <input type="hidden" id="v4-led-idx" value="-1">
+    </div>
+    <div style="padding:12px 20px;border-top:1px solid #E8D5F2;display:flex;justify-content:flex-end;gap:9px;background:#FDFBFC;">
+      <button onclick="v4_closeLedModal()" style="padding:8px 16px;border:1px solid #E8D5F2;border-radius:9px;background:transparent;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:600;">取消</button>
+      <button onclick="v4_submitLedger()" style="padding:8px 20px;background:#E8A8C4;color:#fff;border:none;border-radius:9px;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:800;">確認</button>
     </div>
   </div>
 </div>
@@ -3982,173 +4204,653 @@ function tf_loadHistory() {
 }
 // ==================== end 轉檔器 ====================
 
-// ==================== 老闆帳目 ====================
+// ==================== 老闆帳目 (v4 integrated) ====================
 var BOSS_PW_KEY = 'ddb-boss-pw';
 var BOSS_UNLOCKED = false;
 
-var BOSS_REFUND_TABLE = [
+// ── v4 Data State ──
+var v4_rawData = [];
+var v4_payments = [];
+var v4_currentPage = 'company';
+var v4_db = {
+  agents:{}, aunties:{}, dailyS:[],
+  currentWeek:'all',
+  filters:{ aunty:'all' },
+  viewMode:{ agent:'summary', aunty:'summary' },
+  agentSort:{ by:'amount', dir:'desc' },
+  auntySort:{ by:'amount', dir:'desc' },
+  historyUnsettled:{},
+  agentCycles:{}, auntyCycles:{},
+  auntyAccounts:{},
+  payReceiver:'我',
+  ledgers:{ '司機':[], '家人':[], '現金':[], '其他':[] },
+  activeLedger:'司機',
+  wallets:['我','男友','玉山銀行'],
+  walletCash:{}, walletLedgers:{},
+  mmgg:{},        // 人名 → GG
+  auntieBonus:{}, // 阿姨名 → 額外退款數
+};
+
+var V4_REFUND_TABLE = [
   [50,100,3],[110,140,4],[150,190,5],[200,240,6],[250,290,7],
   [300,340,10],[350,390,12],[400,450,15],[460,500,18],[510,590,20],
   [600,690,20],[700,790,23],[800,890,26],[900,990,30],[1000,1100,35],
   [1110,1200,40],[1210,1300,45]
 ];
 
-function bossGgRefund(actualPrice) {
-  for (var i = 0; i < BOSS_REFUND_TABLE.length; i++) {
-    var r = BOSS_REFUND_TABLE[i];
-    if (actualPrice >= r[0] && actualPrice <= r[1]) return r[2];
-  }
+var WD4 = ['日','一','二','三','四','五','六'];
+
+function v4_ggRefundBase(price){
+  for(var i=0;i<V4_REFUND_TABLE.length;i++){var r=V4_REFUND_TABLE[i];if(price>=r[0]&&price<=r[1])return r[2];}
   return 0;
 }
+function v4_fmt(n){if(n===undefined||n===null)return'$0';var v=Math.round(n),abs=Math.abs(v),sign=v<0?'-':'';return sign+'$'+abs.toLocaleString();}
+function v4_fmtDate(s){if(!s)return'';var d=new Date((s+'').replace(/\//g,'-'));if(isNaN(d.getTime()))return s;return(d.getMonth()+1)+'/'+(d.getDate())+'('+WD4[d.getDay()]+')';}
+function v4_getWeekRange(s){var d=new Date(s);if(isNaN(d))return'未知週期';var day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1);var mon=new Date(d.setDate(diff)),sun=new Date(mon);sun.setDate(mon.getDate()+6);var f=function(x){return x.getFullYear()+'年'+(x.getMonth()+1)+'月'+x.getDate()+'日';};return f(mon)+' - '+f(sun);}
 
-function bossCalc(row) {
-  var pai = parseFloat(row.pai) || 0;
-  var shi = parseFloat(row.shi) || 0;
-  var actualP = pai * 10;
-  var ggRefund = bossGgRefund(actualP);
-  var gBack, eePay, sProfit;
-  if (actualP === 0) {
-    gBack = shi; eePay = shi; sProfit = 0;
-  } else {
-    gBack = shi - (actualP * 0.5 + ggRefund);
-    eePay = shi - actualP * 0.6;
-    sProfit = actualP * 0.1 - ggRefund;
-  }
-  var ox = (actualP === 0) ? '—' : (Math.abs(gBack - (eePay + sProfit)) < 1 ? '✅' : '❌');
-  return { ggRefund: ggRefund, gBack: Math.round(gBack), eePay: Math.round(eePay), sProfit: Math.round(sProfit), ox: ox };
-}
-
-function bossGetPw() {
-  try { return localStorage.getItem(BOSS_PW_KEY) || '0000'; } catch(e){ return '0000'; }
-}
-
-function bossUnlock() {
-  var input = document.getElementById('boss-pw-input').value;
-  if (input === bossGetPw()) {
-    BOSS_UNLOCKED = true;
-    document.getElementById('boss-lock').style.display = 'none';
-    document.getElementById('boss-content').style.display = 'block';
-    document.getElementById('boss-pw-input').value = '';
-    renderBossLedger();
-  } else {
-    document.getElementById('boss-pw-err').textContent = '密碼錯誤';
-    setTimeout(function(){ document.getElementById('boss-pw-err').textContent=''; }, 2000);
-  }
-}
-
-function bossLock() {
-  BOSS_UNLOCKED = false;
-  document.getElementById('boss-lock').style.display = 'flex';
-  document.getElementById('boss-content').style.display = 'none';
-  document.getElementById('boss-pw-input').value = '';
-}
-
-function bossChangePw() {
-  var p1 = document.getElementById('boss-new-pw').value;
-  var p2 = document.getElementById('boss-new-pw2').value;
-  var msg = document.getElementById('boss-pw-change-msg');
-  if (!p1) { msg.style.color='var(--danger)'; msg.textContent='請輸入新密碼'; return; }
-  if (p1 !== p2) { msg.style.color='var(--danger)'; msg.textContent='兩次密碼不一致'; return; }
-  try { localStorage.setItem(BOSS_PW_KEY, p1); } catch(e){}
-  msg.style.color='var(--sage)'; msg.textContent='✓ 密碼已更改';
-  document.getElementById('boss-new-pw').value = '';
-  document.getElementById('boss-new-pw2').value = '';
-  setTimeout(function(){ msg.textContent=''; }, 3000);
-}
-
-function renderBossLedger() {
-  if (!BOSS_UNLOCKED) return;
-
-  // populate date selector
-  var sel = document.getElementById('boss-date-sel');
-  var selectedDate = sel.value;
-  var allDates = Object.keys(notes).sort().reverse();
-  sel.innerHTML = '<option value="all">全部日期</option>';
-  allDates.forEach(function(dk) {
-    var opt = document.createElement('option');
-    opt.value = dk; opt.textContent = dk;
-    if (dk === selectedDate) opt.selected = true;
-    sel.appendChild(opt);
-  });
-
-  var filterDate = sel.value;
-  var dates = (filterDate === 'all') ? allDates : [filterDate];
-
-  var tbody = document.getElementById('boss-tbody');
-  var tfoot = document.getElementById('boss-tfoot');
-  tbody.innerHTML = ''; tfoot.innerHTML = '';
-
-  var totals = { shi: 0, gBack: 0, eePay: 0, sProfit: 0, ggRefund: 0, count: 0 };
-
-  dates.forEach(function(dk) {
-    var rows = notes[dk] || [];
-    if (!rows.length) return;
-    rows.forEach(function(row, ri) {
-      var calc = bossCalc(row);
-      totals.count++;
-      totals.shi += parseFloat(row.shi) || 0;
-      totals.gBack += calc.gBack;
-      totals.eePay += calc.eePay;
-      totals.sProfit += calc.sProfit;
-      totals.ggRefund += calc.ggRefund;
-      var tr = document.createElement('tr');
-      var actualP = (parseFloat(row.pai)||0)*10;
-      tr.innerHTML =
-        '<td>'+dk+'</td>'+
-        '<td>'+(row.name||'')+'</td>'+
-        '<td>'+(row.auntie||'')+'</td>'+
-        '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;">'+(row.place||'')+'</td>'+
-        '<td style="text-align:right;font-family:var(--mono);">'+(actualP||'')+'</td>'+
-        '<td style="text-align:right;font-family:var(--mono);">'+(row.shi||'')+'</td>'+
-        '<td style="text-align:right;font-family:var(--mono);">'+(row.rebate||'')+'</td>'+
-        '<td style="text-align:right;font-family:var(--mono);color:var(--gold);">'+(actualP?calc.ggRefund:'')+'</td>'+
-        '<td style="text-align:right;font-family:var(--mono);color:var(--accent);font-weight:600;">'+(actualP||row.shi?calc.gBack:'')+'</td>'+
-        '<td style="text-align:right;font-family:var(--mono);color:var(--rose);">'+(actualP||row.shi?calc.eePay:'')+'</td>'+
-        '<td style="text-align:right;font-family:var(--mono);color:var(--sage);font-weight:600;">'+(actualP?calc.sProfit:'')+'</td>'+
-        '<td style="text-align:center;">'+(actualP?calc.ox:'')+'</td>';
-      tbody.appendChild(tr);
+// ── Generate rawData from work orders ──
+function v4_generateRawData(){
+  v4_rawData=[];
+  Object.keys(notes).sort().forEach(function(dk){
+    (notes[dk]||[]).forEach(function(row){
+      var mm=row.name||'';
+      var ee=row.auntie||'';
+      var gg=v4_db.mmgg[mm]||'';
+      var actualP=(parseFloat(row.pai)||0)*10;
+      var mRec=parseFloat(row.shi)||0;
+      var bonus=v4_db.auntieBonus[ee]||0;
+      var ggRefund=actualP?(v4_ggRefundBase(actualP)+bonus):0;
+      var gBack,eePay,sProfit;
+      if(actualP===0){gBack=mRec;eePay=mRec;sProfit=0;}
+      else{gBack=mRec-(actualP*0.5+ggRefund);eePay=mRec-actualP*0.6;sProfit=actualP*0.1-ggRefund;}
+      var tm=(row.place||'').match(/^(\d{3,4})\s*/);
+      var time=tm?tm[1]:'';
+      var location=tm?(row.place||'').replace(tm[0],'').trim():(row.place||'');
+      var ox=actualP===0?'—':(Math.abs(gBack-(eePay+sProfit))<1?'✅':'❌');
+      v4_rawData.push({date:dk,ee:ee,mm:mm,gg:gg,time:time,location:location,
+        ps:row.note||'',write:row.rebate||'',
+        price:actualP,m_rec:mRec,gg_refund:ggRefund,
+        back:Math.round(gBack),ee_pay:Math.round(eePay),
+        s_profit:Math.round(sProfit),ox:ox,cycle:'',col2:'',
+        id:dk+'_'+mm+'_'+Date.now()+Math.random()});
     });
   });
-
-  // footer totals
-  tfoot.innerHTML =
-    '<tr>'+
-    '<td colspan="5" style="text-align:right;color:var(--text2);">合計 ('+totals.count+' 筆)</td>'+
-    '<td style="text-align:right;font-family:var(--mono);">'+totals.shi+'</td>'+
-    '<td></td>'+
-    '<td style="text-align:right;font-family:var(--mono);color:var(--gold);">'+totals.ggRefund+'</td>'+
-    '<td style="text-align:right;font-family:var(--mono);color:var(--accent);">'+totals.gBack+'</td>'+
-    '<td style="text-align:right;font-family:var(--mono);color:var(--rose);">'+totals.eePay+'</td>'+
-    '<td style="text-align:right;font-family:var(--mono);color:var(--sage);">'+totals.sProfit+'</td>'+
-    '<td></td></tr>';
-
-  // summary cards
-  var sumDiv = document.getElementById('boss-summary');
-  sumDiv.innerHTML =
-    bossCard('G回 總計', totals.gBack, 'var(--accent)')+
-    bossCard('EE$ 總計', totals.eePay, 'var(--rose)')+
-    bossCard('S 總計', totals.sProfit, 'var(--sage)')+
-    bossCard('實收 總計', totals.shi, 'var(--text)');
 }
 
-function bossCard(label, val, color) {
-  return '<div class="boss-sum-card"><div class="boss-sum-label">'+label+'</div><div class="boss-sum-val" style="color:'+color+'">'+val+'</div></div>';
-}
-
-function bossCopyTable() {
-  var sel = document.getElementById('boss-date-sel').value;
-  var dates = (sel==='all') ? Object.keys(notes).sort().reverse() : [sel];
-  var lines = ['日期\t人名\t阿姨\t時間地點\t牌價\t實收\t寫\t經退\tG回\tEE$\tS\t對帳'];
-  dates.forEach(function(dk) {
-    (notes[dk]||[]).forEach(function(row) {
-      var calc = bossCalc(row);
-      var actualP = (parseFloat(row.pai)||0)*10;
-      lines.push([dk, row.name||'', row.auntie||'', row.place||'', actualP||'', row.shi||'', row.rebate||'',
-        actualP?calc.ggRefund:'', actualP||row.shi?calc.gBack:'', actualP||row.shi?calc.eePay:'',
-        actualP?calc.sProfit:'', actualP?calc.ox:''].join('\t'));
-    });
+// ── Analyze ──
+function v4_analyzeData(){
+  var filtered=v4_db.currentWeek==='all'?v4_rawData:v4_rawData.filter(function(r){return v4_getWeekRange(r.date)===v4_db.currentWeek;});
+  v4_db.agents={};v4_db.aunties={};v4_db.dailyS=[];
+  var dailyMap={};
+  filtered.forEach(function(r){
+    if(r.gg){
+      if(!v4_db.agents[r.gg])v4_db.agents[r.gg]={name:r.gg,records:[],total_back:0,entries:0};
+      v4_db.agents[r.gg].records.push(r);v4_db.agents[r.gg].total_back+=r.back;v4_db.agents[r.gg].entries++;
+    }
+    if(r.ee){
+      if(!v4_db.aunties[r.ee])v4_db.aunties[r.ee]={name:r.ee,records:[],total_ee_pay:0,entries:0};
+      v4_db.aunties[r.ee].records.push(r);v4_db.aunties[r.ee].total_ee_pay+=r.ee_pay;v4_db.aunties[r.ee].entries++;
+    }
+    if(r.date){if(!dailyMap[r.date])dailyMap[r.date]=0;dailyMap[r.date]+=r.s_profit;}
   });
-  copyText(lines.join('\n'), '✓ 已複製帳目表格');
+  Object.values(v4_db.agents).forEach(function(a){a.mergedRecords=v4_mergeRec(a.records);a.payments=v4_payments.filter(function(p){return p.name===a.name;});});
+  Object.values(v4_db.aunties).forEach(function(a){a.mergedRecords=v4_mergeRec(a.records);a.payments=v4_payments.filter(function(p){return p.name===a.name;});});
+  for(var d in dailyMap)v4_db.dailyS.push({date:d,amount:dailyMap[d]});
+  v4_db.dailyS.sort(function(a,b){return a.date.localeCompare(b.date);});
+  v4_updateWeekSel();
+}
+
+function v4_mergeRec(records){
+  var g={};
+  records.forEach(function(r){
+    var k=r.date+'_'+r.time+'_'+r.location;
+    if(!g[k])g[k]={...r,originalCount:1};
+    else{g[k].back+=r.back;g[k].ee_pay+=r.ee_pay;g[k].s_profit+=r.s_profit;g[k].price+=r.price;g[k].m_rec+=r.m_rec;g[k].gg_refund+=r.gg_refund;g[k].originalCount++;}
+  });
+  return Object.values(g);
+}
+
+function v4_updateWeekSel(){
+  var weeks=new Set();
+  v4_rawData.forEach(function(r){var w=v4_getWeekRange(r.date);if(w!=='未知週期')weeks.add(w);});
+  var sorted=[...weeks].sort().reverse();
+  var row=document.getElementById('v4-week-sel-row');if(!row)return;
+  row.innerHTML='<select onchange="v4_changeWeek(this.value)" style="padding:7px 11px;border-radius:10px;border:1px solid var(--border);font-size:12px;font-weight:700;background:var(--card2);outline:none;cursor:pointer;"><option value="all">所有日期</option>'+sorted.map(function(w){return'<option value="'+w+'"'+(v4_db.currentWeek===w?' selected':'')+'>'+w+'</option>';}).join('')+'</select><button onclick="v4_settleWeek()" style="padding:7px 12px;border:1px solid var(--border);border-radius:10px;background:var(--card2);font-size:12px;cursor:pointer;font-family:var(--font);">🔒 結算</button>';
+}
+
+function v4_changeWeek(w){v4_db.currentWeek=w;v4_analyzeData();v4_renderCurrent();}
+
+// ── Save/Load ──
+function v4_saveToLocal(){
+  var payload={
+    rawData:v4_rawData,payments:v4_payments,
+    historyUnsettled:v4_db.historyUnsettled,
+    agentCycles:v4_db.agentCycles,auntyCycles:v4_db.auntyCycles,
+    auntyAccounts:v4_db.auntyAccounts,ledgers:v4_db.ledgers,
+    walletCash:v4_db.walletCash,walletLedgers:v4_db.walletLedgers,
+    wallets:v4_db.wallets,mmgg:v4_db.mmgg,auntieBonus:v4_db.auntieBonus
+  };
+  if(IS_GAS){
+    google.script.run
+      .withSuccessHandler(function(){showSyncStatus('✅ 帳目已同步',true);})
+      .withFailureHandler(function(e){showSyncStatus('❌ 同步失敗',false);})
+      .saveBossData(JSON.stringify(payload));
+  } else {
+    try{localStorage.setItem('boss_v4_data',JSON.stringify(payload));}catch(e){}
+  }
+}
+
+function v4_loadData(cb){
+  if(IS_GAS){
+    google.script.run
+      .withSuccessHandler(function(s){if(s){try{var d=JSON.parse(s);v4_applyData(d);}catch(e){}}if(cb)cb();})
+      .withFailureHandler(function(){if(cb)cb();})
+      .loadBossData();
+  } else {
+    try{var s=localStorage.getItem('boss_v4_data');if(s){var d=JSON.parse(s);v4_applyData(d);}}catch(e){}
+    if(cb)cb();
+  }
+}
+
+function v4_applyData(d){
+  if(d.rawData)v4_rawData=d.rawData;
+  if(d.payments)v4_payments=d.payments;
+  if(d.historyUnsettled)v4_db.historyUnsettled=d.historyUnsettled;
+  if(d.agentCycles)v4_db.agentCycles=d.agentCycles;
+  if(d.auntyCycles)v4_db.auntyCycles=d.auntyCycles;
+  if(d.auntyAccounts)v4_db.auntyAccounts=d.auntyAccounts;
+  if(d.ledgers)v4_db.ledgers=d.ledgers;
+  if(d.walletCash)v4_db.walletCash=d.walletCash;
+  if(d.walletLedgers)v4_db.walletLedgers=d.walletLedgers;
+  if(d.wallets)v4_db.wallets=d.wallets;
+  if(d.mmgg)v4_db.mmgg=d.mmgg;
+  if(d.auntieBonus)v4_db.auntieBonus=d.auntieBonus;
+  if(!v4_db.wallets||!v4_db.wallets.length)v4_db.wallets=['我','男友','玉山銀行'];
+}
+
+// ── Navigation ──
+function v4_switchPage(id,el){
+  v4_currentPage=id;
+  document.querySelectorAll('#tab-boss .v4-nav-btn').forEach(function(b){b.classList.remove('active');});
+  if(el)el.classList.add('active');
+  document.querySelectorAll('#tab-boss .v4-page').forEach(function(p){p.classList.remove('active');});
+  var pg=document.getElementById('v4-page-'+id);if(pg)pg.classList.add('active');
+  v4_renderPage(id);
+}
+
+function v4_renderPage(id){
+  if(id==='company')v4_renderCompany();
+  else if(id==='accounts')v4_renderAgentPage();
+  else if(id==='payment')v4_renderPaymentPage();
+  else if(id==='data')v4_renderDataPage();
+  else if(id==='ledger')v4_renderLedgerPage();
+  else if(id==='settings')v4_renderSettings();
+}
+
+function v4_renderCurrent(){v4_renderPage(v4_currentPage);}
+
+function v4_switchAccTab(tab,el){
+  document.querySelectorAll('#v4-page-accounts .v4-filter-tab').slice(0,2).forEach(function(b){b.classList.remove('active');});
+  if(el)el.classList.add('active');
+  document.getElementById('v4-accounts-agent').style.display=tab==='agent'?'':'none';
+  document.getElementById('v4-accounts-aunty').style.display=tab==='aunty'?'':'none';
+  if(tab==='agent')v4_renderAgentPage();else v4_renderAuntyPage();
+}
+
+function v4_setAuntyFilter(val,el){
+  v4_db.filters.aunty=val;
+  document.querySelectorAll('#v4-aunty-filter-tabs .v4-filter-tab').forEach(function(b){b.classList.remove('active');});
+  if(el)el.classList.add('active');
+  v4_renderAuntyPage();
+}
+
+// ── Company Page ──
+function v4_renderCompany(){
+  var totalS=v4_db.dailyS.reduce(function(s,d){return s+d.amount;},0);
+  var totalBack=Object.values(v4_db.agents).reduce(function(s,a){return s+a.total_back;},0);
+  var totalEE=Object.values(v4_db.aunties).reduce(function(s,a){return s+a.total_ee_pay;},0);
+  var c=document.getElementById('v4-page-company');if(!c)return;
+  c.innerHTML=
+    '<div class="v4-sum-grid">'+
+    '<div class="v4-sum-card v4-sc-peach"><div class="v4-sum-label">本週公司淨利 S</div><div class="v4-sum-amt">'+v4_fmt(totalS)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-pink"><div class="v4-sum-label">本週應收 (經紀)</div><div class="v4-sum-amt">'+v4_fmt(totalBack)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-green"><div class="v4-sum-label">本週應付 (阿姨)</div><div class="v4-sum-amt">'+v4_fmt(totalEE)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-purple"><div class="v4-sum-label">數據筆數</div><div class="v4-sum-amt">'+v4_rawData.length+'</div></div>'+
+    '</div>'+
+    '<div class="v4-company-grid">'+
+    '<div class="v4-day-tbl"><div class="v4-day-tbl-hdr"><span>每日 S 淨利</span><span style="color:#F5C89A;">'+v4_fmt(totalS)+'</span></div>'+
+    (v4_db.dailyS.map(function(d){return'<div class="v4-day-row"><span style="color:var(--text3);font-size:11px;font-weight:600;">'+v4_fmtDate(d.date)+'</span><span style="font-weight:800;color:'+(d.amount>=0?'var(--rose)':'var(--sage)')+';">'+v4_fmt(d.amount)+'</span></div>';}).join('')||'<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px;">暫無資料</div>')+
+    '</div>'+
+    '<div class="v4-day-tbl"><div class="v4-day-tbl-hdr"><span>各經紀回款</span><span style="color:#E8A8C4;">'+v4_fmt(totalBack)+'</span></div>'+
+    (Object.values(v4_db.agents).sort(function(a,b){return b.total_back-a.total_back;}).map(function(a){return'<div class="v4-day-row"><span style="font-weight:700;">'+a.name+'</span><span style="font-weight:800;color:var(--rose);">'+v4_fmt(a.total_back)+'</span></div>';}).join('')||'<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px;">暫無資料</div>')+
+    '</div>'+
+    '<div class="v4-day-tbl"><div class="v4-day-tbl-hdr"><span>各阿姨 EE$</span><span style="color:#B8E6D5;">'+v4_fmt(totalEE)+'</span></div>'+
+    (Object.values(v4_db.aunties).sort(function(a,b){return b.total_ee_pay-a.total_ee_pay;}).map(function(a){return'<div class="v4-day-row"><span style="font-weight:700;">'+a.name+'</span><span style="font-weight:800;color:var(--sage);">'+v4_fmt(a.total_ee_pay)+'</span></div>';}).join('')||'<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px;">暫無資料</div>')+
+    '</div></div>'+
+    '<div class="v4-owing-grid" style="margin-top:16px;">'+
+    '<div class="v4-owing-panel"><div class="v4-owing-hdr text-red">經紀欠我 (應收)</div>'+
+    (Object.values(v4_db.agents).map(function(a){var t=(v4_db.historyUnsettled[a.name]||0)+a.total_back-a.payments.reduce(function(s,p){return s+p.amount;},0);return t!==0?'<div class="v4-owing-row"><div><div style="font-weight:800;">'+a.name+'</div><div style="font-size:10px;color:var(--text3);">'+a.entries+' 筆</div></div><div style="font-weight:800;color:'+(t>=0?'var(--rose)':'var(--sage)')+';">'+v4_fmt(t)+'</div></div>':'';}).join('')||'<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px;">無欠款</div>')+
+    '</div>'+
+    '<div class="v4-owing-panel"><div class="v4-owing-hdr text-green">我欠阿姨 (應付)</div>'+
+    (Object.values(v4_db.aunties).map(function(a){var t=(v4_db.historyUnsettled[a.name]||0)+a.total_ee_pay-a.payments.reduce(function(s,p){return s+p.amount;},0);return t!==0?'<div class="v4-owing-row"><div><div style="font-weight:800;">'+a.name+'</div><div style="font-size:10px;color:var(--text3);">'+a.entries+' 筆</div></div><div style="font-weight:800;color:'+(t>=0?'var(--sage)':'var(--rose)')+';">'+v4_fmt(t)+'</div></div>':'';}).join('')||'<div style="padding:16px;text-align:center;color:var(--text3);font-size:12px;">無欠款</div>')+
+    '</div></div>';
+}
+
+// ── Agent Page ──
+function v4_renderAgentPage(){
+  var c=document.getElementById('v4-accounts-agent');if(!c)return;
+  var list=Object.values(v4_db.agents);
+  var s=v4_db.agentSort;
+  list.sort(function(a,b){
+    var pA=a.payments.reduce(function(x,p){return x+p.amount;},0),pB=b.payments.reduce(function(x,p){return x+p.amount;},0);
+    var vA=s.by==='owing'?(v4_db.historyUnsettled[a.name]||0)+a.total_back-pA:s.by==='name'?a.name:a.total_back;
+    var vB=s.by==='owing'?(v4_db.historyUnsettled[b.name]||0)+b.total_back-pB:s.by==='name'?b.name:b.total_back;
+    if(s.by==='name')return s.dir==='asc'?vA.localeCompare(vB,'zh'):vB.localeCompare(vA,'zh');
+    return s.dir==='asc'?vA-vB:vB-vA;
+  });
+  var totBack=list.reduce(function(s,a){return s+a.total_back;},0);
+  var totPaid=list.reduce(function(s,a){return s+a.payments.reduce(function(x,p){return x+p.amount;},0);},0);
+  var totPrev=list.reduce(function(s,a){return s+(v4_db.historyUnsettled[a.name]||0);},0);
+  var html=
+    '<div class="v4-sum-grid">'+
+    '<div class="v4-sum-card v4-sc-purple"><div class="v4-sum-label">上週未結</div><div class="v4-sum-amt">'+v4_fmt(totPrev)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-pink"><div class="v4-sum-label">本週應收</div><div class="v4-sum-amt">'+v4_fmt(totBack)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-green"><div class="v4-sum-label">實際已收</div><div class="v4-sum-amt">'+v4_fmt(totPaid)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-peach"><div class="v4-sum-label">尚欠總額</div><div class="v4-sum-amt">'+v4_fmt(totPrev+totBack-totPaid)+'</div></div>'+
+    '</div>'+
+    '<div class="v4-sec-hdr"><div class="v4-sec-title">💼 經紀帳務 <span class="v4-badge">'+list.length+' 人</span></div>'+
+    '<div style="display:flex;align-items:center;gap:10px;">'+
+    '<div class="v4-sort-bar"><span style="font-size:11px;color:var(--text3);font-weight:700;padding:0 5px;">排序</span>'+
+    [['amount','本週'],['owing','尚欠'],['name','名稱']].map(function(k){return'<button class="v4-sort-btn'+(s.by===k[0]?' active':'')+'" onclick="v4_agentSortBy(\''+k[0]+'\')">'+k[1]+'</button>';}).join('')+
+    '</div>'+
+    '<div class="v4-view-toggle">'+
+    '<button class="v4-vt-btn'+(v4_db.viewMode.agent==='summary'?' active':'')+'" onclick="v4_setViewMode(\'agent\',\'summary\')">摘要</button>'+
+    '<button class="v4-vt-btn'+(v4_db.viewMode.agent==='detail'?' active':'')+'" onclick="v4_setViewMode(\'agent\',\'detail\')">明細</button>'+
+    '</div></div></div>'+
+    '<div class="v4-cards-grid">';
+  list.forEach(function(agent){
+    var paid=agent.payments.reduce(function(s,p){return s+p.amount;},0);
+    var prev=v4_db.historyUnsettled[agent.name]||0;
+    var owing=prev+agent.total_back-paid;
+    var uid=agent.name.replace(/\s/g,'_');
+    html+='<div class="v4-person-card">'+
+      '<div class="v4-card-hdr">'+
+      '<span class="v4-card-name">'+agent.name+'</span>'+
+      '<div class="v4-prev-wrap"><span class="v4-prev-lbl">上週</span>'+
+      '<input class="v4-prev-inp" type="number" value="'+(prev||'')+'" placeholder="$0" onchange="v4_onPrevInput(\''+agent.name+'\',this)" onclick="this.select()"></div>'+
+      '</div>'+
+      '<div class="v4-card-body">'+v4_buildAgentBody(agent)+'</div>'+
+      '<div class="v4-card-foot">'+
+      '<div class="v4-foot-total"><div class="v4-foot-lbl">尚欠總額</div>'+
+      '<div class="v4-foot-amt '+(owing>=0?'text-red':'text-green')+'" id="v4-foot-'+uid+'">'+v4_fmt(owing)+'</div></div>'+
+      '<button class="v4-pay-btn" onclick="v4_openPayModal(\''+agent.name+'\',\'in\')">＋ 記帳</button>'+
+      '</div></div>';
+  });
+  html+='</div>';
+  c.innerHTML=html;
+}
+
+function v4_buildAgentBody(agent){
+  var dateMap={};
+  agent.mergedRecords.forEach(function(r){
+    if(!dateMap[r.date])dateMap[r.date]={records:[],mms:new Set(),subtotal:0};
+    dateMap[r.date].records.push(r);dateMap[r.date].mms.add(r.mm);dateMap[r.date].subtotal+=r.back;
+  });
+  var paid=agent.payments.reduce(function(s,p){return s+p.amount;},0);
+  var prev=v4_db.historyUnsettled[agent.name]||0;
+  var html='';
+  if(agent.payments.length>0){
+    html+='<details class="v4-pay-details"><summary><span style="color:var(--sage);">✔️ 已回帳 ('+agent.payments.length+' 筆)</span><span style="color:var(--sage);">'+v4_fmt(paid)+'</span></summary>'+
+      agent.payments.slice().sort(function(a,b){return a.date.localeCompare(b.date);}).map(function(p){return'<div style="display:flex;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--bg);font-size:11.5px;"><span style="color:var(--text3);">'+v4_fmtDate(p.date)+' '+p.method+'</span><span style="color:var(--sage);font-weight:800;">-'+v4_fmt(p.amount)+'</span></div>';}).join('')+
+      '</details>';
+  }
+  var di=0;
+  Object.keys(dateMap).sort().forEach(function(date){
+    var d=dateMap[date];var detId='v4ag_'+agent.name.replace(/\W/g,'_')+'_'+di++;
+    if(v4_db.viewMode.agent==='detail'){
+      html+='<div style="font-size:11px;font-weight:800;color:var(--v4-acc);padding:8px 16px 3px;background:var(--v4-surf);">'+v4_fmtDate(date)+'</div>';
+      d.records.forEach(function(r){html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 16px;border-bottom:1px solid var(--bg);">'+
+        '<div><div style="font-weight:800;font-size:12px;">'+r.mm+'</div><div style="font-size:10px;color:var(--text3);">'+r.time+' '+r.location+'</div></div>'+
+        '<div style="display:flex;align-items:center;gap:8px;"><span style="font-weight:800;font-size:12px;color:var(--rose);">'+v4_fmt(r.back)+'</span>'+
+        '<button class="v4-qs-btn" onclick="v4_quickSettle(\''+agent.name+'\',\'in\','+r.back+',\'結清\')">⚡ 結清</button></div></div>';});
+    } else {
+      html+='<div class="v4-date-row" onclick="v4_toggleDetail(\''+detId+'\',this)">'+
+        '<span class="v4-dr-date">'+v4_fmtDate(date)+'</span>'+
+        '<span class="v4-dr-mms">'+[...d.mms].join('・')+'</span>'+
+        '<span class="v4-dr-right"><span class="v4-dr-amt text-red">'+v4_fmt(d.subtotal)+'</span><span class="v4-dr-arrow">▶</span></span></div>'+
+        '<div class="v4-detail" id="'+detId+'">'+
+        d.records.map(function(r){return'<div class="v4-det-row"><div><div class="v4-det-mm">'+r.mm+'</div><div class="v4-det-meta">'+r.time+' '+r.location+'</div></div>'+
+          '<div style="display:flex;align-items:center;gap:7px;"><span class="v4-det-amt text-red">'+v4_fmt(r.back)+'</span><button class="v4-qs-btn" onclick="event.stopPropagation();v4_quickSettle(\''+agent.name+'\',\'in\','+r.back+',\'結清\')">⚡</button></div></div>';}).join('')+
+        '</div>';
+    }
+  });
+  return html||'<div style="padding:24px;text-align:center;color:var(--text3);font-size:12px;">暫無工單</div>';
+}
+
+// ── Aunty Page ──
+function v4_renderAuntyPage(){
+  var c=document.getElementById('v4-aunty-content');if(!c)return;
+  var filter=v4_db.filters.aunty;
+  var list=Object.values(v4_db.aunties).filter(function(a){
+    if(filter==='all')return true;
+    var cy=v4_db.auntyCycles[a.name];
+    return (filter==='day'&&cy==='日結')||(filter==='wk'&&cy==='週結')||(filter==='mo'&&cy==='月結');
+  });
+  var s=v4_db.auntySort;
+  list.sort(function(a,b){
+    var pA=a.payments.reduce(function(x,p){return x+p.amount;},0),pB=b.payments.reduce(function(x,p){return x+p.amount;},0);
+    var vA=s.by==='owing'?(v4_db.historyUnsettled[a.name]||0)+a.total_ee_pay-pA:s.by==='name'?a.name:a.total_ee_pay;
+    var vB=s.by==='owing'?(v4_db.historyUnsettled[b.name]||0)+b.total_ee_pay-pB:s.by==='name'?b.name:b.total_ee_pay;
+    if(s.by==='name')return s.dir==='asc'?vA.localeCompare(vB,'zh'):vB.localeCompare(vA,'zh');
+    return s.dir==='asc'?vA-vB:vB-vA;
+  });
+  var totEE=list.reduce(function(s,a){return s+a.total_ee_pay;},0);
+  var totPaid=list.reduce(function(s,a){return s+a.payments.reduce(function(x,p){return x+p.amount;},0);},0);
+  var totPrev=list.reduce(function(s,a){return s+(v4_db.historyUnsettled[a.name]||0);},0);
+  var html=
+    '<div class="v4-sum-grid">'+
+    '<div class="v4-sum-card v4-sc-purple"><div class="v4-sum-label">上週未結</div><div class="v4-sum-amt">'+v4_fmt(totPrev)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-green"><div class="v4-sum-label">本週應付</div><div class="v4-sum-amt">'+v4_fmt(totEE)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-pink"><div class="v4-sum-label">實際已付</div><div class="v4-sum-amt">'+v4_fmt(totPaid)+'</div></div>'+
+    '<div class="v4-sum-card v4-sc-peach"><div class="v4-sum-label">尚欠總額</div><div class="v4-sum-amt">'+v4_fmt(totPrev+totEE-totPaid)+'</div></div>'+
+    '</div>'+
+    '<div class="v4-sec-hdr"><div class="v4-sec-title">🌸 阿姨帳務 <span class="v4-badge">'+list.length+' 人</span></div>'+
+    '<div style="display:flex;align-items:center;gap:10px;">'+
+    '<div class="v4-sort-bar"><span style="font-size:11px;color:var(--text3);font-weight:700;padding:0 5px;">排序</span>'+
+    [['amount','本週'],['owing','尚欠'],['name','名稱']].map(function(k){return'<button class="v4-sort-btn'+(s.by===k[0]?' active':'')+'" onclick="v4_auntySortBy(\''+k[0]+'\')">'+k[1]+'</button>';}).join('')+
+    '</div>'+
+    '<div class="v4-view-toggle">'+
+    '<button class="v4-vt-btn'+(v4_db.viewMode.aunty==='summary'?' active':'')+'" onclick="v4_setViewMode(\'aunty\',\'summary\')">摘要</button>'+
+    '<button class="v4-vt-btn'+(v4_db.viewMode.aunty==='detail'?' active':'')+'" onclick="v4_setViewMode(\'aunty\',\'detail\')">明細</button>'+
+    '</div></div></div>'+
+    '<div class="v4-cards-grid">';
+  list.forEach(function(ee){
+    var paid=ee.payments.reduce(function(s,p){return s+p.amount;},0);
+    var prev=v4_db.historyUnsettled[ee.name]||0;
+    var owing=prev+ee.total_ee_pay-paid;
+    var uid=ee.name.replace(/\s/g,'_');
+    html+='<div class="v4-person-card">'+
+      '<div class="v4-card-hdr">'+
+      '<span class="v4-card-name">'+ee.name+'<span class="v4-tag-ee">EE</span></span>'+
+      '<div class="v4-prev-wrap"><span class="v4-prev-lbl">上週</span>'+
+      '<input class="v4-prev-inp" style="color:var(--sage);" type="number" value="'+(prev||'')+'" placeholder="$0" onchange="v4_onPrevInput(\''+ee.name+'\',this)" onclick="this.select()"></div>'+
+      '</div>'+
+      '<div class="v4-card-body">'+v4_buildAuntyBody(ee)+'</div>'+
+      '<div class="v4-card-foot">'+
+      '<div class="v4-foot-total"><div class="v4-foot-lbl">尚欠總額</div>'+
+      '<div class="v4-foot-amt '+(owing>=0?'text-green':'text-red')+'" id="v4-foot-'+uid+'">'+v4_fmt(owing)+'</div></div>'+
+      '<button class="v4-pay-btn" onclick="v4_openPayModal(\''+ee.name+'\',\'out\')">＋ 記帳</button>'+
+      '</div></div>';
+  });
+  html+='</div>';
+  c.innerHTML=html;
+}
+
+function v4_buildAuntyBody(ee){
+  var dateMap={};
+  ee.mergedRecords.forEach(function(r){
+    var isNo=r.location.includes('不收');
+    if(!dateMap[r.date])dateMap[r.date]={records:[],mms:new Set(),subtotal:0};
+    dateMap[r.date].records.push(r);dateMap[r.date].mms.add(r.mm);dateMap[r.date].subtotal+=isNo?-Math.abs(r.ee_pay):r.ee_pay;
+  });
+  var paid=ee.payments.reduce(function(s,p){return s+p.amount;},0);
+  var html='';
+  if(ee.payments.length>0){
+    html+='<details class="v4-pay-details"><summary><span style="color:var(--rose);">✔️ 已付款 ('+ee.payments.length+' 筆)</span><span style="color:var(--rose);">'+v4_fmt(paid)+'</span></summary>'+
+      ee.payments.slice().sort(function(a,b){return a.date.localeCompare(b.date);}).map(function(p){return'<div style="display:flex;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--bg);font-size:11.5px;"><span style="color:var(--text3);">'+v4_fmtDate(p.date)+' '+p.method+'</span><span style="color:var(--rose);font-weight:800;">-'+v4_fmt(p.amount)+'</span></div>';}).join('')+
+      '</details>';
+  }
+  var di=0;
+  Object.keys(dateMap).sort().forEach(function(date){
+    var d=dateMap[date];var detId='v4ee_'+ee.name.replace(/\W/g,'_')+'_'+di++;
+    if(v4_db.viewMode.aunty==='detail'){
+      html+='<div style="font-size:11px;font-weight:800;color:var(--v4-ee);padding:8px 16px 3px;">'+v4_fmtDate(date)+'</div>';
+      d.records.forEach(function(r){var isNo=r.location.includes('不收');var amt=isNo?-Math.abs(r.ee_pay):r.ee_pay;
+        html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 16px;border-bottom:1px solid var(--bg);">'+
+          '<div><div style="font-weight:800;font-size:12px;">'+r.mm+'</div><div style="font-size:10px;color:var(--text3);">'+r.time+' '+r.location+'</div></div>'+
+          '<div style="display:flex;align-items:center;gap:8px;"><span style="font-weight:800;font-size:12px;color:var(--sage);">'+v4_fmt(amt)+'</span>'+
+          '<button class="v4-qs-btn" onclick="v4_quickSettle(\''+ee.name+'\',\'out\','+amt+',\'結清\')">⚡ 結清</button></div></div>';});
+    } else {
+      html+='<div class="v4-date-row" onclick="v4_toggleDetail(\''+detId+'\',this)">'+
+        '<span class="v4-dr-date">'+v4_fmtDate(date)+'</span>'+
+        '<span class="v4-dr-mms">'+[...d.mms].join('・')+'</span>'+
+        '<span class="v4-dr-right"><span class="v4-dr-amt text-green">'+v4_fmt(d.subtotal)+'</span><span class="v4-dr-arrow">▶</span></span></div>'+
+        '<div class="v4-detail" id="'+detId+'">'+
+        d.records.map(function(r){var isNo=r.location.includes('不收');var amt=isNo?-Math.abs(r.ee_pay):r.ee_pay;return'<div class="v4-det-row"><div><div class="v4-det-mm">'+r.mm+'</div><div class="v4-det-meta">'+r.time+' '+r.location+'</div></div>'+
+          '<div style="display:flex;align-items:center;gap:7px;"><span class="v4-det-amt text-green">'+v4_fmt(amt)+'</span><button class="v4-qs-btn" onclick="event.stopPropagation();v4_quickSettle(\''+ee.name+'\',\'out\','+amt+',\'結清\')">⚡</button></div></div>';}).join('')+
+        '</div>';
+    }
+  });
+  return html||'<div style="padding:24px;text-align:center;color:var(--text3);font-size:12px;">暫無工單</div>';
+}
+
+function v4_toggleDetail(id,rowEl){var det=document.getElementById(id);if(!det)return;var open=det.classList.toggle('show');rowEl.classList.toggle('open',open);}
+
+// ── Sort & View ──
+function v4_agentSortBy(k){if(v4_db.agentSort.by===k)v4_db.agentSort.dir=v4_db.agentSort.dir==='desc'?'asc':'desc';else v4_db.agentSort={by:k,dir:'desc'};v4_renderAgentPage();}
+function v4_auntySortBy(k){if(v4_db.auntySort.by===k)v4_db.auntySort.dir=v4_db.auntySort.dir==='desc'?'asc':'desc';else v4_db.auntySort={by:k,dir:'desc'};v4_renderAuntyPage();}
+function v4_setViewMode(type,mode){v4_db.viewMode[type]=mode;if(type==='agent')v4_renderAgentPage();else v4_renderAuntyPage();}
+
+// ── Prev input ──
+function v4_onPrevInput(name,el){
+  var val=parseFloat(el.value)||0;
+  if(val===0)delete v4_db.historyUnsettled[name];else v4_db.historyUnsettled[name]=val;
+  v4_saveToLocal();
+}
+
+// ── Quick settle ──
+function v4_quickSettle(name,dir,amount,note){
+  if(!confirm('確定結清「'+name+'」的 '+v4_fmt(amount)+'？'))return;
+  v4_payments.push({id:Date.now(),name:name,dir:dir,date:new Date().toISOString().split('T')[0],amount:Math.abs(amount),method:'現金',note:note,receiver:v4_db.wallets[0]||'我'});
+  v4_saveToLocal();v4_analyzeData();v4_renderCurrent();
+}
+
+// ── Payment Page ──
+function v4_renderPaymentPage(){
+  var c=document.getElementById('v4-payment-content');if(!c)return;
+  var balances={};v4_db.wallets.forEach(function(w){balances[w]=0;});
+  v4_payments.forEach(function(p){var w=p.receiver||v4_db.wallets[0];if(balances[w]===undefined)balances[w]=0;if(p.dir==='in')balances[w]+=p.amount;else balances[w]-=p.amount;});
+  var walletHtml='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:20px;">';
+  v4_db.wallets.forEach(function(w){walletHtml+='<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;"><div style="font-size:13px;font-weight:700;margin-bottom:6px;">'+w+'</div><div style="font-size:20px;font-weight:800;color:'+(balances[w]>=0?'var(--rose)':'var(--sage)')+';">'+v4_fmt(balances[w])+'</div></div>';});
+  walletHtml+='</div>';
+  c.innerHTML=
+    '<div class="v4-sec-hdr"><div class="v4-sec-title">🏦 資金餘額</div><button class="btn btn-plain btn-sm" onclick="v4_editWallets()">✏️ 編輯</button></div>'+
+    walletHtml+
+    '<div class="v4-sec-hdr"><div class="v4-sec-title">💳 歷史流水 <span class="v4-badge">'+v4_payments.length+' 筆</span></div>'+
+    '<div style="display:flex;gap:8px;">'+
+    '<button class="btn btn-rose-outline btn-sm" onclick="v4_openPayModal(\'\',\'in\')">＋ 收進</button>'+
+    '<button class="btn btn-sage btn-sm" onclick="v4_openPayModal(\'\',\'out\')">＋ 付出</button>'+
+    '</div></div>'+
+    '<div class="v4-pay-list">'+
+    (v4_payments.length===0?'<div style="padding:28px;text-align:center;color:var(--text3);">暫無記錄</div>':
+    v4_payments.slice().reverse().map(function(p,ri){var realIdx=v4_payments.length-1-ri;
+      return'<div class="v4-pay-row"><div class="v4-pay-dir '+(p.dir==='in'?'v4-dir-in':'v4-dir-out')+'">'+(p.dir==='in'?'收進':'付出')+'</div>'+
+        '<div style="color:var(--text3);min-width:58px;font-size:11px;font-weight:600;">'+v4_fmtDate(p.date)+'</div>'+
+        '<div style="font-weight:800;min-width:44px;">'+p.name+'</div>'+
+        '<div style="font-size:11px;background:var(--bg);border-radius:5px;padding:2px 7px;color:var(--text2);">'+p.method+'</div>'+
+        '<div style="flex:1;font-size:11.5px;color:var(--text2);">'+(p.note||'')+(p.receiver?' → '+p.receiver:'')+'</div>'+
+        '<div style="font-weight:800;font-size:14px;color:'+(p.dir==='in'?'var(--rose)':'var(--sage)')+';">'+v4_fmt(p.amount)+'</div>'+
+        '<div style="display:flex;gap:5px;"><button onclick="v4_openPayModal(\'\',\'\','+realIdx+')" style="font-size:11px;color:var(--sky);border:none;background:var(--sky-light);border-radius:5px;padding:3px 9px;cursor:pointer;font-family:var(--font);">編輯</button>'+
+        '<button onclick="v4_deletePayment('+realIdx+')" style="font-size:11px;color:var(--rose);border:none;background:var(--rose-light);border-radius:5px;padding:3px 9px;cursor:pointer;font-family:var(--font);">刪除</button></div></div>';
+    }).join(''))+
+    '</div>';
+}
+
+function v4_editWallets(){var s=prompt('資金帳戶（逗號分隔）：',v4_db.wallets.join(', '));if(s!==null){var w=s.split(',').map(function(x){return x.trim();}).filter(function(x){return x;});if(w.length>0){v4_db.wallets=w;v4_saveToLocal();v4_renderPaymentPage();}}}
+
+// ── Data Page ──
+function v4_renderDataPage(){
+  var c=document.getElementById('v4-xls-container');if(!c)return;
+  var cnt=document.getElementById('v4-raw-count');if(cnt)cnt.textContent=v4_rawData.length+' 筆';
+  var cols=[{key:'date',label:'日期'},{key:'ee',label:'阿姨'},{key:'mm',label:'妹妹'},{key:'gg',label:'經紀'},{key:'time',label:'時間'},{key:'location',label:'位置'},{key:'ps',label:'PS'},{key:'write',label:'寫'},{key:'price',label:'牌價'},{key:'m_rec',label:'M收'},{key:'gg_refund',label:'回扣'},{key:'back',label:'G回'},{key:'ee_pay',label:'EE$'},{key:'s_profit',label:'S'},{key:'ox',label:'OX'},{key:'cycle',label:'週期'},{key:'col2',label:'欄2'}];
+  c.innerHTML='<table class="v4-xls-tbl"><thead><tr><th>#</th>'+cols.map(function(c){return'<th>'+c.label+'</th>';}).join('')+'<th>操作</th></tr></thead><tbody>'+
+    v4_rawData.map(function(row,i){return'<tr><td style="text-align:center;color:var(--text3);font-weight:700;">'+(i+1)+'</td>'+cols.map(function(col){return'<td contenteditable="true" class="v4-ed-cell" onblur="v4_updateRaw('+i+',\''+col.key+'\',this.textContent)">'+(row[col.key]!==undefined?row[col.key]:'')+'</td>';}).join('')+'<td><button onclick="v4_deleteRaw('+i+')" style="color:var(--rose);border:none;background:var(--rose-light);padding:3px 9px;border-radius:5px;cursor:pointer;font-size:11px;font-weight:700;">刪除</button></td></tr>';}).join('')+
+    '</tbody></table>';
+}
+
+function v4_updateRaw(i,k,v){var numKeys=['price','m_rec','gg_refund','back','ee_pay','s_profit'];if(numKeys.includes(k))v=parseFloat(v)||0;if(v4_rawData[i])v4_rawData[i][k]=v;}
+function v4_deleteRaw(i){if(confirm('確定刪除？')){v4_rawData.splice(i,1);v4_saveToLocal();v4_analyzeData();v4_renderDataPage();}}
+function v4_saveDataChanges(){v4_saveToLocal();v4_analyzeData();v4_renderCurrent();alert('已儲存！');}
+function v4_generateAndRefresh(){v4_generateRawData();v4_analyzeData();v4_renderCurrent();showToast('✓ 已從工單重新生成');}
+
+// ── Ledger Page ──
+function v4_renderLedgerPage(){
+  var active=v4_db.activeLedger,list=v4_db.ledgers[active]||[];
+  var tabsEl=document.getElementById('v4-led-tabs');if(!tabsEl)return;
+  tabsEl.innerHTML=Object.keys(v4_db.ledgers).map(function(t){return'<button class="v4-led-tab'+(t===active?' active':'')+'" onclick="v4_switchLed(\''+t+'\')">'+t+'</button>';}).join('')+
+    '<button class="v4-led-tab" onclick="v4_addLed()" style="border-style:dashed;">＋ 新增</button>';
+  var totIn=list.reduce(function(s,r){return s+(r.in||0);},0),totOut=list.reduce(function(s,r){return s+(r.out||0);},0);
+  var running=0;var rows=list.map(function(r,idx){running+=(r.in||0)-(r.out||0);return'<div class="v4-led-row"><span>'+v4_fmtDate(r.date)+'</span><span>'+r.note+'</span><span class="text-red">'+(r.in?v4_fmt(r.in):'')+'</span><span class="text-green">'+(r.out?v4_fmt(r.out):'')+'</span><span style="font-weight:800;">'+v4_fmt(running)+'</span><div style="display:flex;gap:5px;"><button onclick="v4_openLedModal('+idx+')" style="font-size:11px;color:var(--sky);border:none;background:var(--sky-light);border-radius:5px;padding:3px 8px;cursor:pointer;font-family:var(--font);">編輯</button><button onclick="v4_delLed('+idx+')" style="font-size:11px;color:var(--rose);border:none;background:var(--rose-light);border-radius:5px;padding:3px 8px;cursor:pointer;font-family:var(--font);">刪除</button></div></div>';}).reverse();
+  var c=document.getElementById('v4-led-content');if(!c)return;
+  c.innerHTML=
+    '<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">'+
+    '<div class="v4-led-sum"><div class="v4-led-lbl">總收入</div><div class="v4-led-val text-red">'+v4_fmt(totIn)+'</div></div>'+
+    '<div class="v4-led-sum"><div class="v4-led-lbl">總支出</div><div class="v4-led-val text-green">'+v4_fmt(totOut)+'</div></div>'+
+    '<div class="v4-led-sum"><div class="v4-led-lbl">現餘</div><div class="v4-led-val">'+v4_fmt(totIn-totOut)+'</div></div>'+
+    '</div>'+
+    '<div class="v4-sec-hdr"><div class="v4-sec-title">📒 '+active+'</div><button class="btn btn-sage btn-sm" onclick="v4_openLedModal()">＋ 新增</button></div>'+
+    '<div class="v4-led-wrap">'+
+    '<div class="v4-led-row hdr"><span>日期</span><span>明細</span><span>收入</span><span>支出</span><span>餘額</span><span>操作</span></div>'+
+    (rows.length?rows.join(''):'<div style="padding:24px;text-align:center;color:var(--text3);font-size:12px;">暫無數據</div>')+
+    '</div>';
+}
+function v4_switchLed(n){v4_db.activeLedger=n;v4_renderLedgerPage();}
+function v4_addLed(){var n=prompt('新帳本名稱：');if(n){v4_db.ledgers[n]=[];v4_db.activeLedger=n;v4_saveToLocal();v4_renderLedgerPage();}}
+function v4_openLedModal(idx){var list=v4_db.ledgers[v4_db.activeLedger]||[];var r=idx>=0?list[idx]:{date:new Date().toISOString().split('T')[0],note:'',in:'',out:''};document.getElementById('v4-led-date').value=r.date;document.getElementById('v4-led-note').value=r.note;document.getElementById('v4-led-in').value=r.in||'';document.getElementById('v4-led-out').value=r.out||'';document.getElementById('v4-led-idx').value=idx!==undefined?idx:-1;document.getElementById('v4-led-modal-title').textContent=idx>=0?'編輯流水':'新增流水';document.getElementById('v4-led-modal').style.display='flex';}
+function v4_closeLedModal(){document.getElementById('v4-led-modal').style.display='none';}
+function v4_submitLedger(){var idx=parseInt(document.getElementById('v4-led-idx').value);var data={date:document.getElementById('v4-led-date').value,note:document.getElementById('v4-led-note').value,in:parseFloat(document.getElementById('v4-led-in').value)||0,out:parseFloat(document.getElementById('v4-led-out').value)||0};if(!v4_db.ledgers[v4_db.activeLedger])v4_db.ledgers[v4_db.activeLedger]=[];if(idx>=0)v4_db.ledgers[v4_db.activeLedger][idx]=data;else v4_db.ledgers[v4_db.activeLedger].push(data);v4_saveToLocal();v4_renderLedgerPage();v4_closeLedModal();}
+function v4_delLed(idx){if(confirm('確定刪除？')){v4_db.ledgers[v4_db.activeLedger].splice(idx,1);v4_saveToLocal();v4_renderLedgerPage();}}
+
+// ── Payment Modal ──
+function v4_openPayModal(name,dir,editIdx){
+  var editing=editIdx>=0&&editIdx!==undefined;var p=editing?v4_payments[editIdx]:null;
+  var nm=editing?p.name:name;var d=editing?p.dir:(dir||'in');
+  document.getElementById('v4-pay-name').value=nm;
+  document.getElementById('v4-pay-name').readOnly=!!nm;
+  document.getElementById('v4-pay-dir').value=d;
+  document.getElementById('v4-pay-date').value=editing?p.date:new Date().toISOString().split('T')[0];
+  document.getElementById('v4-pay-amount').value=editing?p.amount:'';
+  document.getElementById('v4-pay-note').value=editing?(p.note||''):'';
+  document.getElementById('v4-pay-edit-idx').value=editing?editIdx:-1;
+  document.getElementById('v4-pay-modal-title').textContent=editing?'編輯付款':(d==='in'?'記錄回帳':'記錄付款');
+  v4_setPayDir(d);v4_setPayMethod(editing?p.method:(d==='in'?'現金':'街口'));
+  var btns=document.getElementById('v4-pay-receiver-btns');
+  if(btns)btns.innerHTML=v4_db.wallets.map(function(w){return'<button onclick="v4_setPayReceiver(\''+w+'\')" id="v4-pr-'+w.replace(/\s/g,'_')+'" style="padding:7px 14px;border-radius:8px;border:2px solid var(--border);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;">'+w+'</button>';}).join('');
+  v4_setPayReceiver(editing?(p.receiver||v4_db.wallets[0]):v4_db.payReceiver);
+  document.getElementById('v4-payment-modal').style.display='flex';
+}
+function v4_closePayModal(){document.getElementById('v4-payment-modal').style.display='none';}
+function v4_setPayDir(d){document.getElementById('v4-pay-dir').value=d;['in','out'].forEach(function(x){var el=document.getElementById('v4-pdt-'+x);if(!el)return;el.style.background=x===d?'#E8A8C4':'transparent';el.style.color=x===d?'#fff':'';el.style.borderColor=x===d?'#E8A8C4':'#E8D5F2';});}
+function v4_setPayMethod(m){document.getElementById('v4-pay-method').value=m;var map={現金:'v4-pm-cash',街口:'v4-pm-jko',轉帳:'v4-pm-bank',現金存款:'v4-pm-cash2'};Object.keys(map).forEach(function(k){var el=document.getElementById(map[k]);if(!el)return;var a=k===m;el.style.background=a?'#E8A8C4':'transparent';el.style.color=a?'#fff':'';el.style.borderColor=a?'#E8A8C4':'#E8D5F2';});}
+function v4_setPayReceiver(r){v4_db.payReceiver=r;v4_db.wallets.forEach(function(w){var el=document.getElementById('v4-pr-'+w.replace(/\s/g,'_'));if(!el)return;var a=w===r;el.style.background=a?'#D4B5F4':'transparent';el.style.color=a?'#fff':'';el.style.borderColor=a?'#D4B5F4':'#E8D5F2';});}
+function v4_submitPayment(){
+  var amount=parseFloat(document.getElementById('v4-pay-amount').value);
+  if(!amount)return alert('請輸入金額');
+  var editIdx=parseInt(document.getElementById('v4-pay-edit-idx').value);
+  var rec={id:editIdx>=0?v4_payments[editIdx].id:Date.now(),
+    name:document.getElementById('v4-pay-name').value,
+    dir:document.getElementById('v4-pay-dir').value,
+    date:document.getElementById('v4-pay-date').value,
+    amount:amount,method:document.getElementById('v4-pay-method').value,
+    note:document.getElementById('v4-pay-note').value||'',
+    receiver:v4_db.payReceiver||v4_db.wallets[0]};
+  if(editIdx>=0)v4_payments[editIdx]=rec;else v4_payments.push(rec);
+  v4_saveToLocal();v4_analyzeData();v4_renderCurrent();v4_closePayModal();
+}
+function v4_deletePayment(idx){if(confirm('確定刪除？')){v4_payments.splice(idx,1);v4_saveToLocal();v4_analyzeData();v4_renderCurrent();}}
+
+// ── Settings ──
+function v4_renderSettings(){
+  v4_renderMmggGrid();v4_renderBonusGrid();v4_renderCycleGrid();
+  var winp=document.getElementById('v4-wallets-inp');if(winp)winp.value=v4_db.wallets.join(', ');
+}
+function v4_renderMmggGrid(){
+  var grid=document.getElementById('v4-mmgg-grid');if(!grid)return;
+  // Collect all MMs from work orders
+  var allMMs=new Set();
+  Object.values(notes).forEach(function(rows){rows.forEach(function(r){if(r.name)allMMs.add(r.name);});});
+  var unknowns=[];
+  allMMs.forEach(function(mm){if(!v4_db.mmgg[mm])unknowns.push(mm);});
+  var unknownEl=document.getElementById('v4-mmgg-unknown');
+  if(unknownEl){if(unknowns.length>0){unknownEl.style.display='';unknownEl.textContent='⚠️ 未設定GG的人名：'+unknowns.join('、');}else unknownEl.style.display='none';}
+  // Show all MMs
+  grid.innerHTML=[...allMMs].sort().map(function(mm){return'<div class="v4-map-row"><span class="v4-map-mm">'+mm+'</span><span style="color:var(--text3);font-size:11px;">→</span><input class="v4-map-inp" id="v4-mmgg-'+mm.replace(/\W/g,'_')+'" value="'+(v4_db.mmgg[mm]||'')+'" placeholder="GG名稱"></div>';}).join('');
+}
+function v4_saveMmgg(){
+  var allMMs=new Set();Object.values(notes).forEach(function(rows){rows.forEach(function(r){if(r.name)allMMs.add(r.name);});});
+  allMMs.forEach(function(mm){var el=document.getElementById('v4-mmgg-'+mm.replace(/\W/g,'_'));if(el){var v=el.value.trim();if(v)v4_db.mmgg[mm]=v;else delete v4_db.mmgg[mm];}});
+  v4_saveToLocal();v4_generateRawData();v4_analyzeData();showToast('✓ 已儲存對映');v4_renderMmggGrid();
+}
+function v4_renderBonusGrid(){
+  var grid=document.getElementById('v4-bonus-grid');if(!grid)return;
+  var allEEs=new Set();Object.values(notes).forEach(function(rows){rows.forEach(function(r){if(r.auntie)allEEs.add(r.auntie);});});
+  grid.innerHTML=[...allEEs].sort().map(function(ee){return'<div class="v4-map-row"><span class="v4-map-mm">'+ee+'</span><span style="color:var(--text3);font-size:11px;">+</span><input class="v4-map-inp" id="v4-bonus-'+ee.replace(/\W/g,'_')+'" type="number" value="'+(v4_db.auntieBonus[ee]||0)+'" placeholder="0" style="width:60px;"></div>';}).join('');
+}
+function v4_saveAuntieBonus(){
+  var allEEs=new Set();Object.values(notes).forEach(function(rows){rows.forEach(function(r){if(r.auntie)allEEs.add(r.auntie);});});
+  allEEs.forEach(function(ee){var el=document.getElementById('v4-bonus-'+ee.replace(/\W/g,'_'));if(el){var v=parseFloat(el.value)||0;if(v)v4_db.auntieBonus[ee]=v;else delete v4_db.auntieBonus[ee];}});
+  v4_saveToLocal();v4_generateRawData();v4_analyzeData();showToast('✓ 已儲存阿姨加成');
+}
+function v4_renderCycleGrid(){
+  var grid=document.getElementById('v4-cycle-grid');if(!grid)return;
+  var allEEs=new Set();Object.values(notes).forEach(function(rows){rows.forEach(function(r){if(r.auntie)allEEs.add(r.auntie);});});
+  grid.innerHTML=[...allEEs].sort().map(function(ee){var cur=v4_db.auntyCycles[ee]||'';return'<div class="v4-map-row" style="flex-direction:column;align-items:flex-start;gap:4px;"><span style="font-weight:700;font-size:12px;">'+ee+'</span><select id="v4-cyc-'+ee.replace(/\W/g,'_')+'" style="height:28px;font-size:12px;border:1px solid var(--border);border-radius:5px;background:var(--card2);color:var(--text);"><option value="">未設定</option><option value="日結"'+(cur==='日結'?' selected':'')+'>日結</option><option value="週結"'+(cur==='週結'?' selected':'')+'>週結</option><option value="月結"'+(cur==='月結'?' selected':'')+'>月結</option></select></div>';}).join('');
+}
+function v4_saveCycles(){
+  var allEEs=new Set();Object.values(notes).forEach(function(rows){rows.forEach(function(r){if(r.auntie)allEEs.add(r.auntie);});});
+  allEEs.forEach(function(ee){var el=document.getElementById('v4-cyc-'+ee.replace(/\W/g,'_'));if(el){var v=el.value;if(v)v4_db.auntyCycles[ee]=v;else delete v4_db.auntyCycles[ee];}});
+  v4_saveToLocal();showToast('✓ 已儲存結算週期');
+}
+function v4_saveWallets(){var inp=document.getElementById('v4-wallets-inp');if(!inp)return;var w=inp.value.split(',').map(function(x){return x.trim();}).filter(function(x){return x;});if(w.length>0){v4_db.wallets=w;v4_saveToLocal();showToast('✓ 已儲存帳戶');}}
+
+// ── Settle week ──
+function v4_settleWeek(){if(v4_db.currentWeek==='all')return alert('請先選擇特定週別');if(!confirm('確定結算 '+v4_db.currentWeek+'？'))return;Object.values(v4_db.agents).forEach(function(a){var c=(v4_db.historyUnsettled[a.name]||0)+a.total_back-a.payments.reduce(function(s,p){return s+p.amount;},0);if(c!==0)v4_db.historyUnsettled[a.name]=c;else delete v4_db.historyUnsettled[a.name];});Object.values(v4_db.aunties).forEach(function(e){var c=(v4_db.historyUnsettled[e.name]||0)+e.total_ee_pay-e.payments.reduce(function(s,p){return s+p.amount;},0);if(c!==0)v4_db.historyUnsettled[e.name]=c;else delete v4_db.historyUnsettled[e.name];});v4_saveToLocal();alert('結算完成！');v4_renderCurrent();}
+
+// ── Export ──
+function v4_exportData(){
+  var snap={exportedAt:new Date().toISOString(),rawData:v4_rawData,payments:v4_payments,historyUnsettled:v4_db.historyUnsettled,agentCycles:v4_db.agentCycles,auntyCycles:v4_db.auntyCycles,ledgers:v4_db.ledgers,mmgg:v4_db.mmgg,auntieBonus:v4_db.auntieBonus};
+  var blob=new Blob(['﻿',JSON.stringify(snap,null,2)],{type:'application/json;charset=utf-8'});
+  var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;
+  var d=new Date();a.download='DDB_帳目備份_'+d.getFullYear()+(d.getMonth()+1)+d.getDate()+'.json';a.click();URL.revokeObjectURL(url);
+}
+
+// ── Refresh all ──
+function v4_refreshAll(){v4_generateRawData();v4_analyzeData();v4_renderCurrent();}
+
+// ── Boss lock/unlock ──
+function bossGetPw(){try{return localStorage.getItem(BOSS_PW_KEY)||'0000';}catch(e){return'0000';}}
+
+function bossUnlock(){
+  var input=document.getElementById('boss-pw-input').value;
+  if(input===bossGetPw()){
+    BOSS_UNLOCKED=true;
+    document.getElementById('boss-lock').style.display='none';
+    document.getElementById('boss-content').style.display='block';
+    document.getElementById('boss-pw-input').value='';
+    v4_loadData(function(){v4_generateRawData();v4_analyzeData();v4_renderPage('company');});
+  } else {
+    document.getElementById('boss-pw-err').textContent='密碼錯誤';
+    setTimeout(function(){document.getElementById('boss-pw-err').textContent='';},2000);
+  }
+}
+
+function bossLock(){
+  BOSS_UNLOCKED=false;
+  document.getElementById('boss-lock').style.display='flex';
+  document.getElementById('boss-content').style.display='none';
+  document.getElementById('boss-pw-input').value='';
+}
+
+function bossChangePw(){
+  var p1=document.getElementById('boss-new-pw').value;
+  var p2=document.getElementById('boss-new-pw2').value;
+  var msg=document.getElementById('boss-pw-change-msg');
+  if(!p1){msg.style.color='var(--danger)';msg.textContent='請輸入新密碼';return;}
+  if(p1!==p2){msg.style.color='var(--danger)';msg.textContent='兩次密碼不一致';return;}
+  try{localStorage.setItem(BOSS_PW_KEY,p1);}catch(e){}
+  msg.style.color='var(--sage)';msg.textContent='✓ 密碼已更改';
+  document.getElementById('boss-new-pw').value='';document.getElementById('boss-new-pw2').value='';
+  setTimeout(function(){msg.textContent='';},3000);
 }
 // ==================== end 老闆帳目 ====================
 
