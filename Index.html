@@ -1038,7 +1038,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
             <span id="tf-count" style="background:var(--sky-light);color:var(--sky);padding:2px 10px;border-radius:99px;font-size:0.8125rem;font-weight:600;">總計：0 筆</span>
           </div>
           <div style="overflow-x:auto;margin-bottom:10px;">
-            <table class="etbl" style="min-width:700px;width:100%;table-layout:fixed;">
+            <table class="etbl" style="min-width:1000px;width:100%;table-layout:fixed;">
               <thead><tr>
                 <th style="width:4.5rem">日期</th>
                 <th style="width:5rem">阿姨</th>
@@ -1050,6 +1050,11 @@ body.sidebar-collapsed .app{margin-left:44px;}
                 <th style="width:3.5rem">寫</th>
                 <th style="width:4rem">牌價</th>
                 <th style="width:4.5rem">M收</th>
+                <th style="width:3.5rem;color:var(--gold);">經退</th>
+                <th style="width:4rem;color:var(--accent);">G回</th>
+                <th style="width:4rem;color:var(--rose);">EE$</th>
+                <th style="width:3.5rem;color:var(--sage);">S</th>
+                <th style="width:3.5rem">對帳</th>
               </tr></thead>
               <tbody id="tf-rtb"></tbody>
             </table>
@@ -3753,11 +3758,32 @@ function tf_applyU() {
   tf_renderTable(); tf_renderMm();
 }
 
+function tf_calcRow(r) {
+  var price=parseFloat(r.price)||0;
+  var mRec=parseFloat(r.shou)||0;
+  var ggRefund=0;
+  for(var i=0;i<BOSS_REFUND_TABLE.length;i++){
+    var rt=BOSS_REFUND_TABLE[i];
+    if(price>=rt[0]&&price<=rt[1]){ggRefund=rt[2];break;}
+  }
+  var gBack,eePay,sProfit,ox;
+  if(price===0){gBack=mRec;eePay=mRec;sProfit=0;ox='';}
+  else{
+    gBack=Math.round(mRec-(price*0.5+ggRefund));
+    eePay=Math.round(mRec-price*0.6);
+    sProfit=Math.round(price*0.1-ggRefund);
+    ox=Math.abs(gBack-(eePay+sProfit))<1?'✅':'❌';
+  }
+  r.ggRefund=price?ggRefund:''; r.gBack=(price||mRec)?gBack:''; r.eePay=(price||mRec)?eePay:''; r.sProfit=price?sProfit:''; r.ox=price?ox:'';
+}
+
 function tf_renderTable() {
+  tf_CR.forEach(function(r){ if(r.ggRefund===undefined) tf_calcRow(r); });
   document.getElementById('tf-rtb').innerHTML=tf_CR.map(function(r,i){
     var gc=r.warn
       ?'<span style="color:var(--danger);font-weight:700;" contenteditable="true" onblur="tf_inlineGG('+i+',this.innerText)">❓</span>'
       :'<span contenteditable="true" style="color:var(--sky);font-weight:600;" onblur="tf_inlineGG('+i+',this.innerText)">'+r.gg+'</span>';
+    var oxColor=r.ox==='✅'?'color:var(--sage)':r.ox==='❌'?'color:var(--danger)':'';
     return '<tr>'+
       '<td><div class="cv mono" contenteditable="true" onblur="tf_CR['+i+'].date=this.innerText">'+r.date+'</div></td>'+
       '<td><div class="cv" contenteditable="true" onblur="tf_CR['+i+'].ee=this.innerText">'+r.ee+'</div></td>'+
@@ -3767,12 +3793,36 @@ function tf_renderTable() {
       '<td style="text-align:left;"><div class="cv" contenteditable="true" onblur="tf_CR['+i+'].place=this.innerText">'+r.place+'</div></td>'+
       '<td><div class="cv" contenteditable="true" onblur="tf_CR['+i+'].psCol=this.innerText">'+r.psCol+'</div></td>'+
       '<td><div class="cv mono" contenteditable="true" onblur="tf_CR['+i+'].writeCol=this.innerText">'+r.writeCol+'</div></td>'+
-      '<td><div class="cv mono" contenteditable="true" onblur="tf_CR['+i+'].price=this.innerText">'+r.price+'</div></td>'+
-      '<td><div class="cv mono green" contenteditable="true" onblur="tf_CR['+i+'].shou=this.innerText">'+r.shou+'</div></td>'+
+      '<td><div class="cv mono" contenteditable="true" onblur="tf_CR['+i+'].price=this.innerText;tf_calcRow(tf_CR['+i+']);tf_refreshCalcCells('+i+')">'+r.price+'</div></td>'+
+      '<td><div class="cv mono green" contenteditable="true" onblur="tf_CR['+i+'].shou=this.innerText;tf_calcRow(tf_CR['+i+']);tf_refreshCalcCells('+i+')">'+r.shou+'</div></td>'+
+      '<td><div class="cv mono" id="tf-c-ggr-'+i+'" contenteditable="true" style="color:var(--gold);" onblur="tf_CR['+i+'].ggRefund=this.innerText;tf_CR['+i+'].ox=tf_recheck('+i+')">'+r.ggRefund+'</div></td>'+
+      '<td><div class="cv mono" id="tf-c-gb-'+i+'" contenteditable="true" style="color:var(--accent);font-weight:700;" onblur="tf_CR['+i+'].gBack=this.innerText;tf_CR['+i+'].ox=tf_recheck('+i+')">'+r.gBack+'</div></td>'+
+      '<td><div class="cv mono" id="tf-c-ep-'+i+'" contenteditable="true" style="color:var(--rose);" onblur="tf_CR['+i+'].eePay=this.innerText;tf_CR['+i+'].ox=tf_recheck('+i+')">'+r.eePay+'</div></td>'+
+      '<td><div class="cv mono" id="tf-c-sp-'+i+'" contenteditable="true" style="color:var(--sage);font-weight:700;" onblur="tf_CR['+i+'].sProfit=this.innerText;tf_CR['+i+'].ox=tf_recheck('+i+')">'+r.sProfit+'</div></td>'+
+      '<td><div class="cv" id="tf-c-ox-'+i+'" style="'+oxColor+';font-weight:700;">'+r.ox+'</div></td>'+
       '</tr>';
   }).join('');
   document.getElementById('tf-count').innerText='總計：'+tf_CR.length+' 筆';
   document.getElementById('tf-rc').style.display='';
+}
+
+function tf_refreshCalcCells(i) {
+  var r=tf_CR[i];
+  var upd={'ggr':r.ggRefund,'gb':r.gBack,'ep':r.eePay,'sp':r.sProfit,'ox':r.ox};
+  Object.keys(upd).forEach(function(k){
+    var el=document.getElementById('tf-c-'+k+'-'+i);
+    if(el) el.innerText=upd[k];
+  });
+}
+
+function tf_recheck(i) {
+  var r=tf_CR[i];
+  var gb=parseFloat(r.gBack)||0,ep=parseFloat(r.eePay)||0,sp=parseFloat(r.sProfit)||0;
+  var ok=Math.abs(gb-(ep+sp))<1;
+  var ox=r.price?ok?'✅':'❌':'';
+  var el=document.getElementById('tf-c-ox-'+i);
+  if(el){ el.innerText=ox; el.style.color=ok?'var(--sage)':'var(--danger)'; }
+  return ox;
 }
 
 function tf_inlineGG(i, v) {
@@ -3788,23 +3838,14 @@ function tf_copyXL() {
 
 function tf_copyForViewer() {
   var text=tf_CR.map(function(r){
-    var price=parseFloat(r.price)||0;
-    var mRec=parseFloat(r.shou)||0;
-    var ggRefund=0;
-    for(var i=0;i<BOSS_REFUND_TABLE.length;i++){
-      var rt=BOSS_REFUND_TABLE[i];
-      if(price>=rt[0]&&price<=rt[1]){ggRefund=rt[2];break;}
-    }
-    var gBack,eePay,sProfit,ox;
-    if(price===0){gBack=mRec;eePay=mRec;sProfit=0;ox='';}
-    else{
-      gBack=Math.round(mRec-(price*0.5+ggRefund));
-      eePay=Math.round(mRec-price*0.6);
-      sProfit=Math.round(price*0.1-ggRefund);
-      ox=Math.abs(gBack-(eePay+sProfit))<1?'✅ OK':'❌ 異常';
-    }
+    // 用表格中已儲存的值（可能已被手動修改）
+    var ox=r.ox||''; if(ox==='✅') ox='✅ OK'; else if(ox==='❌') ox='❌ 異常';
     return[r.date,r.ee,r.mm,r.gg,r.time,r.place,r.psCol||'',r.writeCol,r.price,r.shou,
-      price?ggRefund:'',price||mRec?gBack:'',price||mRec?eePay:'',price?sProfit:'',price?ox:'',
+      r.ggRefund!==undefined?r.ggRefund:'',
+      r.gBack!==undefined?r.gBack:'',
+      r.eePay!==undefined?r.eePay:'',
+      r.sProfit!==undefined?r.sProfit:'',
+      ox,
       r.cycle||'',r.col2||''].join('\t');
   }).join('\n');
   var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
