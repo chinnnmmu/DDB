@@ -909,29 +909,15 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <!-- 左側操作面板 -->
     <div class="walk-panel-left">
 
-      <!-- a+b 並排 -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0;">
-
-        <!-- a: 今日日期 -->
-        <div class="walk-card" style="margin-bottom:0;">
-          <div class="walk-card-title"><span class="wdot"></span>今日日期</div>
-          <div class="date-row">
-            <input type="date" id="walk-datePicker" onchange="walkOnDateChange()">
-            <div class="date-weekday" id="walk-weekdayDisplay">（一）</div>
-          </div>
-        </div>
-
-        <!-- b: 每日快速編輯 -->
-        <div class="walk-card" style="margin-bottom:0;">
-          <div class="walk-card-title"><span class="wdot" style="background:var(--sage)"></span>每日快速編輯</div>
-          <div class="quick-label">今日改休內容</div>
-          <textarea class="quick-textarea quick-gap" id="walk-quickRest" rows="3"
-            placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
-          <div class="quick-label">今日約滿內容</div>
-          <textarea class="quick-textarea" id="walk-quickFull" rows="2"
-            placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
-        </div>
-
+      <!-- 每日快速編輯（全寬） -->
+      <div class="walk-card">
+        <div class="walk-card-title"><span class="wdot" style="background:var(--sage)"></span>每日快速編輯</div>
+        <div class="quick-label">今日改休內容</div>
+        <textarea class="quick-textarea quick-gap" id="walk-quickRest" rows="3"
+          placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
+        <div class="quick-label">今日約滿內容</div>
+        <textarea class="quick-textarea" id="walk-quickFull" rows="2"
+          placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
       </div>
 
       <!-- c: 貼上原始廣告文案（全寬） -->
@@ -3293,24 +3279,13 @@ var walkAdvOpen = false;
 
 function walkGEl(id){ return document.getElementById(id); }
 
-function walkInitDate() {
-  var now = new Date();
-  var pad = function(n){ return String(n).padStart(2,'0'); };
-  walkGEl('walk-datePicker').value = now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
-  walkUpdateWeekday(now);
-}
-function walkOnDateChange() {
-  var val = walkGEl('walk-datePicker').value;
-  if (val) walkUpdateWeekday(new Date(val + 'T00:00:00'));
-}
-function walkUpdateWeekday(d) {
-  walkGEl('walk-weekdayDisplay').textContent = '（' + WD_NAMES[d.getDay()] + '）';
-}
+function walkInitDate() {}
+function walkOnDateChange() {}
+function walkUpdateWeekday(d) {}
 function walkGetDateString() {
-  var val = walkGEl('walk-datePicker').value;
-  if (!val) return '';
-  var d = new Date(val + 'T00:00:00');
-  return (d.getMonth()+1) + '/' + d.getDate() + ' (' + WD_NAMES[d.getDay()] + ')';
+  // 日期從貼入的廣告文案自動取得，不需要獨立選擇
+  var now = new Date();
+  return (now.getMonth()+1) + '/' + now.getDate() + ' (' + WD_NAMES[now.getDay()] + ')';
 }
 
 
