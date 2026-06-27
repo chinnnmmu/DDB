@@ -1532,6 +1532,7 @@ input:focus {
   </div>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
     <div id="fin-week-selector-container"></div>
+    <button class="fin-btn-secondary" onclick="finSyncFromWorkOrders()" title="把每日工單資料自動匯入財務，避免重複輸入">🔄 從工單同步</button>
     <button class="fin-btn-secondary" onclick="finExportData()">📤 匯出備份</button>
     <button class="fin-btn-paste" onclick="finOpenPasteModal()">📥 貼入數據</button>
   </div>
@@ -5228,6 +5229,61 @@ function finOpenPayDir(btn,name){
   const rect=btn.getBoundingClientRect();document.body.appendChild(popup);
   popup.style.top=(rect.bottom+6+window.scrollY)+'px';popup.style.right=(window.innerWidth-rect.right)+'px';
   setTimeout(()=>{document.addEventListener('click',function close(e){if(!popup.contains(e.target)&&e.target!==btn){popup.remove();document.removeEventListener('click',close);}});},10);
+}
+
+// ═══════════════════════════════════════
+// 從每日工單同步
+// ═══════════════════════════════════════
+function finSyncFromWorkOrders() {
+  if (typeof notes === 'undefined' || !notes || Object.keys(notes).length === 0) {
+    alert('每日工單目前沒有資料');
+    return;
+  }
+  // 用 date+time+mm 當唯一 key，避免重複同步
+  const existingKeys = new Set(
+    finRawData.map(r => `${r.date}|${r.time}|${r.mm}`)
+  );
+  const newRecs = [];
+  Object.keys(notes).forEach(dateKey => {
+    const rows = notes[dateKey];
+    if (!Array.isArray(rows)) return;
+    rows.forEach(row => {
+      const d = row.date || dateKey;
+      const t = row.time || '';
+      const mm = row.mm || '';
+      const key = `${d}|${t}|${mm}`;
+      if (existingKeys.has(key)) return;
+      existingKeys.add(key);
+      newRecs.push({
+        date: d,
+        ee: row.ee || '',
+        mm: mm,
+        gg: row.gg || '',
+        time: t,
+        location: row.place || '',
+        ps: row.psCol || '',
+        write: row.writeCol || '',
+        price: parseFloat(row.price) || 0,
+        m_rec: parseFloat(row.shou) || 0,
+        gg_refund: 0,
+        back: 0,
+        ee_pay: 0,
+        s_profit: 0,
+        ox: '', cycle: '', col2: '',
+        id: Date.now() + Math.random()
+      });
+    });
+  });
+  if (newRecs.length === 0) {
+    alert('沒有新工單需要同步（所有資料都已存在）');
+    return;
+  }
+  finRawData = [...finRawData, ...newRecs];
+  finRawData.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  finSaveToLocal();
+  finAnalyzeData();
+  finRenderCurrent();
+  alert(`✅ 已從每日工單同步 ${newRecs.length} 筆！\n回扣 / 回帳 / EE$ / S淨利 請至「數據資料庫」補填。`);
 }
 
 // ═══════════════════════════════════════
