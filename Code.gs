@@ -105,9 +105,25 @@ function loadAllData() {
       }
     }
 
-    // 2. 讀取工單
+    // 2. 讀取工單（若工單為空，自動從轉換紀錄重建）
     var shO = getOrCreateSheet(SHEET_NAME_ORDERS);
     var oData = shO.getDataRange().getValues();
+    if (oData.length <= 1) {
+      // 工單是空的，嘗試從轉換紀錄重建
+      var shR2 = getOrCreateSheet(SHEET_NAME_TF_RECORDS);
+      var rData2 = shR2.getDataRange().getValues();
+      if (rData2.length > 1) {
+        var tfRecs = [];
+        for (var ti = 1; ti < rData2.length; ti++) {
+          var tr = rData2[ti];
+          tfRecs.push({ date:String(tr[0]), ee:String(tr[1]), mm:String(tr[2]), gg:String(tr[3]),
+                        time:String(tr[4]), place:String(tr[5]), psCol:String(tr[6]),
+                        writeCol:String(tr[7]), price:String(tr[8]), shou:String(tr[9]) });
+        }
+        _mergeTfRecordsToOrders(tfRecs);
+        oData = shO.getDataRange().getValues();
+      }
+    }
     if (oData.length > 1) {
       for (var j = 1; j < oData.length; j++) {
         var r = oData[j];
