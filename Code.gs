@@ -38,7 +38,7 @@ function saveAllData(payload) {
     }
 
     // 2. 儲存工單
-    if (payload.workOrders && typeof payload.workOrders === 'object') {
+    if (payload.workOrders && typeof payload.workOrders === 'object' && Object.keys(payload.workOrders).length > 0) {
       var shO = getOrCreateSheet(SHEET_NAME_ORDERS);
       shO.clearContents();
       shO.appendRow(['日期','牌','人名','時間地點','阿姨','實收','EE','退','備記','已結','結帳日','結帳金額','編號']);
