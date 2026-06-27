@@ -1632,52 +1632,22 @@ function loadAllDataFromCloud(silent) {
         var cloudEmpty = true;
         if (data && data.multiNotes && Array.isArray(data.multiNotes) && data.multiNotes.length > 0) {
           if (silent) {
-            // 靜默刷新：先同步編輯器，再合併雲端（不直接覆蓋）
+            // 靜默刷新：以 in-memory 為主，雲端補缺漏的
             syncEditorsToNotes();
-            var cloudNotes = data.multiNotes;
-            // 把雲端有但 in-memory 沒有的筆記補進來
-            cloudNotes.forEach(function(cn) {
+            data.multiNotes.forEach(function(cn) {
               var exists = multiNotes.find(function(n){ return String(n.id)===String(cn.id); });
               if (!exists) multiNotes.push(cn);
             });
-            // 重新存回雲端（以 in-memory 為準）
-            saveMultiNotes();
           } else {
-            // 首次載入：直接用雲端資料，再用 localStorage 補更多筆
+            // 首次載入：雲端資料優先（跨裝置同步）
             multiNotes = data.multiNotes;
-            try {
-              var lsN = JSON.parse(localStorage.getItem(MULTI_NOTES_LS_KEY)||'null');
-              if (lsN && Array.isArray(lsN) && lsN.length > multiNotes.length) { multiNotes = lsN; }
-            } catch(e){}
           }
           renderMultiNoteList();
           cloudEmpty = false;
         }
         if (data && data.workOrders && typeof data.workOrders === 'object' && Object.keys(data.workOrders).length > 0) {
-          // 合併 localStorage 和雲端工單（取聯集，各日期取筆數多的）
-          var lsOrders2 = null, lsTs2 = 0;
-          try {
-            var lsRaw = JSON.parse(localStorage.getItem(ORDERS_LS_KEY)||'null');
-            if (lsRaw && lsRaw.ts && lsRaw.data) { lsOrders2 = lsRaw.data; lsTs2 = lsRaw.ts; }
-          } catch(e){}
-          var merged = data.workOrders;
-          var needUpload = false;
-          if (lsOrders2 && typeof lsOrders2 === 'object') {
-            // 對每個日期 key，取筆數較多（較新）的那份
-            Object.keys(lsOrders2).forEach(function(dk) {
-              var lsRows = lsOrders2[dk] || [];
-              var cloudRows = merged[dk] || [];
-              if (lsRows.length > cloudRows.length) {
-                merged[dk] = lsRows;
-                needUpload = true;
-              }
-            });
-          }
-          notes = merged;
-          if (needUpload) {
-            toast('✓ 已合併本機快取（補傳中）');
-            setTimeout(saveAllDataToCloud, 500);
-          }
+          // 雲端資料直接用（跨裝置同步，不依賴 localStorage）
+          notes = data.workOrders;
           try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
           try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
           cloudEmpty = false;
@@ -1706,39 +1676,8 @@ function loadAllDataFromCloud(silent) {
             } catch(e) {}
           }
         }
-        // 雲端是空的 → 用本機資料，並馬上補傳到雲端
-        if (cloudEmpty) {
-          var lsNotes = null, lsOrders = null;
-          try { lsNotes = JSON.parse(localStorage.getItem(MULTI_NOTES_LS_KEY)||'null'); } catch(e){}
-          if (!lsNotes) { try { lsNotes = JSON.parse(localStorage.getItem('ddb9s')||'null'); } catch(e){} }
-          try {
-            var lsRaw2 = JSON.parse(localStorage.getItem(ORDERS_LS_KEY)||'null');
-            if (lsRaw2 && lsRaw2.data) lsOrders = lsRaw2.data;
-          } catch(e){}
-          if (!lsOrders) { try { lsOrders = JSON.parse(localStorage.getItem('ddb9')||'null'); } catch(e){} }
-          if (lsNotes && Array.isArray(lsNotes) && lsNotes.length) { multiNotes = lsNotes; renderMultiNoteList(); }
-          if (lsOrders && typeof lsOrders === 'object' && Object.keys(lsOrders).length) {
-            notes = lsOrders;
-            try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
-            try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
-          }
-          // 本機有資料但雲端沒有 → 立刻補傳（不管是 silent 還是首次載入）
-          if ((lsNotes && lsNotes.length) || (lsOrders && Object.keys(lsOrders).length)) {
-            _cloudSaveRetries = 0;
-            setTimeout(saveAllDataToCloud, 1000);
-            if(!silent) toast('✓ 已將本機備份搬移到雲端');
-          }
-        }
-        // 額外保護：即使雲端有資料，如果本機有更多工單，也補傳
-        if (!cloudEmpty && notes && Object.keys(notes).length > 0) {
-          try {
-            var lsCheck = JSON.parse(localStorage.getItem(ORDERS_LS_KEY)||'null');
-            if (lsCheck && lsCheck.ts && lsCheck.ts > Date.now() - 60000) {
-              // 本機 1 分鐘內有存過，確保雲端是最新的
-              setTimeout(saveAllDataToCloud, 2000);
-            }
-          } catch(e){}
-        }
+        // 雲端是空的（真的沒有資料）→ 顯示空白，不讀本機快取
+        // 因為使用者需要跨裝置同步，以雲端為唯一資料來源
       } catch(handlerErr) { console.error('loadAllData handler:', handlerErr); }
       hideLoadingOverlay();
       setSyncStatus('ok','已同步');
