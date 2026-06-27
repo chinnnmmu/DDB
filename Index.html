@@ -400,7 +400,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
 #tab-walk .main-output-title{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:var(--text);}
 #tab-walk .main-badge{font-size:10px;background:var(--gold-light);color:var(--gold);border:1px solid var(--gold);padding:1px 8px;border-radius:20px;}
 #tab-walk .btn-copy-main{background:var(--rose);color:#fff;border:none;border-radius:6px;padding:4px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);}
-#tab-walk #walkMainOutput{min-height:480px;resize:vertical;line-height:1.7;}
+#tab-walk #walkMainOutput{min-height:320px;}
 #tab-walk .sub-outputs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 #tab-walk .sub-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;}
 #tab-walk .sub-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
@@ -457,7 +457,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <button class="snav-item" data-tab="bb" onclick="ST('bb')"><span class="snav-icon">🔍</span> 探索搜尋</button>
     <button class="snav-item" data-tab="stat" onclick="ST('stat')"><span class="snav-icon">📊</span> 數據紀錄</button>
     <button class="snav-item" data-tab="admin" onclick="ST('admin')"><span class="snav-icon">📋</span> 班表管理</button>
-    <button class="snav-item" data-tab="walk" onclick="ST('walk')"><span class="snav-icon">✦</span> 現走表</button>
+    <button class="snav-item" data-tab="walk" onclick="ST('walk')"><span class="snav-icon">✦</span> 符號編輯器</button>
     <button class="snav-item" data-tab="tf" onclick="ST('tf')"><span class="snav-icon">📊</span> 轉檔器</button>
   </div>
   <div class="sidebar-footer">
@@ -895,7 +895,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
   <div class="walk-hdr">
     <div>
-      <div class="walk-hdr-title">✦ 老闆娘 現走表 ✦</div>
+      <div class="walk-hdr-title">✦ 符號編輯器 ✦</div>
       <div class="walk-hdr-sub">Schedule Formatter</div>
     </div>
     <div style="text-align:right;">
@@ -909,15 +909,21 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <!-- 左側操作面板 -->
     <div class="walk-panel-left">
 
-      <!-- 每日快速編輯（全寬） -->
+      <!-- 每日快速編輯：左右並排 -->
       <div class="walk-card">
         <div class="walk-card-title"><span class="wdot" style="background:var(--sage)"></span>每日快速編輯</div>
-        <div class="quick-label">今日改休內容</div>
-        <textarea class="quick-textarea quick-gap" id="walk-quickRest" rows="3"
-          placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
-        <div class="quick-label">今日約滿內容</div>
-        <textarea class="quick-textarea" id="walk-quickFull" rows="2"
-          placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <div class="quick-label">今日改休內容</div>
+            <textarea class="quick-textarea" id="walk-quickRest" rows="4"
+              placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
+          </div>
+          <div>
+            <div class="quick-label">今日約滿內容</div>
+            <textarea class="quick-textarea" id="walk-quickFull" rows="4"
+              placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
+          </div>
+        </div>
       </div>
 
       <!-- c: 貼上原始廣告文案（全寬） -->
@@ -958,18 +964,12 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <!-- 右側輸出 -->
     <div class="walk-panel-right">
 
-      <div class="main-output-card">
-        <div class="main-output-header">
-          <div class="main-output-title">
-            <span id="walkMainLabel">款式 A</span>
-            <span class="main-badge">主要</span>
-          </div>
-          <button class="btn-copy-main" onclick="walkCopyMain()">複製</button>
+      <!-- 輸出：AB 並排（上） / CD 並排（下） -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="sub-card">
+          <div class="sub-card-header"><span class="sub-card-label" id="walkMainLabel">款式 A</span><button class="btn-copy-sub" onclick="walkCopyMain()">複製</button></div>
+          <textarea class="sub-output-box" id="walkMainOutput" readonly placeholder="· · ·"></textarea>
         </div>
-        <textarea id="walkMainOutput" readonly placeholder="點擊「四款同時轉檔」後顯示 · · ·"></textarea>
-      </div>
-
-      <div class="sub-outputs-grid">
         <div class="sub-card">
           <div class="sub-card-header"><span class="sub-card-label" id="walkSubLabel1">款式 B</span><button class="btn-copy-sub" onclick="walkCopySub(1)">複製</button></div>
           <textarea class="sub-output-box" id="walkSubOutput1" readonly placeholder="· · ·"></textarea>
@@ -1142,7 +1142,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
   <button class="bnav-item" data-tab="bb" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
   <button class="bnav-item" data-tab="stat" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
   <button class="bnav-item" data-tab="admin" onclick="ST('admin')"><span class="bnav-icon">📋</span>班表</button>
-  <button class="bnav-item" data-tab="walk" onclick="ST('walk')"><span class="bnav-icon">✦</span>現走</button>
+  <button class="bnav-item" data-tab="walk" onclick="ST('walk')"><span class="bnav-icon">✦</span>符號</button>
   <button class="bnav-item" data-tab="tf" onclick="ST('tf')"><span class="bnav-icon">📊</span>轉檔</button>
 </nav>
 
