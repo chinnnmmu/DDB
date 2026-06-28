@@ -218,7 +218,7 @@ button.subtle{color:#c9949b;font-size:11px;padding:5px 13px;border-color:#dcc9d0
 #inputA   {height:180px;}
 #weekInput{height:140px;}
 #db{height:1140px;max-height:250px;overflow-y:hidden;}
-#outputDiv{height:180px;border-left:3px solid var(--accent);}
+#outputDiv{height:110px;border-left:3px solid var(--accent);}
 #pureOutput{height:120px;}
 #notepad{height:100%;min-height:200px;resize:none;}
 
@@ -456,62 +456,39 @@ textarea.raw-input::placeholder{color:var(--hint);}
 }
 .btn-reset-adv:hover{border-color:var(--tan);color:var(--tan-dark);}
 
-/* Walk right outputs */
-.walk-panel-right{display:flex;flex-direction:column;gap:14px;}
-.main-output-card{
-  background:var(--card-bg);backdrop-filter:blur(6px);
-  border:1.5px solid var(--fog-pink-pale);border-top:3px solid var(--fog-pink);
-  border-radius:16px;padding:18px;box-shadow:0 3px 18px var(--shadow);
-}
-.main-output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.main-output-title{
-  font-family:"Cormorant Garamond",serif;
-  font-size:16px;font-weight:500;letter-spacing:.1em;color:var(--tan-dark);
-  display:flex;align-items:center;gap:8px;
-}
-.main-badge{
-  font-size:10px;font-weight:700;letter-spacing:.1em;
-  background:var(--fog-pink);color:#fff;
-  padding:2px 8px;border-radius:10px;font-family:"Noto Sans TC",sans-serif;
-}
-.btn-copy-main{
-  padding:8px 22px;border-radius:20px;
-  border:1.5px solid var(--fog-pink);background:var(--fog-pink);color:#fff;
-  font-family:"Noto Sans TC",sans-serif;font-size:13px;font-weight:500;
-  cursor:pointer;transition:filter .18s;
-}
-.btn-copy-main:hover{filter:brightness(1.08);}
-#walkMainOutput{
-  width:100%;min-height:480px;
-  background:var(--input-bg);border:1.5px solid var(--border);border-radius:10px;
-  font-family:"JetBrains Mono",monospace;font-size:13px;
-  white-space:pre;padding:14px 16px;color:var(--text);
-  resize:vertical;line-height:1.75;outline:none;
-}
-.sub-outputs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.sub-card{
+/* Walk right outputs — 4-column equal grid */
+.walk-panel-right{display:flex;flex-direction:column;gap:0;}
+.walk-4col-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.walk-out-card{
   background:var(--card-bg);backdrop-filter:blur(4px);
   border:1.5px solid var(--border);border-radius:14px;
   padding:13px;display:flex;flex-direction:column;
   box-shadow:0 2px 10px var(--shadow);
 }
-.sub-card:nth-child(1){border-top:3px solid var(--fog-green);}
-.sub-card:nth-child(2){border-top:3px solid var(--fog-blue);}
-.sub-card:nth-child(3){border-top:3px solid var(--fog-lavender);}
-.sub-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-.sub-card-label{
+.walk-out-card:nth-child(1){border-top:3px solid var(--fog-pink);}
+.walk-out-card:nth-child(2){border-top:3px solid var(--fog-green);}
+.walk-out-card:nth-child(3){border-top:3px solid var(--fog-blue);}
+.walk-out-card:nth-child(4){border-top:3px solid var(--fog-lavender);}
+.walk-out-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.walk-out-label{
   font-family:"Cormorant Garamond",serif;
-  font-size:13px;font-weight:500;letter-spacing:.08em;color:var(--tan-dark);
+  font-size:14px;font-weight:500;letter-spacing:.08em;color:var(--tan-dark);
+  display:flex;align-items:center;gap:6px;
 }
-.btn-copy-sub{
+.walk-out-badge{
+  font-size:9px;font-weight:700;letter-spacing:.08em;
+  background:var(--fog-pink);color:#fff;
+  padding:1px 6px;border-radius:8px;font-family:"Noto Sans TC",sans-serif;
+}
+.btn-copy-out{
   padding:3px 11px;border-radius:16px;
   border:1.5px solid var(--border);background:transparent;color:var(--muted);
   font-size:11px;font-weight:500;cursor:pointer;transition:all .18s;
   font-family:"Noto Sans TC",sans-serif;
 }
-.btn-copy-sub:hover{border-color:var(--tan-btn);background:var(--tan-btn);color:#fff;}
-.sub-output-box{
-  width:100%;min-height:340px;flex:1;
+.btn-copy-out:hover{border-color:var(--tan-btn);background:var(--tan-btn);color:#fff;}
+.walk-out-box{
+  width:100%;min-height:380px;flex:1;
   background:var(--input-bg);border:1.5px solid var(--border);border-radius:8px;
   font-family:"JetBrains Mono",monospace;font-size:11.5px;
   white-space:pre;padding:10px 12px;color:var(--text);
@@ -535,9 +512,10 @@ textarea.raw-input::placeholder{color:var(--hint);}
   .week-zone{grid-template-columns:1fr;}
   .day-grid{grid-template-columns:repeat(4,1fr);}
 }
+@media(max-width:900px){.walk-4col-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:600px){
   .day-grid{grid-template-columns:repeat(2,1fr);}
-  .sub-outputs-grid{grid-template-columns:1fr;}
+  .walk-4col-grid{grid-template-columns:1fr;}
   .page-hdr{flex-wrap:wrap;}
   .walk-hdr{flex-direction:column;align-items:flex-start;gap:10px;}
 }
@@ -559,6 +537,7 @@ textarea.raw-input::placeholder{color:var(--hint);}
   </nav>
   <div class="hdr-right">
     <div class="save-status" id="globalStatus"></div>
+    <div id="lastSaveTime" style="font-size:11px;color:var(--hint);margin-right:8px;white-space:nowrap;"></div>
     <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="切換深淺色">🌙</button>
   </div>
 </div>
@@ -656,9 +635,13 @@ textarea.raw-input::placeholder{color:var(--hint);}
       </div>
       <div style="margin-top:12px;">
         <textarea id="db" placeholder="請在此貼入母檔資料…" spellcheck="false"
-          oninput="autoSave('db',this.value)"></textarea>
+          oninput="autoSave('db',this.value)"
+          onblur="immediateSave('db',this.value)"></textarea>
         <div id="dbStatus">（整理後顯示統計）</div>
-        <button id="toggleDbBtn" onclick="toggleDbCollapse()">▼ 展開完整母檔</button>
+        <div style="display:flex;gap:8px;margin-top:6px;align-items:center;">
+          <button id="toggleDbBtn" onclick="toggleDbCollapse()">▼ 展開完整母檔</button>
+          <button onclick="immediateSave('db',document.getElementById('db').value)" style="font-size:12px;padding:5px 12px;">💾 立即儲存母檔</button>
+        </div>
       </div>
     </div>
   </div>
@@ -755,46 +738,50 @@ textarea.raw-input::placeholder{color:var(--hint);}
 
     </div><!-- /walk-panel-left -->
 
-    <!-- 右側輸出 -->
+    <!-- 右側輸出 — A B C D 並排 4 欄 -->
     <div class="walk-panel-right">
+      <div class="walk-4col-grid">
 
-      <!-- A款主輸出 -->
-      <div class="main-output-card">
-        <div class="main-output-header">
-          <div class="main-output-title">
-            <span id="walkMainLabel">款式 A</span>
-            <span class="main-badge">主要</span>
+        <!-- A款 -->
+        <div class="walk-out-card">
+          <div class="walk-out-header">
+            <div class="walk-out-label">
+              <span id="walkMainLabel">款式 A</span>
+              <span class="walk-out-badge">主要</span>
+            </div>
+            <button class="btn-copy-out" onclick="copyWalkMain()">複製</button>
           </div>
-          <button class="btn-copy-main" onclick="copyWalkMain()">複製</button>
+          <textarea class="walk-out-box" id="walkMainOutput" readonly placeholder="· · ·"></textarea>
         </div>
-        <textarea id="walkMainOutput" readonly placeholder="點擊「四款同時轉檔」後顯示 · · ·"></textarea>
+
+        <!-- B款 -->
+        <div class="walk-out-card">
+          <div class="walk-out-header">
+            <span class="walk-out-label" id="walkSubLabel1">款式 B</span>
+            <button class="btn-copy-out" onclick="copyWalkSub(1)">複製</button>
+          </div>
+          <textarea class="walk-out-box" id="walkSubOutput1" readonly placeholder="· · ·"></textarea>
+        </div>
+
+        <!-- C款 -->
+        <div class="walk-out-card">
+          <div class="walk-out-header">
+            <span class="walk-out-label" id="walkSubLabel2">款式 C</span>
+            <button class="btn-copy-out" onclick="copyWalkSub(2)">複製</button>
+          </div>
+          <textarea class="walk-out-box" id="walkSubOutput2" readonly placeholder="· · ·"></textarea>
+        </div>
+
+        <!-- D款 -->
+        <div class="walk-out-card">
+          <div class="walk-out-header">
+            <span class="walk-out-label" id="walkSubLabel3">款式 D</span>
+            <button class="btn-copy-out" onclick="copyWalkSub(3)">複製</button>
+          </div>
+          <textarea class="walk-out-box" id="walkSubOutput3" readonly placeholder="· · ·"></textarea>
+        </div>
+
       </div>
-
-      <!-- B C D 副輸出 -->
-      <div class="sub-outputs-grid">
-        <div class="sub-card">
-          <div class="sub-card-header">
-            <span class="sub-card-label" id="walkSubLabel1">款式 B</span>
-            <button class="btn-copy-sub" onclick="copyWalkSub(1)">複製</button>
-          </div>
-          <textarea class="sub-output-box" id="walkSubOutput1" readonly placeholder="· · ·"></textarea>
-        </div>
-        <div class="sub-card">
-          <div class="sub-card-header">
-            <span class="sub-card-label" id="walkSubLabel2">款式 C</span>
-            <button class="btn-copy-sub" onclick="copyWalkSub(2)">複製</button>
-          </div>
-          <textarea class="sub-output-box" id="walkSubOutput2" readonly placeholder="· · ·"></textarea>
-        </div>
-        <div class="sub-card">
-          <div class="sub-card-header">
-            <span class="sub-card-label" id="walkSubLabel3">款式 D</span>
-            <button class="btn-copy-sub" onclick="copyWalkSub(3)">複製</button>
-          </div>
-          <textarea class="sub-output-box" id="walkSubOutput3" readonly placeholder="· · ·"></textarea>
-        </div>
-      </div>
-
     </div><!-- /walk-panel-right -->
 
   </div><!-- /walk-grid -->
@@ -890,15 +877,29 @@ function switchTab(tab) {
    GAS AUTO-SAVE (1.5 s debounce)
 ════════════════════════════════════════ */
 const _saveTimers = {};
+function _onSaveOk() {
+  const now = new Date();
+  const hm = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') + ':' + now.getSeconds().toString().padStart(2,'0');
+  showGlobalStatus('✓ 已同步至 Sheets');
+  document.getElementById('lastSaveTime').textContent = '最後存檔 ' + hm;
+}
 function autoSave(key, val) {
   showGlobalStatus('✎ 儲存中…', 0);
   clearTimeout(_saveTimers[key]);
   _saveTimers[key] = setTimeout(() => {
     google.script.run
-      .withSuccessHandler(() => showGlobalStatus('✓ 已同步至 Sheets'))
+      .withSuccessHandler(_onSaveOk)
       .withFailureHandler(e => showGlobalStatus('⚠ 儲存失敗：' + e.message))
       .save(key, val);
   }, 1500);
+}
+function immediateSave(key, val) {
+  clearTimeout(_saveTimers[key]);
+  showGlobalStatus('✎ 儲存中…', 0);
+  google.script.run
+    .withSuccessHandler(_onSaveOk)
+    .withFailureHandler(e => showGlobalStatus('⚠ 儲存失敗：' + e.message))
+    .save(key, val);
 }
 
 /* ════════════════════════════════════════
