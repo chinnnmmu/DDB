@@ -1,5 +1,7 @@
 ---
-description: Greet the user with a personalized message
+description: >
+  Greet the user warmly by name. Use when the user says "hello", "hi",
+  "hey", "greet me", or introduces themselves by name.
 ---
 
 # Hello Skill
