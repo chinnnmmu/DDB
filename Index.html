@@ -576,7 +576,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <button class="snav-item" data-tab="admin" onclick="ST('admin')"><span class="snav-icon">📋</span> 班表管理</button>
     <button class="snav-item" data-tab="walk" onclick="ST('walk')"><span class="snav-icon">✦</span> 符號編輯器</button>
     <button class="snav-item" data-tab="tf" onclick="ST('tf')"><span class="snav-icon">📊</span> 轉檔器</button>
-    <button class="snav-item" data-tab="boss" onclick="ST('boss')"><span class="snav-icon">🔐</span> 老闆帳目</button>
+    <button class="snav-item" data-tab="boss" onclick="ST('boss')"><span class="snav-icon">💼</span> 老闆帳目</button>
   </div>
   <div class="sidebar-footer">
     <div class="theme-toggle-inline sidebar-expand-only" id="themeToggle">
@@ -1263,73 +1263,63 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
 <!-- ==================== 老闆帳目 Tab ==================== -->
 <div id="tab-boss" class="panel">
-  <div id="boss-lock" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;">
-    <div style="font-size:48px;">🔐</div>
-    <div style="font-size:18px;font-weight:700;color:var(--accent);">老闆帳目</div>
-    <div style="font-size:13px;color:var(--text3);">請輸入密碼以查看</div>
-    <div style="display:flex;gap:8px;">
-      <input type="password" id="boss-pw-input" placeholder="密碼" style="padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:14px;width:160px;" onkeydown="if(event.key==='Enter')bossUnlock()">
-      <button onclick="bossUnlock()" style="padding:8px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);">進入</button>
-    </div>
-    <div id="boss-pw-err" style="color:var(--danger);font-size:12px;min-height:16px;"></div>
-    <div style="font-size:11px;color:var(--text3);margin-top:8px;">首次使用請輸入 <b>0000</b> 並可在帳目頁修改</div>
-  </div>
-  <div id="boss-content" style="display:none;padding:12px;">
+  <div id="boss-content" style="padding:12px;">
     <!-- Top bar -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
-      <span style="font-size:16px;font-weight:800;color:var(--accent);">🔐 老闆帳目</span>
+      <span style="font-size:16px;font-weight:800;color:var(--accent);">💼 老闆帳目</span>
       <button onclick="v4_refreshAll()" style="padding:4px 12px;background:var(--sage);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);">🔄 重新整理</button>
       <button onclick="v4_exportData()" style="padding:4px 12px;background:var(--sky);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);">📤 備份</button>
-      <details style="font-size:12px;">
-        <summary style="color:var(--text3);cursor:pointer;">修改密碼</summary>
-        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-          <input type="password" id="boss-new-pw" placeholder="新密碼" style="padding:5px 9px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:13px;width:120px;">
-          <input type="password" id="boss-new-pw2" placeholder="確認" style="padding:5px 9px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:13px;width:120px;">
-          <button onclick="bossChangePw()" style="padding:5px 12px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);">更改</button>
-          <span id="boss-pw-change-msg" style="font-size:12px;align-self:center;"></span>
-        </div>
-      </details>
-      <button onclick="bossLock()" style="padding:4px 12px;background:var(--card2);color:var(--text2);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);margin-left:auto;">🔒 鎖定</button>
+      <span id="boss-sync-status" style="font-size:11px;color:var(--text3);margin-left:auto;"></span>
     </div>
     <!-- v4 Navigation -->
     <div class="v4-nav">
-      <button class="v4-nav-btn active" id="v4-nav-company" onclick="v4_switchPage('company',this)">🏢 公司總覽</button>
-      <button class="v4-nav-btn" id="v4-nav-accounts" onclick="v4_switchPage('accounts',this)">📊 帳務管理</button>
+      <button class="v4-nav-btn active" id="v4-nav-overview" onclick="v4_switchPage('overview',this)">📊 總覽＆帳務</button>
       <button class="v4-nav-btn" id="v4-nav-payment" onclick="v4_switchPage('payment',this)">💳 付款紀錄</button>
-      <button class="v4-nav-btn" id="v4-nav-data" onclick="v4_switchPage('data',this)">📁 數據資料庫</button>
+      <button class="v4-nav-btn" id="v4-nav-data" onclick="v4_switchPage('data',this)">📁 轉換紀錄庫</button>
       <button class="v4-nav-btn" id="v4-nav-ledger" onclick="v4_switchPage('ledger',this)">📒 小帳本</button>
       <button class="v4-nav-btn" id="v4-nav-settings" onclick="v4_switchPage('settings',this)">⚙️ 設定</button>
     </div>
     <!-- Week selector -->
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;" id="v4-week-sel-row"></div>
     <!-- Pages -->
-    <div id="v4-page-company" class="v4-page active"></div>
-    <div id="v4-page-accounts" class="v4-page">
-      <div class="v4-filter-tabs">
-        <button class="v4-filter-tab active" onclick="v4_switchAccTab('agent',this)">💼 經紀帳務</button>
-        <button class="v4-filter-tab" onclick="v4_switchAccTab('aunty',this)">🌸 阿姨帳務</button>
+    <!-- 總覽＆帳務（合併） -->
+    <div id="v4-page-overview" class="v4-page active">
+      <!-- 切換按鈕 -->
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <button id="boss-sub-company" onclick="bossSwitchSub('company')" style="flex:1;padding:8px;border:1.5px solid var(--accent);border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">🏢 公司總覽</button>
+        <button id="boss-sub-accounts" onclick="bossSwitchSub('accounts')" style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:8px;background:var(--card2);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">📊 帳務管理</button>
       </div>
-      <div id="v4-accounts-agent"></div>
-      <div id="v4-accounts-aunty" style="display:none;">
-        <div class="v4-filter-tabs" id="v4-aunty-filter-tabs">
-          <button class="v4-filter-tab active" onclick="v4_setAuntyFilter('all',this)">全部</button>
-          <button class="v4-filter-tab" onclick="v4_setAuntyFilter('day',this)">日結</button>
-          <button class="v4-filter-tab" onclick="v4_setAuntyFilter('wk',this)">週結</button>
-          <button class="v4-filter-tab" onclick="v4_setAuntyFilter('mo',this)">月結</button>
+      <div id="boss-sub-company-view">
+        <div id="v4-page-company"></div>
+      </div>
+      <div id="boss-sub-accounts-view" style="display:none;">
+        <div class="v4-filter-tabs">
+          <button class="v4-filter-tab active" onclick="v4_switchAccTab('agent',this)">💼 經紀帳務</button>
+          <button class="v4-filter-tab" onclick="v4_switchAccTab('aunty',this)">🌸 阿姨帳務</button>
         </div>
-        <div id="v4-aunty-content"></div>
+        <div id="v4-accounts-agent"></div>
+        <div id="v4-accounts-aunty" style="display:none;">
+          <div class="v4-filter-tabs" id="v4-aunty-filter-tabs">
+            <button class="v4-filter-tab active" onclick="v4_setAuntyFilter('all',this)">全部</button>
+            <button class="v4-filter-tab" onclick="v4_setAuntyFilter('day',this)">日結</button>
+            <button class="v4-filter-tab" onclick="v4_setAuntyFilter('wk',this)">週結</button>
+            <button class="v4-filter-tab" onclick="v4_setAuntyFilter('mo',this)">月結</button>
+          </div>
+          <div id="v4-aunty-content"></div>
+        </div>
       </div>
     </div>
     <div id="v4-page-payment" class="v4-page"><div id="v4-payment-content"></div></div>
     <div id="v4-page-data" class="v4-page">
       <div class="v4-sec-hdr">
-        <div class="v4-sec-title">原始資料庫 <span class="v4-badge" id="v4-raw-count">0 筆</span></div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-plain btn-sm" onclick="v4_generateAndRefresh()">🔄 從工單重新生成</button>
-          <button class="btn btn-sage btn-sm" onclick="v4_saveDataChanges()">💾 儲存修改</button>
+        <div class="v4-sec-title">📋 轉換紀錄庫 <span class="v4-badge" id="v4-raw-count">載入中…</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-plain btn-sm" onclick="tf_loadRecordsTable()">🔄 重新載入</button>
+          <button class="btn btn-sky btn-sm" onclick="tf_syncToOrders()">🔁 同步→工單</button>
         </div>
       </div>
-      <div class="v4-xls-wrap" id="v4-xls-container"></div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">雙擊儲存格可直接編輯，修改後按 Enter 或點其他格自動儲存。</div>
+      <div id="v4-tf-records-table" style="overflow-x:auto;"></div>
     </div>
     <div id="v4-page-ledger" class="v4-page">
       <div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;" id="v4-led-tabs"></div>
@@ -1460,7 +1450,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
   <button class="bnav-item" data-tab="admin" onclick="ST('admin')"><span class="bnav-icon">📋</span>班表</button>
   <button class="bnav-item" data-tab="walk" onclick="ST('walk')"><span class="bnav-icon">✦</span>符號</button>
   <button class="bnav-item" data-tab="tf" onclick="ST('tf')"><span class="bnav-icon">📊</span>轉檔</button>
-  <button class="bnav-item" data-tab="boss" onclick="ST('boss')"><span class="bnav-icon">🔐</span>帳目</button>
+  <button class="bnav-item" data-tab="boss" onclick="ST('boss')"><span class="bnav-icon">💼</span>帳目</button>
 </nav>
 
 
@@ -2381,7 +2371,7 @@ function ST(id){
   // 切換到探索搜尋時，自動從自由編輯區重新解析
   if(id==='bb') { syncNotepadToBb(); if(document.getElementById('bb-raw').value.trim()) parseBB(); }
   if(id==='tf') { if(!tf_initialized){ tf_loadG(); tf_initialized=true; } tf_populateOrderDates(); }
-  if(id==='boss' && BOSS_UNLOCKED) { if(typeof v4_renderCurrent==='function') v4_renderCurrent(); }
+  if(id==='boss') { BOSS_UNLOCKED=true; if(typeof v4_loadData==='function') v4_loadData(function(){ if(typeof v4_renderCurrent==='function') v4_renderCurrent(); }); else if(typeof v4_renderCurrent==='function') v4_renderCurrent(); }
 }
 
 function SST(id){ ST(id); }
@@ -4379,20 +4369,117 @@ function v4_switchPage(id,el){
   document.querySelectorAll('#tab-boss .v4-nav-btn').forEach(function(b){b.classList.remove('active');});
   if(el)el.classList.add('active');
   document.querySelectorAll('#tab-boss .v4-page').forEach(function(p){p.classList.remove('active');});
-  var pg=document.getElementById('v4-page-'+id);if(pg)pg.classList.add('active');
+  // 支援新合併頁 overview
+  var pgId = (id==='company'||id==='accounts') ? 'overview' : id;
+  var pg=document.getElementById('v4-page-'+pgId);if(pg)pg.classList.add('active');
   v4_renderPage(id);
 }
 
 function v4_renderPage(id){
-  if(id==='company')v4_renderCompany();
+  if(id==='overview'||id==='company')v4_renderCompany();
   else if(id==='accounts')v4_renderAgentPage();
   else if(id==='payment')v4_renderPaymentPage();
-  else if(id==='data')v4_renderDataPage();
+  else if(id==='data'){ tf_loadRecordsTable(); }
   else if(id==='ledger')v4_renderLedgerPage();
   else if(id==='settings')v4_renderSettings();
 }
 
 function v4_renderCurrent(){v4_renderPage(v4_currentPage);}
+
+// 總覽＆帳務 子切換
+var _bossSubCurrent = 'company';
+function bossSwitchSub(sub){
+  _bossSubCurrent = sub;
+  document.getElementById('boss-sub-company-view').style.display = sub==='company' ? '' : 'none';
+  document.getElementById('boss-sub-accounts-view').style.display = sub==='accounts' ? '' : 'none';
+  var btnC = document.getElementById('boss-sub-company');
+  var btnA = document.getElementById('boss-sub-accounts');
+  if(btnC){ btnC.style.background = sub==='company'?'var(--accent)':'var(--card2)'; btnC.style.color = sub==='company'?'#fff':'var(--text2)'; btnC.style.borderColor = sub==='company'?'var(--accent)':'var(--border)'; }
+  if(btnA){ btnA.style.background = sub==='accounts'?'var(--accent)':'var(--card2)'; btnA.style.color = sub==='accounts'?'#fff':'var(--text2)'; btnA.style.borderColor = sub==='accounts'?'var(--accent)':'var(--border)'; }
+  if(sub==='accounts') v4_renderAgentPage();
+  else v4_renderCompany();
+}
+
+// 轉換紀錄可編輯表格
+function tf_loadRecordsTable(){
+  var cnt = document.getElementById('v4-raw-count');
+  var tbl = document.getElementById('v4-tf-records-table');
+  if(!tbl) return;
+  if(cnt) cnt.textContent = '載入中…';
+  tbl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);">⏳ 從雲端載入轉換紀錄…</div>';
+  if(typeof google==='undefined'||!google.script||!google.script.run){
+    tbl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);">僅在 Google Apps Script 環境中可用</div>';
+    return;
+  }
+  google.script.run.withSuccessHandler(function(res){
+    if(!res||!res.success||!res.records||res.records.length===0){
+      if(cnt) cnt.textContent = '0 筆';
+      tbl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);">📭 尚無轉換紀錄</div>';
+      return;
+    }
+    if(cnt) cnt.textContent = res.records.length + ' 筆';
+    var cols = ['日期','阿姨','妹妹','GG','時間','地點','PS','寫','牌價','M收'];
+    var keys = ['date','ee','mm','gg','time','place','psCol','writeCol','price','shou'];
+    var h = '<table style="width:100%;border-collapse:collapse;font-size:12px;">';
+    h += '<thead><tr style="background:var(--card2);">';
+    cols.forEach(function(c){ h += '<th style="padding:6px 8px;border:1px solid var(--border);white-space:nowrap;font-weight:700;">'+c+'</th>'; });
+    h += '<th style="padding:6px 8px;border:1px solid var(--border);">刪除</th></tr></thead><tbody>';
+    res.records.forEach(function(rec){
+      h += '<tr data-row="'+rec.rowIndex+'">';
+      keys.forEach(function(k){
+        var v = rec[k]||'';
+        h += '<td style="padding:4px 6px;border:1px solid var(--border);cursor:pointer;" ondblclick="tfRecEditCell(this,\''+k+'\','+rec.rowIndex+')" title="雙擊編輯">'+v+'</td>';
+      });
+      h += '<td style="padding:4px;border:1px solid var(--border);text-align:center;"><button onclick="tfRecDelete('+rec.rowIndex+')" style="background:var(--danger,#e57373);color:#fff;border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-size:11px;">✕</button></td>';
+      h += '</tr>';
+    });
+    h += '</tbody></table>';
+    tbl.innerHTML = h;
+    tbl._records = res.records;
+  }).withFailureHandler(function(e){
+    if(tbl) tbl.innerHTML = '<div style="padding:12px;color:var(--danger);">載入失敗：'+e.message+'</div>';
+  }).getTfRecords();
+}
+
+var _tfRecEditSaving = false;
+function tfRecEditCell(td, key, rowIndex){
+  if(td.querySelector('input')) return;
+  var orig = td.textContent;
+  var inp = document.createElement('input');
+  inp.value = orig;
+  inp.style.cssText = 'width:100%;border:none;outline:none;background:var(--card2);font-size:12px;font-family:var(--font);padding:2px;';
+  td.textContent = '';
+  td.appendChild(inp);
+  inp.focus();
+  inp.select();
+  function save(){
+    if(_tfRecEditSaving) return;
+    _tfRecEditSaving = true;
+    var newVal = inp.value.trim();
+    td.textContent = newVal;
+    if(newVal === orig){ _tfRecEditSaving = false; return; }
+    // 找到該行的所有 key 值
+    var row = td.closest('tr');
+    var cells = row ? row.querySelectorAll('td') : [];
+    var keys2 = ['date','ee','mm','gg','time','place','psCol','writeCol','price','shou'];
+    var record = {};
+    keys2.forEach(function(k,i){ record[k] = cells[i] ? cells[i].textContent : ''; });
+    if(typeof google!=='undefined'&&google.script&&google.script.run){
+      google.script.run.withSuccessHandler(function(){ _tfRecEditSaving=false; }).withFailureHandler(function(e){ toast('儲存失敗: '+e.message); _tfRecEditSaving=false; }).updateTfRecord(rowIndex, record);
+    } else { _tfRecEditSaving = false; }
+  }
+  inp.addEventListener('blur', save);
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ inp.blur(); } else if(e.key==='Escape'){ td.textContent=orig; } });
+}
+
+function tfRecDelete(rowIndex){
+  if(!confirm('確定刪除此筆轉換紀錄？')) return;
+  if(typeof google==='undefined'||!google.script||!google.script.run){ toast('非 GAS 環境'); return; }
+  google.script.run.withSuccessHandler(function(res){
+    if(res&&res.success){ toast('✅ 已刪除'); tf_loadRecordsTable(); }
+    else toast('刪除失敗: '+(res&&res.message||'未知錯誤'));
+  }).withFailureHandler(function(e){ toast('刪除失敗: '+e.message); }).deleteTfRecord(rowIndex);
+}
 
 function v4_switchAccTab(tab,el){
   Array.from(document.querySelectorAll('#v4-page-accounts .v4-filter-tab')).slice(0,2).forEach(function(b){b.classList.remove('active');});
@@ -4825,38 +4912,10 @@ function v4_refreshAll(){v4_generateRawData();v4_analyzeData();v4_renderCurrent(
 // ── Boss lock/unlock ──
 function bossGetPw(){try{return localStorage.getItem(BOSS_PW_KEY)||'0000';}catch(e){return'0000';}}
 
-function bossUnlock(){
-  var input=document.getElementById('boss-pw-input').value;
-  if(input===bossGetPw()){
-    BOSS_UNLOCKED=true;
-    document.getElementById('boss-lock').style.display='none';
-    document.getElementById('boss-content').style.display='block';
-    document.getElementById('boss-pw-input').value='';
-    v4_loadData(function(){v4_generateRawData();v4_analyzeData();v4_renderPage('company');});
-  } else {
-    document.getElementById('boss-pw-err').textContent='密碼錯誤';
-    setTimeout(function(){document.getElementById('boss-pw-err').textContent='';},2000);
-  }
-}
-
-function bossLock(){
-  BOSS_UNLOCKED=false;
-  document.getElementById('boss-lock').style.display='flex';
-  document.getElementById('boss-content').style.display='none';
-  document.getElementById('boss-pw-input').value='';
-}
-
-function bossChangePw(){
-  var p1=document.getElementById('boss-new-pw').value;
-  var p2=document.getElementById('boss-new-pw2').value;
-  var msg=document.getElementById('boss-pw-change-msg');
-  if(!p1){msg.style.color='var(--danger)';msg.textContent='請輸入新密碼';return;}
-  if(p1!==p2){msg.style.color='var(--danger)';msg.textContent='兩次密碼不一致';return;}
-  try{localStorage.setItem(BOSS_PW_KEY,p1);}catch(e){}
-  msg.style.color='var(--sage)';msg.textContent='✓ 密碼已更改';
-  document.getElementById('boss-new-pw').value='';document.getElementById('boss-new-pw2').value='';
-  setTimeout(function(){msg.textContent='';},3000);
-}
+// 密碼鎖已移除 - boss tab 直接開放
+function bossUnlock(){ BOSS_UNLOCKED=true; }
+function bossLock(){}
+function bossChangePw(){}
 // ==================== end 老闆帳目 ====================
 
 </script>
