@@ -3320,69 +3320,112 @@ var IS_GAS = (typeof google !== 'undefined' && google.script && google.script.ru
 
 // ── Mock 模式（非 GAS 環境：CodePen / 本機預覽） ──
 if (!IS_GAS) {
-  var _MOCK_TODAY = (function(){
-    var d = new Date(); var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
-    return y+'/'+m+'/'+day;
-  })();
-  var _MOCK_DATA = {
-    multiNotes: [
-      {id:'1',time:'格子 1',text:'🟣 測試便簽\n這是第一格內容'},
-      {id:'2',time:'格子 2',text:'💜 示範文字\n可以多行'},
-      {id:'3',time:'格子 3',text:''}
-    ],
-    workOrders: {},
-    kvData: {}
-  };
-  _MOCK_DATA.workOrders[_MOCK_TODAY] = [
-    {pai:'1500',name:'安啾',place:'101',auntie:'嬌嬌',shi:'9000',ee:'1000',rebate:'',note:'',settled:false,settledDate:'',settledAmount:'',id:'m1'},
-    {pai:'2200',name:'薇星',place:'102',auntie:'邦哥',shi:'13200',ee:'1500',rebate:'',note:'PS 特殊',settled:false,settledDate:'',settledAmount:'',id:'m2'}
-  ];
-  var _d2 = (function(){ var d=new Date(); d.setDate(d.getDate()-1); var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0'); return y+'/'+m+'/'+day; })();
-  _MOCK_DATA.workOrders[_d2] = [
-    {pai:'1800',name:'晴晴',place:'203',auntie:'貓貓',shi:'10800',ee:'1200',rebate:'',note:'',settled:true,settledDate:_d2,settledAmount:'1200',id:'m3'}
-  ];
+  (function(){
+    var _d0 = (function(){ var d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0'); return y+'/'+m+'/'+day; })();
+    var _d1 = (function(){ var d=new Date(); d.setDate(d.getDate()-1); var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0'); return y+'/'+m+'/'+day; })();
 
-  var _makeGSR = function(fn, args) {
-    return {
-      withSuccessHandler: function(cb) {
-        setTimeout(function(){ try{ cb(fn.apply(null, args||[])); }catch(e){ console.warn('mock GSR err',e); } }, 200);
-        return { withFailureHandler: function(){ return { loadAllData:function(){}, saveAllData:function(){}, getTfRecords:function(){}, saveReport:function(){}, updateMapping:function(){}, saveKvData:function(){} }; } };
-      },
-      withFailureHandler: function(cb) {
-        return {
-          withSuccessHandler: function(scb){
-            setTimeout(function(){ try{ scb(fn.apply(null, args||[])); }catch(e){ cb(e); } }, 200);
-            return _makeProxy();
-          }
+    var MOCK_DB = {
+      multiNotes: [{id:'1',time:'格子 1',text:'🟣 測試便簽\n示範內容'},{id:'2',time:'格子 2',text:''},{id:'3',time:'格子 3',text:''}],
+      workOrders: {},
+      kvData: {}
+    };
+    MOCK_DB.workOrders[_d0] = [
+      {pai:'1500',name:'安啾',place:'101',auntie:'嬌嬌',shi:'9000',ee:'1000',rebate:'',note:'',settled:false,settledDate:'',settledAmount:'',id:'m1'},
+      {pai:'2200',name:'薇星',place:'102',auntie:'邦哥', shi:'13200',ee:'1500',rebate:'',note:'PS',settled:false,settledDate:'',settledAmount:'',id:'m2'}
+    ];
+    MOCK_DB.workOrders[_d1] = [
+      {pai:'1800',name:'晴晴',place:'203',auntie:'貓貓',shi:'10800',ee:'1200',rebate:'',note:'',settled:true,settledDate:_d1,settledAmount:'1200',id:'m3'}
+    ];
+
+    // 各 GAS 方法回傳值
+    var MOCK_METHODS = {
+      loadAllData:    function(){ return JSON.parse(JSON.stringify(MOCK_DB)); },
+      saveAllData:    function(){ return {ok:true}; },
+      getTfRecords:   function(){ return []; },
+      saveReport:     function(){ return true; },
+      updateMapping:  function(){ return true; },
+      saveKvData:     function(){ return true; },
+      updateTfRecord: function(){ return true; },
+      deleteTfRecord: function(){ return true; },
+      getInitData:    function(){ return {mmgg:{},ggList:[]}; },
+      getAuntieList:  function(){ return []; },
+      saveAuntieList: function(){ return true; },
+      saveToSheet:    function(){ return {ok:true}; },
+      syncTfRecordsToOrders: function(){ return {success:true,count:0}; },
+      getBackupList:  function(){ return []; },
+      loadBackup:     function(){ return null; },
+      saveAllDataToSheet: function(){ return {ok:true}; }
+    };
+
+    // 建立一個可以任意鏈接的 runner 物件
+    // 支援: .withSuccessHandler(fn).withFailureHandler(fn).METHOD(args)
+    //   or: .withFailureHandler(fn).withSuccessHandler(fn).METHOD(args)
+    //   or: .METHOD(args).withSuccessHandler(fn).withFailureHandler(fn)
+    function MockRunner(methodName, args) {
+      this._method = methodName;
+      this._args   = args || [];
+      this._onSuccess = null;
+      this._onFailure = function(){};
+    }
+    MockRunner.prototype._exec = function(){
+      var self = this;
+      var fn = MOCK_METHODS[self._method] || function(){ return null; };
+      setTimeout(function(){
+        try { var r = fn.apply(null, self._args); if(self._onSuccess) self._onSuccess(r); }
+        catch(e){ if(self._onFailure) self._onFailure(e); }
+      }, 120);
+    };
+    MockRunner.prototype.withSuccessHandler = function(cb){
+      this._onSuccess = cb;
+      if(this._method) this._exec(); // method already set, fire now
+      return this;
+    };
+    MockRunner.prototype.withFailureHandler = function(cb){
+      this._onFailure = cb;
+      return this;
+    };
+    // When the actual method name is called last
+    function makeChain(){
+      var runner = new MockRunner(null, []);
+      // return a Proxy so any property access gives back the method caller
+      return new Proxy(runner, {
+        get: function(target, prop){
+          if(prop in target) return target[prop].bind ? target[prop].bind(target) : target[prop];
+          // prop is the GAS method name
+          return function(){
+            target._method = prop;
+            target._args = Array.prototype.slice.call(arguments);
+            target._exec();
+            return target;
+          };
+        }
+      });
+    }
+
+    if(typeof google==='undefined') window.google={};
+    if(!google.script) google.script={};
+    // google.script.run.METHOD(...) → returns MockRunner supporting .withSuccessHandler/.withFailureHandler
+    // google.script.run.withSuccessHandler(cb).METHOD(...) → also works
+    google.script.run = new Proxy({}, {
+      get: function(_, prop){
+        if(prop==='withSuccessHandler'||prop==='withFailureHandler'){
+          return function(cb){
+            var chain = makeChain();
+            chain[prop](cb);
+            return chain;
+          };
+        }
+        // direct: google.script.run.METHOD(args)
+        return function(){
+          var runner = new MockRunner(prop, Array.prototype.slice.call(arguments));
+          runner._exec();
+          return runner;
         };
       }
-    };
-  };
-  var _makeProxy = function(){
-    return new Proxy({}, { get: function(){ return function(){ return _makeProxy(); }; } });
-  };
-  if (typeof google === 'undefined') window.google = {};
-  if (!google.script) google.script = {};
-  google.script.run = new Proxy({}, {
-    get: function(_, methodName) {
-      return function() {
-        var a = Array.prototype.slice.call(arguments);
-        var mockFn = {
-          loadAllData: function(){ return JSON.parse(JSON.stringify(_MOCK_DATA)); },
-          saveAllData: function(){ return {ok:true}; },
-          getTfRecords: function(){ return []; },
-          saveReport: function(){ return true; },
-          updateMapping: function(){ return true; },
-          saveKvData: function(){ return true; },
-          updateTfRecord: function(){ return true; },
-          deleteTfRecord: function(){ return true; }
-        }[methodName] || function(){ return null; };
-        return _makeGSR(mockFn, a);
-      };
-    }
-  });
-  IS_GAS = true; // mock 已就緒，視為 GAS 環境
-  console.log('[MOCK] GAS stub 已啟用，使用示範資料');
+    });
+    IS_GAS = true;
+    console.log('[MOCK] GAS stub ready — 示範資料模式');
+  })();
 }
 
 function showToast(msg){ toast(msg); }
