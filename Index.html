@@ -4019,7 +4019,7 @@ function fb_renderRows(allRows) {
     var ed=function(field,val,extra){
       var cls='acc-inp'+(extra?' '+extra:'');
       return '<input type="text" class="'+cls+'" value="'+((val||'')+'').replace(/"/g,'&quot;')+
-        '" oninput="fb_onInput('+idx+',''+field+'',this)" onchange="fb_onChange('+idx+',''+field+'',this)">';
+        '" oninput="fb_onInput('+idx+',\''+field+'\',this)" onchange="fb_onChange('+idx+',\''+field+'\',this)">';
     };
     html+='<tr class="'+trCls+'">';
     html+='<td>'+ed('date',r.date||r['日期'])+'</td>';
