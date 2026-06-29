@@ -10,6 +10,7 @@ var SHEET_NAME_AUNTIE = '阿姨表';
 var SHEET_NAME_TF_RECORDS = '轉換紀錄';
 var SHEET_NAME_TF_BACKUP  = '工單備份';
 var SHEET_NAME_BOSS   = '老闆帳目';
+var SHEET_NAME_REPORTS = '報表紀錄';
 
 // ==================== 入口點 ====================
 function doGet(e) {
@@ -523,4 +524,58 @@ function testWrite() {
     sh.appendRow(['test-id', new Date().toLocaleString('zh-TW'), '測試寫入成功']);
     return { success: true, message: '寫入測試成功', lastRow: sh.getLastRow() };
   } catch (err) { return { success: false, message: err.message }; }
+}
+
+// ==================== 報表存檔 ====================
+function saveReport(reportData) {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_REPORTS);
+    if (sh.getLastRow() === 0) {
+      sh.appendRow(['報表類型','起始日','結束日','GG總','EE總','S總','牌價總','M收總','筆數','存檔時間','明細JSON']);
+    }
+    var now = new Date().toLocaleString('zh-TW');
+    sh.appendRow([
+      reportData.type || '',
+      reportData.dateFrom || '',
+      reportData.dateTo || '',
+      reportData.totalGG || 0,
+      reportData.totalEE || 0,
+      reportData.totalS || 0,
+      reportData.totalPrice || 0,
+      reportData.totalMRec || 0,
+      reportData.count || 0,
+      now,
+      JSON.stringify(reportData.rows || [])
+    ]);
+    return { success: true, timestamp: now };
+  } catch (e) { return { success: false, message: e.message }; }
+}
+
+function loadReports(limit) {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_REPORTS);
+    var data = sh.getDataRange().getValues() || [];
+    if (data.length <= 1) return { success: true, reports: [] };
+    var n = limit || 30;
+    var start = Math.max(1, data.length - n);
+    var reports = [];
+    for (var i = data.length - 1; i >= start; i--) {
+      var r = data[i];
+      reports.push({
+        type: String(r[0]||''), dateFrom: String(r[1]||''), dateTo: String(r[2]||''),
+        totalGG: r[3]||0, totalEE: r[4]||0, totalS: r[5]||0,
+        totalPrice: r[6]||0, totalMRec: r[7]||0, count: r[8]||0,
+        savedAt: String(r[9]||''), rowIndex: i+1
+      });
+    }
+    return { success: true, reports: reports };
+  } catch (e) { return { success: false, message: e.message, reports: [] }; }
+}
+
+function deleteReport(rowIndex) {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAME_REPORTS);
+    sh.deleteRow(rowIndex);
+    return { success: true };
+  } catch (e) { return { success: false, message: e.message }; }
 }

@@ -447,6 +447,82 @@ body.sidebar-collapsed .app{margin-left:44px;}
 #tab-tf .cv[contenteditable]:focus{background:var(--sky-light);outline:none;}
 #tab-tf .tf-warn{color:var(--danger);font-weight:700;}
 
+/* ── Finance tab shared styles ── */
+#tab-finance{--v4-pink:#E8A8C4;--v4-purple:#D4B5F4;--v4-green:#B8E6D5;--v4-peach:#F5C89A;--v4-lavender:#E8D5F2;--v4-ee:#A382CA;--v4-ee-bg:#F4F0F9;--v4-blue:#7AAAD4;--v4-surf:#ffffff;--v4-surf2:#FDFBFC;--v4-sh:0 4px 16px rgba(212,181,244,.15);--v4-r:16px;--v4-acc:#C07092;--v4-acc-light:#FDF4F8;}
+#tab-finance .v4-filter-tab{padding:5px 14px;border-radius:18px;border:1px solid var(--border);background:var(--card2);font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);font-family:var(--font);}
+#tab-finance .v4-filter-tab.active{background:var(--v4-pink);color:#fff;border-color:var(--v4-pink);}
+#tab-finance .v4-mapping-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:8px;}
+#tab-finance .v4-map-row{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:7px;padding:5px 8px;font-size:12px;}
+#tab-finance .v4-map-mm{font-weight:700;min-width:50px;}
+#tab-finance .v4-map-inp{flex:1;height:26px;font-size:12px;border:1px solid var(--border);border-radius:5px;padding:0 6px;background:var(--card);color:var(--text);}
+#tab-finance .v4-badge{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:2px 10px;font-size:11px;color:var(--text2);font-weight:600;margin-left:6px;}
+#tab-finance .v4-sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:20px;background:var(--card);padding:12px 18px;border-radius:var(--v4-r);border:1px solid var(--border);}
+#tab-finance .v4-sec-title{font-size:14px;font-weight:800;color:var(--text);}
+#tab-finance .v4-led-tab{padding:7px 16px;border-radius:18px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);font-family:var(--font);}
+#tab-finance .v4-led-tab.active{background:var(--v4-pink);color:#fff;border-color:var(--v4-pink);}
+#tab-finance .v4-pay-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--bg);gap:10px;font-size:12px;}
+#tab-finance .v4-pay-row:last-child{border-bottom:none;}
+#tab-finance .v4-pay-list{background:var(--card);border-radius:var(--v4-r);border:1px solid var(--border);overflow:hidden;}
+#tab-finance .v4-pay-dir{min-width:50px;text-align:center;border-radius:5px;padding:3px 5px;font-size:10.5px;font-weight:800;}
+#tab-finance .v4-dir-in{background:var(--rose-light);color:var(--rose);}
+#tab-finance .v4-dir-out{background:var(--sage-light);color:var(--sage);}
+#tab-finance .v4-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+#tab-finance .v4-person-card{background:var(--card);border-radius:var(--v4-r);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;}
+#tab-finance .v4-card-hdr{padding:12px 16px;border-bottom:1px solid var(--bg);display:flex;justify-content:space-between;align-items:center;}
+#tab-finance .v4-card-name{font-size:15px;font-weight:800;}
+#tab-finance .v4-prev-wrap{display:flex;align-items:center;gap:4px;background:var(--bg);padding:3px 7px;border-radius:7px;}
+#tab-finance .v4-prev-lbl{font-size:10px;color:var(--text3);font-weight:700;}
+#tab-finance .v4-prev-inp{width:60px;text-align:right;border:none;font-size:12px;font-weight:800;font-family:var(--font);background:transparent;color:var(--rose);cursor:text;}
+#tab-finance .v4-prev-inp:focus{outline:none;border-bottom:1px solid var(--v4-pink);}
+#tab-finance .v4-date-row{display:flex;align-items:flex-start;padding:9px 16px;cursor:pointer;border-bottom:1px solid var(--bg);gap:7px;user-select:none;}
+#tab-finance .v4-dr-date{font-size:12px;font-weight:700;color:var(--text2);min-width:64px;flex-shrink:0;}
+#tab-finance .v4-dr-mms{flex:1;font-size:12px;color:var(--text2);}
+#tab-finance .v4-dr-amt{font-size:13px;font-weight:800;}
+#tab-finance .v4-dr-arrow{color:var(--text3);font-size:10px;}
+#tab-finance .v4-detail{display:none;background:var(--card2);border-bottom:1px solid var(--border);padding:7px 16px 10px 24px;}
+#tab-finance .v4-detail.show{display:block;}
+#tab-finance .v4-det-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px dashed var(--border);font-size:11.5px;}
+#tab-finance .v4-det-row:last-child{border-bottom:none;}
+#tab-finance .v4-det-mm{font-weight:800;}
+#tab-finance .v4-det-amt{font-weight:800;font-size:12px;}
+#tab-finance .v4-card-foot{padding:16px;display:flex;flex-direction:column;gap:12px;}
+#tab-finance .v4-foot-total{display:flex;justify-content:space-between;align-items:flex-end;}
+#tab-finance .v4-foot-lbl{font-size:12px;font-weight:800;color:var(--text2);}
+#tab-finance .v4-foot-amt{font-size:26px;font-weight:800;}
+#tab-finance .v4-pay-btn{background:var(--v4-pink);color:#fff;border:none;border-radius:10px;padding:10px 0;width:100%;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);}
+#tab-finance .v4-sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+#tab-finance .v4-sum-card{border-radius:16px;padding:18px 20px;box-shadow:var(--v4-sh);display:flex;flex-direction:column;align-items:center;text-align:center;}
+#tab-finance .v4-sum-label{font-size:11px;font-weight:700;opacity:.85;margin-bottom:6px;}
+#tab-finance .v4-sum-amt{font-size:24px;font-weight:800;color:#fff;}
+#tab-finance .v4-sc-pink{background:var(--v4-pink);}
+#tab-finance .v4-sc-green{background:var(--v4-green);}
+#tab-finance .v4-sc-purple{background:var(--v4-purple);}
+#tab-finance .v4-sc-peach{background:var(--v4-peach);}
+#tab-finance .text-red{color:var(--rose)!important;}
+#tab-finance .text-green{color:var(--sage)!important;}
+#tab-finance .v4-led-wrap{background:var(--card);border-radius:var(--v4-r);border:1px solid var(--border);overflow:hidden;}
+#tab-finance .v4-led-row{display:grid;grid-template-columns:78px 1fr 78px 78px 88px 88px;align-items:center;padding:9px 14px;border-bottom:1px solid var(--bg);font-size:12px;gap:7px;}
+#tab-finance .v4-led-row.hdr{background:var(--card2);font-weight:800;color:var(--text2);border-bottom:1px solid var(--border);}
+#tab-finance .v4-led-sum{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:12px 18px;flex:1;min-width:110px;}
+#tab-finance .v4-led-lbl{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:700;}
+#tab-finance .v4-led-val{font-size:19px;font-weight:800;}
+#tab-finance .v4-owing-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+#tab-finance .v4-owing-panel{background:var(--card);border-radius:var(--v4-r);border:1px solid var(--border);overflow:hidden;}
+#tab-finance .v4-owing-hdr{padding:11px 15px;border-bottom:1px solid var(--border);font-weight:800;font-size:13px;}
+#tab-finance .v4-owing-row{display:flex;align-items:center;justify-content:space-between;padding:9px 15px;border-bottom:1px solid var(--bg);font-size:12px;cursor:pointer;}
+#tab-finance .v4-company-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;}
+#tab-finance .v4-qs-btn{font-size:10px;padding:3px 9px;border-radius:5px;border:1px solid var(--v4-pink);background:var(--v4-acc-light);color:var(--v4-acc);cursor:pointer;font-weight:800;font-family:var(--font);}
+#tab-finance .v4-tag-ee{display:inline-block;font-size:10px;font-weight:800;background:var(--v4-ee-bg);color:var(--v4-ee);border-radius:5px;padding:1px 5px;margin-left:5px;}
+#tab-finance .v4-day-tbl{background:var(--card);border-radius:var(--v4-r);border:1px solid var(--border);overflow:hidden;}
+#tab-finance .v4-day-tbl-hdr{padding:11px 15px;border-bottom:1px solid var(--border);font-weight:800;font-size:13px;display:flex;justify-content:space-between;}
+#tab-finance .v4-day-row{display:flex;align-items:center;justify-content:space-between;padding:7px 15px;border-bottom:1px solid var(--bg);font-size:12px;}
+@media(max-width:768px){
+  #tab-finance .v4-sum-grid{grid-template-columns:1fr 1fr;}
+  #tab-finance .v4-company-grid,#tab-finance .v4-owing-grid{grid-template-columns:1fr;}
+  #tab-finance .v4-cards-grid{grid-template-columns:1fr;}
+  #tab-finance .v4-led-row{grid-template-columns:60px 1fr 60px 60px 70px 70px;}
+}
+
 /* ── v4 Boss App (scoped) ── */
 #tab-boss{--v4-pink:#E8A8C4;--v4-purple:#D4B5F4;--v4-green:#B8E6D5;--v4-peach:#F5C89A;--v4-lavender:#E8D5F2;--v4-ee:#A382CA;--v4-ee-bg:#F4F0F9;--v4-blue:#7AAAD4;--v4-blue-bg:#F0F6FB;--v4-surf:#ffffff;--v4-surf2:#FDFBFC;--v4-sh:0 4px 16px rgba(212,181,244,.15);--v4-sh-lg:0 10px 30px rgba(212,181,244,.25);--v4-r:16px;--v4-r-sm:8px;--v4-acc:#C07092;--v4-acc-light:#FDF4F8;}
 #tab-boss .v4-page{display:none;}
@@ -573,10 +649,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
     <button class="snav-item" data-tab="all" onclick="ST('all')"><span class="snav-icon">🗂</span> 所有工單</button>
     <button class="snav-item" data-tab="bb" onclick="ST('bb')"><span class="snav-icon">🔍</span> 探索搜尋</button>
     <button class="snav-item" data-tab="stat" onclick="ST('stat')"><span class="snav-icon">📊</span> 數據紀錄</button>
-    <button class="snav-item" data-tab="admin" onclick="ST('admin')"><span class="snav-icon">📋</span> 班表管理</button>
-    <button class="snav-item" data-tab="walk" onclick="ST('walk')"><span class="snav-icon">✦</span> 符號編輯器</button>
-    <button class="snav-item" data-tab="tf" onclick="ST('tf')"><span class="snav-icon">📊</span> 轉檔器</button>
-    <button class="snav-item" data-tab="boss" onclick="ST('boss')"><span class="snav-icon">💼</span> 老闆帳目</button>
+    <button class="snav-item" data-tab="finance" onclick="ST('finance')"><span class="snav-icon">💼</span> 帳務中心</button>
   </div>
   <div class="sidebar-footer">
     <div class="theme-toggle-inline sidebar-expand-only" id="themeToggle">
@@ -918,7 +991,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
   </div>
 </div>
 
-<div id="tab-admin" class="panel">
+<div id="tab-admin" class="panel" style="display:none!important">
 <div class="sch-wrap">
 
   <!-- 上層 3 欄 -->
@@ -1015,7 +1088,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
 </div><!-- /sch-wrap -->
 </div><!-- /tab-admin -->
 
-<div id="tab-walk" class="panel">
+<div id="tab-walk" class="panel" style="display:none!important">
 <div class="walk-wrap">
 
   <div class="walk-hdr">
@@ -1115,8 +1188,303 @@ body.sidebar-collapsed .app{margin-left:44px;}
 </div><!-- /walk-wrap -->
 </div><!-- /tab-walk -->
 
-<!-- ==================== 轉檔器 Tab ==================== -->
-<div id="tab-tf" class="panel">
+<!-- ==================== 帳務中心 Tab ==================== -->
+<div id="tab-finance" class="panel">
+<div style="width:100%;padding:12px;">
+  <!-- AB 切換 -->
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <button id="finance-btn-a" onclick="financeST('a')" style="flex:1;padding:9px;border:2px solid var(--accent);border-radius:10px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">📋 A 工單輸入</button>
+    <button id="finance-btn-b" onclick="financeST('b')" style="flex:1;padding:9px;border:2px solid var(--border);border-radius:10px;background:var(--card2);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">📊 B 帳務計算</button>
+  </div>
+
+  <!-- A 畫面：工單輸入 + 配對管理 + 阿姨表 + 轉換紀錄 -->
+  <div id="finance-a" style="">
+    <div class="sub-nav" style="margin-bottom:10px;">
+      <button class="sub-tab active" id="fa-tab-convert" onclick="faST('convert')">📋 對帳輸入</button>
+      <button class="sub-tab" id="fa-tab-records" onclick="faST('records')">🗂 轉換紀錄</button>
+      <button class="sub-tab" id="fa-tab-mapping" onclick="faST('mapping')">👥 配對設定</button>
+      <button class="sub-tab" id="fa-tab-auntie" onclick="faST('auntie')">📖 阿姨表</button>
+    </div>
+
+    <!-- 對帳輸入 -->
+    <div class="sub-panel active" id="fa-p-convert">
+      <div style="display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="card" style="padding:14px;">
+            <div class="card-head" style="margin:-14px -14px 12px;padding:8px 14px;"><span class="card-title">✨ 工單資料輸入</span></div>
+            <div style="background:var(--sky-light);border:1px solid var(--sky);border-radius:8px;padding:10px 12px;margin-bottom:10px;">
+              <div style="font-size:11px;font-weight:700;color:var(--sky);margin-bottom:6px;">⚡ 從每日工單直接匯入</div>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                <select id="tf-from-orders-date" style="flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--text);font-family:var(--font);font-size:12px;">
+                  <option value="">選擇日期</option>
+                </select>
+                <button class="btn btn-sky btn-sm" onclick="tf_importFromOrders()">📥 匯入</button>
+              </div>
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">或貼入文字工單：</div>
+            <input type="text" id="tf-date" placeholder="日期（例如 3/19）" style="margin-bottom:8px;">
+            <textarea id="tf-raw" rows="12" placeholder="請貼入原始對話工單..." style="height:200px;resize:vertical;"></textarea>
+            <div style="display:flex;gap:6px;margin-top:8px;">
+              <button class="btn btn-rose" style="flex:1;" onclick="tf_doConvert()">🚀 開始轉換</button>
+              <button class="btn btn-plain" onclick="tf_clearP1()">清除</button>
+            </div>
+          </div>
+          <div class="card" id="tf-uc" style="display:none;padding:14px;margin-top:0;">
+            <div class="card-head" style="margin:-14px -14px 10px;padding:8px 14px;background:var(--peach-light);"><span class="card-title" style="color:var(--peach);">⚠️ 需指派新人員</span></div>
+            <div id="tf-ul" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
+            <button class="btn btn-sage" style="width:100%;margin-top:10px;" onclick="tf_applyU()">✅ 確認鎖定</button>
+          </div>
+        </div>
+        <div>
+          <div class="card" id="tf-rc" style="display:none;padding:14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span class="card-title">🎉 轉換結果</span>
+              <span id="tf-count" style="background:var(--sky-light);color:var(--sky);padding:2px 10px;border-radius:99px;font-size:0.8125rem;font-weight:600;">總計：0 筆</span>
+            </div>
+            <div style="overflow-x:auto;margin-bottom:10px;">
+              <table class="etbl" style="min-width:1000px;width:100%;table-layout:fixed;">
+                <thead><tr>
+                  <th style="width:4.5rem">日期</th><th style="width:5rem">阿姨</th><th style="width:5rem">妹妹</th>
+                  <th style="width:4.5rem">GG</th><th style="width:4rem">時間</th>
+                  <th style="text-align:left;padding-left:8px;">位置/地點</th><th style="width:4rem">PS</th>
+                  <th style="width:3.5rem">寫</th><th style="width:4rem">牌價</th><th style="width:4.5rem">M收</th>
+                  <th style="width:3.5rem;color:var(--gold);">經退</th><th style="width:4rem;color:var(--accent);">G回</th>
+                  <th style="width:4rem;color:var(--rose);">EE$</th><th style="width:3.5rem;color:var(--sage);">S</th>
+                  <th style="width:3.5rem">對帳</th>
+                </tr></thead>
+                <tbody id="tf-rtb"></tbody>
+              </table>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-sky" style="flex:1;" onclick="tf_copyXL()">📋 複製 Excel 格式</button>
+              <button class="btn btn-rose" style="flex:1;" onclick="tf_saveToCloud()">🚀 寫入雲端備份</button>
+            </div>
+          </div>
+          <div id="tf-empty" style="text-align:center;padding:60px 20px;color:var(--text3);">
+            <div style="font-size:2.5rem;margin-bottom:8px;">📝</div>
+            <div>系統待命中，請貼入工單開始</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 轉換紀錄 -->
+    <div class="sub-panel" id="fa-p-records">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
+        <span class="card-title">🗂 轉換紀錄庫 <span class="v4-badge" id="v4-raw-count">載入中…</span></span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-plain btn-sm" onclick="tf_loadRecordsTable()">🔄 重新載入</button>
+          <button class="btn btn-sky btn-sm" onclick="tf_syncToOrders()">🔁 同步→工單</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">雙擊儲存格可直接編輯，修改後按 Enter 或點其他格自動儲存。</div>
+      <div id="v4-tf-records-table" style="overflow-x:auto;"></div>
+    </div>
+
+    <!-- 配對管理 -->
+    <div class="sub-panel" id="fa-p-mapping">
+      <div style="display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start;">
+        <div class="card" style="padding:14px;">
+          <div class="card-head" style="margin:-14px -14px 12px;padding:8px 14px;"><span class="card-title">💼 經紀人名單 (GG)</span></div>
+          <div id="tf-gg-tags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;"></div>
+          <div style="display:flex;gap:6px;">
+            <input type="text" id="tf-new-gg" placeholder="新增名字...">
+            <button class="btn btn-sky btn-sm" onclick="tf_addGgTag()">新增</button>
+          </div>
+        </div>
+        <div class="card" style="padding:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span class="card-title">👩‍👧 分組配對資料庫</span>
+            <div style="display:flex;gap:6px;">
+              <input type="text" id="tf-mm-search" placeholder="🔍 搜尋妹妹..." style="width:150px;" oninput="tf_filterMm()">
+              <button class="btn btn-rose btn-sm" onclick="tf_addMm()">＋ 新增</button>
+            </div>
+          </div>
+          <div id="tf-mm-container" style="max-height:60vh;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;"></div>
+        </div>
+      </div>
+      <!-- v4 GG mapping (extra) -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:14px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text);">🔗 工單人名 → GG 對映</div>
+        <div id="v4-mmgg-unknown" style="background:var(--rose-light);border:1px solid var(--rose-border);border-radius:7px;padding:8px 12px;font-size:12px;color:var(--rose);font-weight:600;margin-bottom:8px;display:none;"></div>
+        <div id="v4-mmgg-grid" class="v4-mapping-grid"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn btn-sage btn-sm" onclick="v4_saveMmgg()">💾 儲存對映</button>
+          <button class="btn btn-plain btn-sm" onclick="v4_renderMmggGrid()">🔄 重新整理</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 阿姨表 -->
+    <div class="sub-panel" id="fa-p-auntie">
+      <div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span class="card-title">📖 阿姨表（退補設定）</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-sage btn-sm" onclick="tf_addAuntie()">＋ 新增</button>
+            <button class="btn btn-rose btn-sm" onclick="tf_saveAunties()">💾 儲存</button>
+          </div>
+        </div>
+        <div style="font-size:0.8125rem;color:var(--text3);margin-bottom:8px;">類型填 JP 或 TW，退補欄填正數（JP+5, TW+3 等）。</div>
+        <table class="etbl">
+          <thead><tr><th>阿姨名稱</th><th>類型 (JP/TW)</th><th>退補</th><th>操作</th></tr></thead>
+          <tbody id="tf-auntie-tbody"></tbody>
+        </table>
+        <!-- Auntie bonus (v4) -->
+        <div style="margin-top:16px;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--text);">🌸 阿姨額外退款加成</div>
+          <div id="v4-bonus-grid" class="v4-mapping-grid"></div>
+          <button class="btn btn-sage btn-sm" style="margin-top:8px;" onclick="v4_saveAuntieBonus()">💾 儲存加成</button>
+        </div>
+        <!-- Auntie cycles -->
+        <div style="margin-top:16px;">
+          <div style="font-size:13px;font-weight:700;margin-bottom:8px;">📋 阿姨結算週期</div>
+          <div id="v4-cycle-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;"></div>
+          <button class="btn btn-sage btn-sm" style="margin-top:8px;" onclick="v4_saveCycles()">儲存週期</button>
+        </div>
+      </div>
+    </div>
+  </div><!-- /finance-a -->
+
+  <!-- B 畫面：帳務計算 -->
+  <div id="finance-b" style="display:none;">
+    <!-- 日期範圍選擇 -->
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+      <button class="v4-filter-tab active" id="fb-range-today" onclick="fb_setRange('today',this)">今天</button>
+      <button class="v4-filter-tab" id="fb-range-week" onclick="fb_setRange('week',this)">本週</button>
+      <button class="v4-filter-tab" id="fb-range-month" onclick="fb_setRange('month',this)">本月</button>
+      <button class="v4-filter-tab" id="fb-range-custom" onclick="fb_setRange('custom',this)">自訂</button>
+      <div id="fb-custom-dates" style="display:none;gap:6px;align-items:center;">
+        <input type="date" id="fb-date-from" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card2);color:var(--text);" onchange="fb_loadData()">
+        <span style="color:var(--text3);">—</span>
+        <input type="date" id="fb-date-to" style="padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card2);color:var(--text);" onchange="fb_loadData()">
+      </div>
+      <button class="btn btn-plain btn-sm" onclick="fb_loadData()">🔄</button>
+      <div style="margin-left:auto;display:flex;gap:6px;">
+        <button class="btn btn-sky btn-sm" onclick="fb_saveReport('日報')">💾 日報</button>
+        <button class="btn btn-sage btn-sm" onclick="fb_saveReport('週報')">💾 週報</button>
+        <button class="btn btn-rose btn-sm" onclick="fb_saveReport('月報')">💾 月報</button>
+      </div>
+    </div>
+
+    <!-- 頂部匯總卡 -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px;" id="fb-summary">
+      <div class="card" style="padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">GG 總</div>
+        <div id="fb-tot-gg" style="font-size:18px;font-weight:800;color:var(--accent);">—</div>
+      </div>
+      <div class="card" style="padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">EE 總</div>
+        <div id="fb-tot-ee" style="font-size:18px;font-weight:800;color:var(--rose);">—</div>
+      </div>
+      <div class="card" style="padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">S（公司）</div>
+        <div id="fb-tot-s" style="font-size:18px;font-weight:800;color:var(--sage);">—</div>
+      </div>
+      <div class="card" style="padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">牌價總</div>
+        <div id="fb-tot-price" style="font-size:18px;font-weight:800;color:var(--gold);">—</div>
+      </div>
+      <div class="card" style="padding:10px;text-align:center;">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px;">M收總</div>
+        <div id="fb-tot-shou" style="font-size:18px;font-weight:800;color:var(--sky);">—</div>
+      </div>
+    </div>
+
+    <!-- 明細表 -->
+    <div class="card" style="padding:12px;overflow-x:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span class="card-title">明細表 <span id="fb-row-count" style="font-size:11px;color:var(--text3);font-weight:400;"></span></span>
+        <span style="font-size:11px;color:var(--text3);">❌ 欄位異常以紅色標記</span>
+      </div>
+      <table class="etbl" id="fb-detail-table" style="min-width:1100px;width:100%;table-layout:fixed;">
+        <thead><tr>
+          <th style="width:5rem">日期</th>
+          <th style="width:4.5rem">阿姨</th>
+          <th style="width:4.5rem">妹妹</th>
+          <th style="width:4rem">GG</th>
+          <th style="width:3.5rem">時間</th>
+          <th style="width:5rem">位置</th>
+          <th style="width:3.5rem">PS</th>
+          <th style="width:3.5rem" title="員工計價（手動）">寫</th>
+          <th style="width:4rem">牌價</th>
+          <th style="width:4.5rem">M收</th>
+          <th style="width:3.5rem;color:var(--gold);">經退</th>
+          <th style="width:4rem;color:var(--accent);">G回</th>
+          <th style="width:4rem;color:var(--rose);">EE$</th>
+          <th style="width:3.5rem;color:var(--sage);">S</th>
+          <th style="width:3rem">O/X</th>
+        </tr></thead>
+        <tbody id="fb-tbody"></tbody>
+      </table>
+      <div id="fb-empty" style="text-align:center;padding:40px;color:var(--text3);">
+        <div style="font-size:2rem;margin-bottom:8px;">📊</div>
+        <div>選擇日期範圍載入資料</div>
+      </div>
+    </div>
+
+    <!-- 小帳本 + 付款記錄 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+      <div id="v4-page-payment" class="card" style="padding:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span class="card-title">💳 付款紀錄</span>
+          <button class="btn btn-sky btn-sm" onclick="v4_openPayModal(-1)">＋ 新增</button>
+        </div>
+        <div id="v4-payment-content"></div>
+      </div>
+      <div class="card" style="padding:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span class="card-title">📒 小帳本</span>
+        </div>
+        <div style="display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;" id="v4-led-tabs"></div>
+        <div id="v4-led-content"></div>
+      </div>
+    </div>
+
+    <!-- 帳務管理（阿姨/GG 帳務） -->
+    <div class="card" style="padding:12px;margin-top:12px;">
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button id="boss-sub-company" onclick="bossSwitchSub('company')" style="flex:1;padding:7px;border:1.5px solid var(--accent);border-radius:8px;background:var(--accent);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">🏢 公司總覽</button>
+        <button id="boss-sub-accounts" onclick="bossSwitchSub('accounts')" style="flex:1;padding:7px;border:1.5px solid var(--border);border-radius:8px;background:var(--card2);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);">📊 帳務管理</button>
+      </div>
+      <div id="boss-sub-company-view">
+        <div id="v4-page-company"></div>
+      </div>
+      <div id="boss-sub-accounts-view" style="display:none;">
+        <div class="v4-filter-tabs">
+          <button class="v4-filter-tab active" onclick="v4_switchAccTab('agent',this)">💼 經紀帳務</button>
+          <button class="v4-filter-tab" onclick="v4_switchAccTab('aunty',this)">🌸 阿姨帳務</button>
+        </div>
+        <div id="v4-accounts-agent"></div>
+        <div id="v4-accounts-aunty" style="display:none;">
+          <div class="v4-filter-tabs" id="v4-aunty-filter-tabs">
+            <button class="v4-filter-tab active" onclick="v4_setAuntyFilter('all',this)">全部</button>
+            <button class="v4-filter-tab" onclick="v4_setAuntyFilter('day',this)">日結</button>
+            <button class="v4-filter-tab" onclick="v4_setAuntyFilter('wk',this)">週結</button>
+            <button class="v4-filter-tab" onclick="v4_setAuntyFilter('mo',this)">月結</button>
+          </div>
+          <div id="v4-aunty-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 資金帳戶設定 -->
+    <div class="card" style="padding:12px;margin-top:12px;">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;">🏦 資金帳戶</div>
+      <input type="text" id="v4-wallets-inp" style="width:100%;padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;background:var(--card2);font-size:13px;" placeholder="用逗號分隔，如：我,男友,玉山銀行">
+      <button class="btn btn-sage btn-sm" style="margin-top:7px;" onclick="v4_saveWallets()">儲存帳戶</button>
+    </div>
+  </div><!-- /finance-b -->
+
+  <!-- 頂部狀態列 -->
+  <div style="text-align:right;margin-top:8px;">
+    <span id="boss-sync-status" style="font-size:11px;color:var(--text3);"></span>
+  </div>
+</div>
+</div><!-- /tab-finance -->
+
+<!-- ==================== 轉檔器 Tab (hidden, kept for JS compat) ==================== -->
+<div id="tab-tf" class="panel" style="display:none!important">
 <div style="width:100%;">
 
   <!-- Sub-nav -->
@@ -1261,8 +1629,8 @@ body.sidebar-collapsed .app{margin-left:44px;}
 </div>
 </div><!-- /tab-tf -->
 
-<!-- ==================== 老闆帳目 Tab ==================== -->
-<div id="tab-boss" class="panel">
+<!-- ==================== 老闆帳目 (hidden, kept for JS compat) ==================== -->
+<div id="tab-boss" class="panel" style="display:none!important">
   <div id="boss-content" style="padding:12px;">
     <!-- Top bar -->
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
@@ -1447,10 +1815,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
   <button class="bnav-item" data-tab="all" onclick="ST('all')"><span class="bnav-icon">🗂</span>所有</button>
   <button class="bnav-item" data-tab="bb" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
   <button class="bnav-item" data-tab="stat" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
-  <button class="bnav-item" data-tab="admin" onclick="ST('admin')"><span class="bnav-icon">📋</span>班表</button>
-  <button class="bnav-item" data-tab="walk" onclick="ST('walk')"><span class="bnav-icon">✦</span>符號</button>
-  <button class="bnav-item" data-tab="tf" onclick="ST('tf')"><span class="bnav-icon">📊</span>轉檔</button>
-  <button class="bnav-item" data-tab="boss" onclick="ST('boss')"><span class="bnav-icon">💼</span>帳目</button>
+  <button class="bnav-item" data-tab="finance" onclick="ST('finance')"><span class="bnav-icon">💼</span>帳務</button>
 </nav>
 
 
@@ -2353,7 +2718,7 @@ function submitStatPartPayment(ui, auntieName) {
 
 function ST(id){
   window.scrollTo(0,0); // 切換 tab 時，回到頁面最頂端
-  var allTabs=['note','cal','all','bb','stat','admin','walk','tf','boss'];
+  var allTabs=['note','cal','all','bb','stat','admin','walk','tf','boss','finance'];
   allTabs.forEach(function(t){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
@@ -2372,6 +2737,11 @@ function ST(id){
   if(id==='bb') { syncNotepadToBb(); if(document.getElementById('bb-raw').value.trim()) parseBB(); }
   if(id==='tf') { if(!tf_initialized){ tf_loadG(); tf_initialized=true; } tf_populateOrderDates(); }
   if(id==='boss') { BOSS_UNLOCKED=true; if(typeof v4_loadData==='function') v4_loadData(function(){ if(typeof v4_renderCurrent==='function') v4_renderCurrent(); }); else if(typeof v4_renderCurrent==='function') v4_renderCurrent(); }
+  if(id==='finance') {
+    if(!tf_initialized){ tf_loadG(); tf_initialized=true; } tf_populateOrderDates();
+    BOSS_UNLOCKED=true;
+    if(typeof v4_loadData==='function') v4_loadData(function(){ if(typeof v4_renderCurrent==='function') v4_renderCurrent(); });
+  }
 }
 
 function SST(id){ ST(id); }
@@ -3735,6 +4105,248 @@ function tfST(id) {
   if(id==='mapping') { tf_renderGgTags(); tf_renderMm(); }
   if(id==='auntie') { tf_renderAunties(); }
   if(id==='history') { tf_loadHistory(); }
+}
+
+// ==================== 帳務中心 AB 畫面 ====================
+function financeST(ab) {
+  var isA = ab === 'a';
+  document.getElementById('finance-a').style.display = isA ? '' : 'none';
+  document.getElementById('finance-b').style.display = isA ? 'none' : '';
+  var btnA = document.getElementById('finance-btn-a');
+  var btnB = document.getElementById('finance-btn-b');
+  if (btnA) {
+    btnA.style.background = isA ? 'var(--accent)' : 'var(--card2)';
+    btnA.style.color = isA ? '#fff' : 'var(--text2)';
+    btnA.style.borderColor = isA ? 'var(--accent)' : 'var(--border)';
+  }
+  if (btnB) {
+    btnB.style.background = !isA ? 'var(--accent)' : 'var(--card2)';
+    btnB.style.color = !isA ? '#fff' : 'var(--text2)';
+    btnB.style.borderColor = !isA ? 'var(--accent)' : 'var(--border)';
+  }
+  if (!isA) fb_loadData();
+}
+
+function faST(id) {
+  ['convert','records','mapping','auntie'].forEach(function(s) {
+    var p = document.getElementById('fa-p-'+s);
+    var t = document.getElementById('fa-tab-'+s);
+    if(p) p.classList.toggle('active', s===id);
+    if(t) t.classList.toggle('active', s===id);
+  });
+  if(id==='records') tf_loadRecordsTable();
+  if(id==='mapping') { tf_renderGgTags(); tf_renderMm(); v4_renderMmggGrid(); }
+  if(id==='auntie') { tf_renderAunties(); v4_renderBonusGrid(); }
+}
+
+// ── B 畫面：帳務計算 ──
+var fb_currentRange = 'today';
+var fb_debounceTimers = {};
+
+function fb_setRange(range, el) {
+  fb_currentRange = range;
+  document.querySelectorAll('[id^="fb-range-"]').forEach(function(b){ b.classList.remove('active'); });
+  if(el) el.classList.add('active');
+  var customDiv = document.getElementById('fb-custom-dates');
+  if(customDiv) customDiv.style.display = range==='custom' ? 'flex' : 'none';
+  if(range !== 'custom') fb_loadData();
+}
+
+function fb_getDateRange() {
+  var now = new Date();
+  var y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
+  var fmt = function(dt) {
+    var mm = dt.getMonth()+1, dd = dt.getDate();
+    return dt.getFullYear()+'/'+(mm<10?'0':'')+mm+'/'+(dd<10?'0':'')+dd;
+  };
+  if(fb_currentRange === 'today') {
+    var s = fmt(now); return {from:s, to:s};
+  } else if(fb_currentRange === 'week') {
+    var dow = now.getDay(); // 0=Sun
+    var monday = new Date(now); monday.setDate(d - (dow===0?6:dow-1));
+    var sunday = new Date(monday); sunday.setDate(monday.getDate()+6);
+    return {from:fmt(monday), to:fmt(sunday)};
+  } else if(fb_currentRange === 'month') {
+    var ms = new Date(y,m,1), me = new Date(y,m+1,0);
+    return {from:fmt(ms), to:fmt(me)};
+  } else {
+    var f = document.getElementById('fb-date-from'), t2 = document.getElementById('fb-date-to');
+    var fv = f?f.value.replace(/-/g,'/'):'', tv = t2?t2.value.replace(/-/g,'/'):fv;
+    return {from:fv||fmt(now), to:tv||fmt(now)};
+  }
+}
+
+function fb_loadData() {
+  var range = fb_getDateRange();
+  var tbody = document.getElementById('fb-tbody');
+  var empty = document.getElementById('fb-empty');
+  if(!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:20px;color:var(--text3);">載入中…</td></tr>';
+  if(empty) empty.style.display = 'none';
+
+  if(IS_GAS) {
+    google.script.run
+      .withSuccessHandler(function(rows){ fb_renderRows(rows||[]); })
+      .withFailureHandler(function(){ fb_renderRows([]); })
+      .getTfRecords();
+  } else {
+    fb_renderRows([]);
+  }
+}
+
+function fb_inRange(dateStr, from, to) {
+  if(!dateStr) return false;
+  return dateStr >= from && dateStr <= to;
+}
+
+function fb_renderRows(allRows) {
+  var range = fb_getDateRange();
+  var rows = allRows.filter(function(r){ return fb_inRange(r.date||r['日期']||'', range.from, range.to); });
+  var tbody = document.getElementById('fb-tbody');
+  var empty = document.getElementById('fb-empty');
+  if(!tbody) return;
+
+  if(!rows.length) {
+    tbody.innerHTML = '';
+    if(empty) empty.style.display = '';
+    fb_updateSummary([]);
+    document.getElementById('fb-row-count').textContent = '';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+
+  var html = '';
+  rows.forEach(function(r, idx) {
+    var calc = fb_calcRow(r);
+    var isErr = calc.ox === '❌';
+    var noGG = !r.gg && !r['GG'];
+    var trClass = (isErr||noGG) ? 'style="background:var(--rose-light);"' : '';
+    var cells = [
+      r.date||r['日期']||'',
+      r.auntie||r['阿姨']||'',
+      r.mm||r['妹妹']||'',
+      r.gg||r['GG']||'',
+      r.time||r['時間']||'',
+      r.place||r['地點']||'',
+      r.ps||r['PS']||'',
+      r.writeCol||r['寫']||'',
+      r.price||r['牌價']||'',
+      r.shou||r['M收']||''
+    ];
+    html += '<tr '+trClass+'>';
+    cells.forEach(function(v, ci) {
+      html += '<td contenteditable="true" style="padding:4px 5px;border:1px solid var(--border);font-size:11px;cursor:text;" '+
+        'oninput="fb_cellChanged('+idx+','+ci+',this)">' + (v||'') + '</td>';
+    });
+    html += '<td style="padding:4px 5px;border:1px solid var(--border);font-size:11px;color:var(--gold);text-align:right;">' + (calc.ggRefund||0) + '</td>';
+    html += '<td style="padding:4px 5px;border:1px solid var(--border);font-size:11px;color:var(--accent);text-align:right;font-weight:700;">' + (calc.gBack||0) + '</td>';
+    html += '<td style="padding:4px 5px;border:1px solid var(--border);font-size:11px;color:var(--rose);text-align:right;font-weight:700;">' + (calc.eePay||0) + '</td>';
+    html += '<td style="padding:4px 5px;border:1px solid var(--border);font-size:11px;color:var(--sage);text-align:right;font-weight:700;">' + (calc.sProfit||0) + '</td>';
+    html += '<td style="padding:4px 5px;border:1px solid var(--border);font-size:11px;text-align:center;">' + (calc.ox||'') + '</td>';
+    html += '</tr>';
+  });
+  tbody.innerHTML = html;
+  document.getElementById('fb-row-count').textContent = rows.length + ' 筆';
+  fb_updateSummary(rows.map(function(r){ return fb_calcRow(r); }));
+  fb_rows_cache = rows;
+}
+
+var fb_rows_cache = [];
+
+function fb_cellChanged(rowIdx, colIdx, el) {
+  clearTimeout(fb_debounceTimers['r'+rowIdx+'c'+colIdx]);
+  fb_debounceTimers['r'+rowIdx+'c'+colIdx] = setTimeout(function(){
+    if(!fb_rows_cache[rowIdx]) return;
+    var colMap = ['date','auntie','mm','gg','time','place','ps','writeCol','price','shou'];
+    var key = colMap[colIdx];
+    if(key) fb_rows_cache[rowIdx][key] = el.textContent.trim();
+    fb_recalcRow(rowIdx);
+    // auto-save to cloud
+    if(IS_GAS && fb_rows_cache[rowIdx]._rowIndex) {
+      google.script.run.updateTfRecord(fb_rows_cache[rowIdx]._rowIndex, fb_rows_cache[rowIdx]);
+    }
+  }, 800);
+}
+
+function fb_recalcRow(rowIdx) {
+  var r = fb_rows_cache[rowIdx];
+  if(!r) return;
+  var calc = fb_calcRow(r);
+  var tr = document.getElementById('fb-tbody').rows[rowIdx];
+  if(!tr) return;
+  var isErr = calc.ox === '❌';
+  var noGG = !r.gg;
+  tr.style.background = (isErr||noGG) ? 'var(--rose-light)' : '';
+  // update calc cells (cols 10-14)
+  tr.cells[10].textContent = calc.ggRefund||0;
+  tr.cells[11].textContent = calc.gBack||0;
+  tr.cells[12].textContent = calc.eePay||0;
+  tr.cells[13].textContent = calc.sProfit||0;
+  tr.cells[14].textContent = calc.ox||'';
+  fb_updateSummary(fb_rows_cache.map(function(rr){ return fb_calcRow(rr); }));
+}
+
+function fb_calcRow(r) {
+  var price = parseFloat(r.price||r['牌價'])||0;
+  var mRec = parseFloat(r.shou||r['M收'])||0;
+  var writeVal = parseFloat(r.writeCol||r['寫'])||0;
+  var ggRefund = 0;
+  for(var i=0;i<V4_REFUND_TABLE.length;i++){
+    var rt=V4_REFUND_TABLE[i];
+    if(price>=rt[0]&&price<=rt[1]){ggRefund=rt[2];break;}
+  }
+  // Auntie bonus
+  var auntie = r.auntie||r['阿姨']||'';
+  var bonus = (typeof v4_db !== 'undefined' && v4_db && v4_db.auntieBonus && v4_db.auntieBonus[auntie]) ? (parseFloat(v4_db.auntieBonus[auntie])||0) : 0;
+  ggRefund += bonus;
+  var gBack, eePay, sProfit, ox;
+  if(price===0){
+    gBack=mRec; eePay=writeVal; sProfit=gBack-eePay; ox=Math.abs(gBack-(eePay+sProfit))<1?'✅':'❌';
+  } else {
+    gBack = Math.round(mRec - (price*0.5 + ggRefund));
+    eePay = writeVal; // EE$ = 寫 (manually entered)
+    sProfit = Math.round(gBack - eePay);
+    ox = Math.abs(gBack-(eePay+sProfit))<1 ? '✅' : '❌';
+  }
+  return {ggRefund:ggRefund, gBack:gBack, eePay:eePay, sProfit:sProfit, ox:ox};
+}
+
+function fb_updateSummary(calcs) {
+  var totGG=0, totEE=0, totS=0, totPrice=0, totShou=0;
+  fb_rows_cache.forEach(function(r,i){
+    totPrice += parseFloat(r.price||r['牌價'])||0;
+    totShou += parseFloat(r.shou||r['M收'])||0;
+  });
+  calcs.forEach(function(c){
+    totGG += c.gBack||0;
+    totEE += c.eePay||0;
+    totS += c.sProfit||0;
+  });
+  var fmt = function(n){ return n.toLocaleString(); };
+  var el = function(id){ return document.getElementById(id); };
+  if(el('fb-tot-gg')) el('fb-tot-gg').textContent = fmt(totGG);
+  if(el('fb-tot-ee')) el('fb-tot-ee').textContent = fmt(totEE);
+  if(el('fb-tot-s')) el('fb-tot-s').textContent = fmt(totS);
+  if(el('fb-tot-price')) el('fb-tot-price').textContent = fmt(totPrice);
+  if(el('fb-tot-shou')) el('fb-tot-shou').textContent = fmt(totShou);
+}
+
+function fb_saveReport(type) {
+  var range = fb_getDateRange();
+  var calcs = fb_rows_cache.map(function(r){ return fb_calcRow(r); });
+  var totGG=0,totEE=0,totS=0,totPrice=0,totShou=0;
+  fb_rows_cache.forEach(function(r){ totPrice+=parseFloat(r.price||r['牌價'])||0; totShou+=parseFloat(r.shou||r['M收'])||0; });
+  calcs.forEach(function(c){ totGG+=c.gBack||0; totEE+=c.eePay||0; totS+=c.sProfit||0; });
+  var report = {
+    type:type, from:range.from, to:range.to,
+    totGG:totGG, totEE:totEE, totS:totS, totPrice:totPrice, totShou:totShou,
+    detail:JSON.stringify(fb_rows_cache), savedAt: new Date().toLocaleString()
+  };
+  if(IS_GAS) {
+    google.script.run.withSuccessHandler(function(){ showToast(type+'已存檔'); }).saveReport(report);
+  } else {
+    showToast(type+'（測試模式）');
+  }
 }
 
 function tf_loadG() {
