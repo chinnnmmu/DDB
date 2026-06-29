@@ -1641,10 +1641,12 @@ function load(){
 }
 var _cloudSaveTimer = null;
 var _cloudSaveRetries = 0;
+var _pendingWoSave = false;
 var ORDERS_LS_KEY = 'ddb-work-orders';
 function save(){
   // 立即存到 localStorage，避免重整遺失
   try{ localStorage.setItem(ORDERS_LS_KEY, JSON.stringify({ts: Date.now(), data: notes})); }catch(e){}
+  _pendingWoSave = true;
   clearTimeout(_cloudSaveTimer);
   _cloudSaveRetries = 0;
   _cloudSaveTimer = setTimeout(function(){
@@ -1709,6 +1711,7 @@ function saveAllDataToCloud() {
     .withSuccessHandler(function(result) {
       if (result && result.success) {
         _cloudSaveRetries = 0;
+        _pendingWoSave = false;
         setSyncStatus('ok','已儲存');
         setTimeout(function(){ setSyncStatus('',''); }, 2500);
       } else {
@@ -1780,15 +1783,19 @@ function loadAllDataFromCloud(silent) {
           } else {
             // 首次載入：雲端資料優先（跨裝置同步）
             multiNotes = data.multiNotes;
+            restoreEditorsFromNotes();
           }
           renderMultiNoteList();
           cloudEmpty = false;
         }
         if (data && data.workOrders && typeof data.workOrders === 'object' && Object.keys(data.workOrders).length > 0) {
-          // 雲端資料直接用（跨裝置同步，不依賴 localStorage）
-          notes = data.workOrders;
-          try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
-          try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
+          if (silent && _pendingWoSave) {
+            // 有未儲存的工單編輯中，跳過覆蓋，保留本機資料
+          } else {
+            notes = data.workOrders;
+            try{RC();}catch(e){} try{RR();}catch(e){} try{RW();}catch(e){}
+            try{renderUnpaidDashboard();}catch(e){} try{renderAllOrders();}catch(e){}
+          }
           cloudEmpty = false;
         }
         // 還原班表資料（KV：day/week/note/db/walk）
@@ -1860,6 +1867,20 @@ function syncEditorsToNotes() {
       };
       multiNotes.unshift(newNote);
       editor.dataset.noteId = String(newNote.id);
+    }
+  }
+}
+
+// 從 multiNotes 還原便簽格子編輯器內容（載入時呼叫）
+function restoreEditorsFromNotes() {
+  for (var i = 1; i <= 3; i++) {
+    var editor = document.getElementById('multi-editor' + i);
+    if (!editor) continue;
+    var note = multiNotes[i - 1];
+    if (note) {
+      editor.value = note.text || '';
+      editor.dataset.noteId = String(note.id);
+      if (note.color) { try{ _applySlotColor(i, note.color); }catch(e){} }
     }
   }
 }
@@ -4019,7 +4040,7 @@ function walkCopySub(i) {
 
 /* ── 班表資料載入已整合進 loadAllDataFromCloud，開頁時自動執行 ── */
 function loadAdminFromSheets() {
-  loadAllDataFromCloud();
+  // 已整合進 loadAllDataFromCloud，不重複呼叫
 }
 
 // ==================== 轉檔器 (tf_*) ====================
