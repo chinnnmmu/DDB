@@ -311,7 +311,6 @@ body.sidebar-collapsed .app{margin-left:44px;}
   <div class="sidebar-label sidebar-expand-only">WORKSPACE</div>
   <div class="sidebar-menu">
     <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📅</span> 每日工單</button>
-    <button class="snav-item" data-tab="tf" onclick="ST('tf')"><span class="snav-icon">📊</span> 轉檔器</button>
   </div>
   <div class="sidebar-footer">
     <div class="theme-toggle-inline sidebar-expand-only" id="themeToggle">
@@ -328,6 +327,11 @@ body.sidebar-collapsed .app{margin-left:44px;}
       </div>
     </div>
   </div>
+
+  <!-- 後台入口 (hidden) -->
+  <div id="backend-hint" style="text-align:center;padding:4px 0;display:none;">
+    <button onclick="ST('tf')" style="font-size:10px;color:var(--text3);background:none;border:none;cursor:pointer;padding:4px 8px;">⚙ 後台</button>
+  </div>
 </aside>
 
 <div id="cloud-loading-overlay" class="hidden" style="display:none">
@@ -342,6 +346,50 @@ body.sidebar-collapsed .app{margin-left:44px;}
 <div class="app">
 
 
+
+<div id="tab-note" class="panel">
+  <div style="padding: 0.4rem; height:calc(100vh - 16px); display:flex; flex-direction:column;">
+    <div style="display:flex; gap:10px; flex:1; min-height:0;">
+      <!-- 左側清單 -->
+      <div style="width: 180px; background: var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(0,0,0,.04); flex-shrink:0;">
+        <div style="padding:6px 8px; background:#E8F0F8; border-bottom:1px solid var(--border); display:flex; gap:6px; align-items:center;">
+          <input type="text" id="multi-note-search" placeholder="搜尋..."
+                 style="flex:1; min-width:0; padding:5px 6px; font-size:12px; border:1px solid var(--border); border-radius:6px;"
+                 onkeyup="filterMultiNoteList()">
+          <button class="btn btn-sage" onclick="addMultiNote()" style="padding:4px 8px; font-size:12px; white-space:nowrap; flex-shrink:0;">＋</button>
+        </div>
+        <div id="multi-note-list" style="flex:1; overflow-y:auto; padding:6px; font-size:13px;"></div>
+      </div>
+      <!-- 右側 3 個彩色編輯區 -->
+      <div style="flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; min-width:0;">
+        <!-- 1. Lavender -->
+        <div style="background:var(--card); border:2px solid #c8c0d8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="padding:7px 10px; background:#e8e2f4; color:#4a3a6a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; flex-shrink:0;">
+            <span id="multi-time1">💜 Lavender</span>
+            <button onclick="saveMultiNote(1)" style="padding:2px 8px; background:white; border:1px solid #c8c0d8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
+          </div>
+          <textarea id="multi-editor1" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第1個行程..."></textarea>
+        </div>
+        <!-- 2. Rose -->
+        <div style="background:var(--card); border:2px solid #e8b8c4; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="padding:7px 10px; background:#fce4ec; color:#6a2a3a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; flex-shrink:0;">
+            <span id="multi-time2">🌹 Rose</span>
+            <button onclick="saveMultiNote(2)" style="padding:2px 8px; background:white; border:1px solid #e8b8c4; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
+          </div>
+          <textarea id="multi-editor2" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第2個行程..."></textarea>
+        </div>
+        <!-- 3. Mint -->
+        <div style="background:var(--card); border:2px solid #a8d4b8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
+          <div style="padding:7px 10px; background:#d8f0e4; color:#2a5a40; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; flex-shrink:0;">
+            <span id="multi-time3">🌿 Mint</span>
+            <button onclick="saveMultiNote(3)" style="padding:2px 8px; background:white; border:1px solid #a8d4b8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
+          </div>
+          <textarea id="multi-editor3" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第3個行程..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="tab-cal" class="panel active">
     <div class="wo-desktop">
@@ -641,7 +689,6 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
 <nav class="bottom-nav">
   <button class="bnav-item active" data-tab="cal" onclick="ST('cal')"><span class="bnav-icon">📅</span>工單</button>
-  <button class="bnav-item" data-tab="tf" onclick="ST('tf')"><span class="bnav-icon">📊</span>轉檔</button>
 </nav>
 
 
@@ -685,18 +732,14 @@ function load(){
 var _cloudSaveTimer = null;
 function save(){
   clearTimeout(_cloudSaveTimer);
-  _cloudSaveTimer = setTimeout(function(){
-    saveAllDataToCloud();
-  }, 800);
+  _cloudSaveTimer = setTimeout(saveAllDataToCloud, 800);
 }
-function saveS(){try{localStorage.setItem(SNK,JSON.stringify(stickies));}catch(e){}}
+function saveS(){ clearTimeout(_cloudSaveTimer); _cloudSaveTimer = setTimeout(saveAllDataToCloud, 800); }
 var _notesSyncTimer = null;
 var MULTI_NOTES_LS_KEY = 'ddb-multi-notes';
 function saveMultiNotes(){
-  // 先存 localStorage 當保險
-  try{ localStorage.setItem(MULTI_NOTES_LS_KEY, JSON.stringify(multiNotes)); }catch(e){}
   clearTimeout(_notesSyncTimer);
-  _notesSyncTimer = setTimeout(function(){ saveAllDataToCloud(); }, 800);
+  _notesSyncTimer = setTimeout(saveAllDataToCloud, 800);
 }
 
 function manualSaveToCloud() {
@@ -1500,7 +1543,7 @@ function submitStatPartPayment(ui, auntieName) {
 
 function ST(id){
   window.scrollTo(0,0); // 切換 tab 時，回到頁面最頂端
-  var allTabs=['cal','tf'];
+  var allTabs=['note','cal','tf'];
   allTabs.forEach(function(t){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
@@ -3262,5 +3305,28 @@ function tf_loadHistory() {
     .getRawOrdersHistory();
 }
 // ==================== end 轉檔器 ====================
+
+
+// ── 後台入口：URL 含 ?backend 或 #tf 時自動開啟，或長按 logo 5 次 ──
+(function(){
+  var _tapCount = 0, _tapTimer;
+  function checkBackendAccess(){
+    if(location.search.includes('backend') || location.hash === '#tf'){
+      document.getElementById('backend-hint').style.display = 'block';
+      ST('tf');
+    }
+  }
+  window.addEventListener('load', checkBackendAccess);
+  // 隱藏入口：點 sidebar toggle 5 次
+  var _sbTaps = 0, _sbTimer;
+  document.addEventListener('DOMContentLoaded', function(){
+    var toggle = document.getElementById('sidebar-toggle') || document.querySelector('.sidebar-toggle');
+    if(toggle){ toggle.addEventListener('click', function(){
+      _sbTaps++; clearTimeout(_sbTimer);
+      _sbTimer = setTimeout(function(){ _sbTaps = 0; }, 2000);
+      if(_sbTaps >= 5){ document.getElementById('backend-hint').style.display='block'; _sbTaps=0; }
+    }); }
+  });
+})();
 
 </script>
