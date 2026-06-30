@@ -2168,6 +2168,41 @@ function parseImpLine(line){
   return {id:'r'+Date.now()+Math.random(),pai:pai,name:name,place:place,auntie:auntie,shi:shi,rebate:'',ee:ee,note:note,settled:false,settledDate:'',settledAmount:''};
 }
 
+// 新格式解析：26詩晴｜2040｜南港探索｜大發｜240/94(店10)
+function parseImpLinePipe(line) {
+  line = line.trim(); if (!line) return null;
+  var parts = line.split('｜').map(function(s){ return s.trim(); });
+  if (parts.length < 5) return null;
+
+  // 第1段：牌+人名，如 26詩晴
+  var m = parts[0].match(/^(\d+)(.+)$/);
+  if (!m) return null;
+  var pai = m[1], name = m[2].trim();
+
+  // 第2段：時間，第3段：地點 → 合併
+  var time = parts[1] || '';
+  var loc  = parts[2] || '';
+  var place = time + loc;
+
+  // 第4段：阿姨
+  var auntie = parts[3] || '';
+
+  // 第5段：實收/EE(備記)
+  var last = parts[4] || '';
+  var note = '';
+  last = last.replace(/\(([^)]*)\)/g, function(_, n){ note = (note ? note+' ' : '') + n; return ''; });
+  var slash = last.split('/');
+  var shi = (slash[0] || '').trim();
+  var ee  = (slash[1] || '').trim();
+
+  // 實收=0 自動加「不收」
+  if (shi === '0' || shi === '') {
+    place = place + '(不收)';
+  }
+
+  return { id:'r'+Date.now()+Math.random(), pai:pai, name:name, place:place, auntie:auntie, shi:shi, rebate:'', ee:ee, note:note, settled:false, settledDate:'', settledAmount:'' };
+}
+
 function doImport(){
   var raw=document.getElementById('imp-raw').value.trim();
   var msg=document.getElementById('imp-msg');
@@ -2176,19 +2211,23 @@ function doImport(){
   var lines=raw.split('\n').map(function(l){return l.trim();}).filter(Boolean);
   var dateVal='', orderLines=lines;
 
-  // 第1行如果是日期格式（M/D 或 M-D）就自動讀取
-  if(lines.length && /^(\d{1,2})[\/\-](\d{1,2})$/.test(lines[0])){
-    dateVal=normDate(lines[0]);
+  // 第1行如果是日期格式（M/D 或 M-D 或含星期）就自動讀取
+  if(lines.length && /^(\d{1,2})[\/\-](\d{1,2})/.test(lines[0])){
+    var dm = lines[0].match(/^(\d{1,2})[\/\-](\d{1,2})/);
+    if (dm) dateVal = normDate(dm[1]+'/'+dm[2]);
     orderLines=lines.slice(1);
   } else {
-    // 否則用目前選取的日期
     var k=selKey(); if(k) dateVal=k;
   }
 
   if(!dateVal){msg.textContent='請在第1行輸入日期（如 6/24），或先在行事曆點選日期';return;}
 
   var parsed=[];
-  orderLines.forEach(function(l){var r=parseImpLine(l);if(r)parsed.push(r);});
+  orderLines.forEach(function(l){
+    // 偵測是否為 ｜ 分隔格式
+    var r = l.indexOf('｜') >= 0 ? parseImpLinePipe(l) : parseImpLine(l);
+    if(r) parsed.push(r);
+  });
   if(!parsed.length){msg.textContent='解析失敗，請確認格式';return;}
   if(!notes[dateVal])notes[dateVal]=[];
   parsed.forEach(function(r){notes[dateVal].push(r);});
@@ -2514,13 +2553,13 @@ window.onload=function(){
   if(impBtn) impBtn.onclick=doImport;
   ST('cal'); // 預設顯示每日工單
 
-  RC();
+  try { RC(); } catch(e) {}
   SD(today.getFullYear(), today.getMonth(), today.getDate());
-  RBB();
-  RSG();
-  renderUnpaidDashboard();
-  renderAllOrders();
-  renderMultiNoteList();
+  try { RBB(); } catch(e) {}
+  try { RSG(); } catch(e) {}
+  try { renderUnpaidDashboard(); } catch(e) {}
+  try { renderAllOrders(); } catch(e) {}
+  try { renderMultiNoteList(); } catch(e) {}
 
   // 搜尋頁籤：bb-raw 快取恢復
   var bbRawCache = loadLS('bb-raw-cache');
@@ -3368,7 +3407,7 @@ var _stickyTimer = null;
 var STICKY_COLORS = [
   { bg:'#FEFCE8', border:'#FDE047', label:'黃', dot:'#EAB308' },
   { bg:'#FFF1F2', border:'#FDA4AF', label:'粉', dot:'#F43F5E' },
-  { bg:'#F0F9FF', border:'#7DD3FC', label:'藍', dot:'#0EA5E9' },
+  { bg:'#FFF7ED', border:'#FDBA74', label:'橙', dot:'#F97316' },
   { bg:'#F0FDF4', border:'#86EFAC', label:'綠', dot:'#22C55E' },
   { bg:'#FAF5FF', border:'#D8B4FE', label:'紫', dot:'#A855F7' },
 ];
@@ -3409,13 +3448,14 @@ function stickyRender() {
     } else {
       listPanel.innerHTML = stickyData.map(function(s, idx) {
         var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
-        var preview = (s.text || '').replace(/\n/g,' ').slice(0, 18) || '（空白）';
+        var lines = (s.text || '（空白）').split('\n').slice(0,3);
         var isVisible = idx < 4;
         return '<div onclick="stickySwitchToView('+idx+')" ' +
-          'style="display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;background:'+(isVisible?'var(--rose-light)':'transparent')+';transition:.15s;" ' +
+          'style="padding:8px 9px;border-radius:8px;cursor:pointer;background:'+(isVisible?'var(--rose-light)':'transparent')+';transition:.15s;border-left:3px solid '+(isVisible?'var(--rose)':col.dot)+';margin-bottom:2px;" ' +
           'onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">' +
-          '<span style="width:9px;height:9px;border-radius:50%;background:'+col.dot+';flex-shrink:0;"></span>' +
-          '<span style="font-size:12px;color:'+(isVisible?'var(--rose)':'var(--text2)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:'+(isVisible?'600':'400')+';">'+preview+'</span>' +
+          lines.map(function(ln, li){
+            return '<div style="font-size:11.5px;color:'+(isVisible?'var(--rose)':'var(--text2)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:'+(li===0&&isVisible?'600':'400')+';">'+(ln||'&nbsp;')+'</div>';
+          }).join('') +
         '</div>';
       }).join('');
     }
@@ -3459,13 +3499,14 @@ function stickyRenderListOnly() {
   if (!listPanel) return;
   listPanel.innerHTML = stickyData.map(function(s, idx) {
     var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
-    var preview = (s.text || '').replace(/\n/g,' ').slice(0, 18) || '（空白）';
+    var lines = (s.text || '（空白）').split('\n').slice(0,3);
     var isVisible = idx < 4;
     return '<div onclick="stickySwitchToView('+idx+')" ' +
-      'style="display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;background:'+(isVisible?'var(--rose-light)':'transparent')+';transition:.15s;" ' +
+      'style="padding:8px 9px;border-radius:8px;cursor:pointer;background:'+(isVisible?'var(--rose-light)':'transparent')+';transition:.15s;border-left:3px solid '+(isVisible?'var(--rose)':col.dot)+';margin-bottom:2px;" ' +
       'onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">' +
-      '<span style="width:9px;height:9px;border-radius:50%;background:'+col.dot+';flex-shrink:0;"></span>' +
-      '<span style="font-size:12px;color:'+(isVisible?'var(--rose)':'var(--text2)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:'+(isVisible?'600':'400')+';">'+preview+'</span>' +
+      lines.map(function(ln, li){
+        return '<div style="font-size:11.5px;color:'+(isVisible?'var(--rose)':'var(--text2)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:'+(li===0&&isVisible?\'600\':\'400\')+';">'+(ln||'&nbsp;')+'</div>';
+      }).join('') +
     '</div>';
   }).join('');
 }
