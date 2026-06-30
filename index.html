@@ -311,7 +311,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
   <div class="sidebar-label sidebar-expand-only">WORKSPACE</div>
   <div class="sidebar-menu">
     <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📌</span> 📌每日工單</button>
-    <button class="snav-item" data-tab="memo" onclick="ST('memo')"><span class="snav-icon">📓</span> 記事本</button>
+    <button class="snav-item" data-tab="memo" onclick="ST('memo')"><span class="snav-icon">🗒</span> 便簽</button>
   </div>
   <div class="sidebar-footer">
     <div class="theme-toggle-inline sidebar-expand-only" id="themeToggle">
@@ -550,17 +550,22 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
 <!-- ==================== 轉檔器 Tab ==================== -->
 <div id="tab-memo" class="panel">
-  <div style="display:flex;flex-direction:column;height:calc(100vh - var(--bottom-h));max-width:900px;margin:0 auto;padding:16px;gap:12px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-      <h2 style="font-size:16px;font-weight:800;margin:0;">📓 記事本</h2>
-      <span id="memo-sync-label" style="font-size:12px;color:var(--text3);"></span>
+  <div style="display:flex;flex-direction:column;height:calc(100vh - var(--bottom-h));padding:12px;gap:10px;">
+
+    <!-- 頂部工具列 -->
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <span style="font-size:15px;font-weight:800;">🗒 便簽</span>
+      <button onclick="stickyAdd()" style="padding:5px 14px;border-radius:20px;border:none;background:var(--rose);color:#fff;font-weight:700;cursor:pointer;font-size:12px;">＋ 新便簽</button>
+      <span id="sticky-sync" style="font-size:11px;color:var(--text3);margin-left:auto;"></span>
     </div>
-    <textarea id="memo-body"
-      placeholder="在這裡輸入重要記事…"
-      oninput="memoAutoSave()"
-      style="flex:1;width:100%;padding:14px;font-size:14px;line-height:1.7;border:1px solid var(--border);border-radius:10px;resize:none;background:var(--card);color:var(--text);font-family:var(--font);box-sizing:border-box;"></textarea>
+
+    <!-- 便簽網格 -->
+    <div id="sticky-board" style="flex:1;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:12px;padding:4px 2px;"></div>
+
   </div>
 </div>
+
+
 
 <div id="tab-tf" class="panel">
 <div style="max-width:1400px;margin:0 auto;">
@@ -703,7 +708,7 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
 <nav class="bottom-nav">
   <button class="bnav-item active" data-tab="cal" onclick="ST('cal')"><span class="bnav-icon">📌</span>工單</button>
-  <button class="bnav-item" data-tab="memo" onclick="ST('memo')"><span class="bnav-icon">📓</span>記事本</button>
+  <button class="bnav-item" data-tab="memo" onclick="ST('memo')"><span class="bnav-icon">🗒</span>便簽</button>
 </nav>
 
 
@@ -1576,7 +1581,7 @@ function ST(id){
   // 切換到探索搜尋時，自動從自由編輯區重新解析
   if(id==='bb') { syncNotepadToBb(); if(document.getElementById('bb-raw').value.trim()) parseBB(); }
   if(id==='tf') { if(!tf_initialized){ tf_loadG(); tf_initialized=true; } }
-    if(id==='memo') { memoLoadFromCloud(); }
+    if(id==='memo') { stickyLoadFromCloud(); }
     if(id==='fin') { if(!fin_initialized){ finInit(); fin_initialized=true; } finRenderPage(finCurrentPage); }
 }
 
@@ -3345,54 +3350,101 @@ function tf_loadHistory() {
   });
 })();
 
+// ══ 便簽 (Sticky Notes) Auto-Save ══
+var stickyData = [];   // [{id, color, text}]
+var _stickyTimer = null;
 
-// ══ 記事本 Auto-Save (1.5s debounce) ══
-var _memoTimer = null;
+var STICKY_COLORS = [
+  { bg:'#FFF9C4', border:'#F9D835', label:'黃' },
+  { bg:'#FFE0E6', border:'#F48FB1', label:'粉' },
+  { bg:'#E0F7FA', border:'#80DEEA', label:'藍' },
+  { bg:'#E8F5E9', border:'#A5D6A7', label:'綠' },
+  { bg:'#F3E5F5', border:'#CE93D8', label:'紫' },
+];
 
-function memoAutoSave() {
-  document.getElementById('memo-sync-label').textContent = '✏️ 輸入中…';
-  clearTimeout(_memoTimer);
-  _memoTimer = setTimeout(function() {
-    memoSaveToCloud();
-  }, 1500);
+function stickyAdd(colorIdx) {
+  var c = colorIdx !== undefined ? colorIdx : Math.floor(Math.random() * STICKY_COLORS.length);
+  stickyData.push({ id: Date.now(), color: c, text: '' });
+  stickyRender();
+  stickyScheduleSave();
 }
 
-function memoSaveToCloud() {
-  if (typeof google === 'undefined' || !google.script || !google.script.run) {
-    document.getElementById('memo-sync-label').textContent = '（本地模式）';
+function stickyDelete(id) {
+  stickyData = stickyData.filter(function(s){ return s.id !== id; });
+  stickyRender();
+  stickyScheduleSave();
+}
+
+function stickyEdit(id, val) {
+  var s = stickyData.find(function(s){ return s.id === id; });
+  if (s) s.text = val;
+  stickyScheduleSave();
+}
+
+function stickyChangeColor(id, colorIdx) {
+  var s = stickyData.find(function(s){ return s.id === id; });
+  if (s) { s.color = colorIdx; stickyRender(); stickyScheduleSave(); }
+}
+
+function stickyRender() {
+  var board = document.getElementById('sticky-board');
+  if (!board) return;
+  if (stickyData.length === 0) {
+    board.innerHTML = '<div style="width:100%;text-align:center;padding:60px 0;color:var(--text3);font-size:14px;">按「＋ 新便簽」新增第一張便簽</div>';
     return;
   }
-  var text = document.getElementById('memo-body').value;
-  document.getElementById('memo-sync-label').textContent = '☁ 儲存中…';
+  board.innerHTML = stickyData.map(function(s) {
+    var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
+    var colorPickers = STICKY_COLORS.map(function(c, i) {
+      return '<span onclick="stickyChangeColor(' + s.id + ',' + i + ')" style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + c.border + ';cursor:pointer;border:2px solid ' + (i===s.color?'#333':'transparent') + ';"></span>';
+    }).join('');
+    return '<div style="width:200px;min-height:160px;display:flex;flex-direction:column;background:' + col.bg + ';border:1.5px solid ' + col.border + ';border-radius:12px;box-shadow:2px 3px 10px rgba(0,0,0,.08);overflow:hidden;">' +
+      '<div style="display:flex;align-items:center;gap:4px;padding:6px 8px;border-bottom:1px solid ' + col.border + ';">' +
+        colorPickers +
+        '<button onclick="stickyDelete(' + s.id + ')" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:14px;color:#aaa;line-height:1;">✕</button>' +
+      '</div>' +
+      '<textarea oninput="stickyEdit(' + s.id + ',this.value)" style="flex:1;min-height:120px;padding:10px;border:none;background:transparent;resize:none;font-size:13px;line-height:1.6;color:#333;font-family:var(--font);" placeholder="寫點什麼…">' + (s.text||'').replace(/</g,'&lt;') + '</textarea>' +
+    '</div>';
+  }).join('');
+}
+
+function stickyScheduleSave() {
+  document.getElementById('sticky-sync').textContent = '✏️ 輸入中…';
+  clearTimeout(_stickyTimer);
+  _stickyTimer = setTimeout(stickySaveToCloud, 1500);
+}
+
+function stickySaveToCloud() {
+  if (typeof google === 'undefined' || !google.script || !google.script.run) {
+    document.getElementById('sticky-sync').textContent = '（本地模式）';
+    return;
+  }
+  document.getElementById('sticky-sync').textContent = '☁ 儲存中…';
   google.script.run
     .withSuccessHandler(function() {
-      document.getElementById('memo-sync-label').textContent = '✅ 已儲存';
-      setTimeout(function(){ document.getElementById('memo-sync-label').textContent = ''; }, 2000);
+      document.getElementById('sticky-sync').textContent = '✅ 已儲存';
+      setTimeout(function(){ document.getElementById('sticky-sync').textContent=''; }, 2000);
     })
     .withFailureHandler(function() {
-      document.getElementById('memo-sync-label').textContent = '❌ 儲存失敗';
+      document.getElementById('sticky-sync').textContent = '❌ 儲存失敗';
     })
-    .saveMemo(text);
+    .saveMemo(JSON.stringify(stickyData));
 }
 
-function memoLoad(text) {
-  var el = document.getElementById('memo-body');
-  if (el) el.value = text || '';
-}
-
-
-function memoLoadFromCloud() {
-  if (typeof google === 'undefined' || !google.script || !google.script.run) return;
-  document.getElementById('memo-sync-label').textContent = '☁ 載入中…';
+function stickyLoadFromCloud() {
+  if (typeof google === 'undefined' || !google.script || !google.script.run) { stickyRender(); return; }
+  document.getElementById('sticky-sync').textContent = '☁ 載入中…';
   google.script.run
-    .withSuccessHandler(function(text) {
-      memoLoad(text);
-      document.getElementById('memo-sync-label').textContent = '';
+    .withSuccessHandler(function(raw) {
+      try { stickyData = raw ? JSON.parse(raw) : []; } catch(e) { stickyData = []; }
+      stickyRender();
+      document.getElementById('sticky-sync').textContent = '';
     })
     .withFailureHandler(function() {
-      document.getElementById('memo-sync-label').textContent = '';
+      stickyRender();
+      document.getElementById('sticky-sync').textContent = '';
     })
     .getMemo();
 }
 
-</script>
+
