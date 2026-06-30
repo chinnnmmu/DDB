@@ -317,8 +317,8 @@ body.sidebar-collapsed .app{margin-left:44px;}
   <div class="sidebar-logo sidebar-expand-only">◈ DDB</div>
   <div class="sidebar-label sidebar-expand-only">WORKSPACE</div>
   <div class="sidebar-menu">
-    <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📌</span> 📌每日工單</button>
-    <button class="snav-item" data-tab="memo" onclick="ST('memo')"><span class="snav-icon">🗒</span> 便簽</button>
+    <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📅</span> 每日工單</button>
+    <button class="snav-item" data-tab="memo" onclick="ST('memo')"><span class="snav-icon">📝</span> 便簽</button>
   </div>
   <div class="sidebar-footer">
     <div class="theme-toggle-inline sidebar-expand-only" id="themeToggle">
@@ -561,14 +561,21 @@ body.sidebar-collapsed .app{margin-left:44px;}
 
     <!-- 頂部工具列 -->
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="font-size:16px;font-weight:800;letter-spacing:-.02em;color:var(--text);">🗒 便簽</span>
+      <span style="font-size:16px;font-weight:800;letter-spacing:-.02em;color:var(--text);">📝 便簽</span>
       <button onclick="stickyAdd()" style="padding:6px 16px;border-radius:99px;border:none;background:var(--rose);color:#fff;font-weight:700;cursor:pointer;font-size:13px;letter-spacing:.01em;box-shadow:0 2px 8px rgba(232,99,122,.3);transition:all .15s;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">＋ 新便簽</button>
       <span id="sticky-sync" style="font-size:11px;color:var(--text3);margin-left:auto;font-weight:500;"></span>
     </div>
 
-    <!-- 便簽網格 -->
-    <div id="sticky-board" style="flex:1;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:12px;padding:4px 2px;"></div>
+    <!-- 主體：左清單 + 右瀑布 -->
+    <div style="display:flex;flex:1;gap:12px;min-height:0;">
 
+      <!-- 左側清單 -->
+      <div id="sticky-list-panel" style="width:160px;flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow-y:auto;padding:8px 6px;display:flex;flex-direction:column;gap:2px;"></div>
+
+      <!-- 右側瀑布流 -->
+      <div id="sticky-board" style="flex:1;overflow-y:auto;columns:3 220px;column-gap:12px;padding:2px 4px;"></div>
+
+    </div>
   </div>
 </div>
 
@@ -714,8 +721,8 @@ body.sidebar-collapsed .app{margin-left:44px;}
 </div>
 
 <nav class="bottom-nav">
-  <button class="bnav-item active" data-tab="cal" onclick="ST('cal')"><span class="bnav-icon">📌</span>工單</button>
-  <button class="bnav-item" data-tab="memo" onclick="ST('memo')"><span class="bnav-icon">🗒</span>便簽</button>
+  <button class="bnav-item active" data-tab="cal" onclick="ST('cal')"><span class="bnav-icon">📅</span>每日工單</button>
+  <button class="bnav-item" data-tab="memo" onclick="ST('memo')"><span class="bnav-icon">📝</span>便簽</button>
 </nav>
 
 
@@ -3395,22 +3402,56 @@ function stickyChangeColor(id, colorIdx) {
 
 function stickyRender() {
   var board = document.getElementById('sticky-board');
+  var listPanel = document.getElementById('sticky-list-panel');
   if (!board) return;
+
   if (stickyData.length === 0) {
-    board.innerHTML = '<div style="width:100%;text-align:center;padding:60px 0;color:var(--text3);font-size:14px;">按「＋ 新便簽」新增第一張便簽</div>';
+    board.innerHTML = '<div style="padding:60px 0;text-align:center;color:var(--text3);font-size:14px;">按「＋ 新便簽」新增第一張便簽</div>';
+    if (listPanel) listPanel.innerHTML = '';
     return;
   }
+
+  // 左側清單
+  if (listPanel) {
+    listPanel.innerHTML = stickyData.map(function(s) {
+      var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
+      var preview = (s.text || '').replace(/\n/g,' ').slice(0, 20) || '（空白）';
+      return '<div onclick="document.getElementById(\'sc-'+s.id+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" ' +
+        'style="display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:.15s;" ' +
+        'onmouseover="this.style.background=\'var(--card2)\'" onmouseout="this.style.background=\'transparent\'">' +
+        '<span style="width:9px;height:9px;border-radius:50%;background:'+col.dot+';flex-shrink:0;"></span>' +
+        '<span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+preview+'</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  // 右側瀑布流卡片
   board.innerHTML = stickyData.map(function(s) {
     var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
     var colorPickers = STICKY_COLORS.map(function(c, i) {
-      return '<span onclick="stickyChangeColor(' + s.id + ',' + i + ')" title="' + c.label + '" style="display:inline-block;width:13px;height:13px;border-radius:50%;background:' + c.dot + ';cursor:pointer;transition:.15s;box-shadow:' + (i===s.color?'0 0 0 2.5px #fff,0 0 0 4px '+c.dot:'none') + ';"></span>';
+      return '<span onclick="stickyChangeColor('+s.id+','+i+')" title="'+c.label+'" style="display:inline-block;width:13px;height:13px;border-radius:50%;background:'+c.dot+';cursor:pointer;flex-shrink:0;box-shadow:'+(i===s.color?'0 0 0 2.5px #fff,0 0 0 4px '+c.dot:'none')+';transition:.15s;"></span>';
     }).join('');
-    return '<div style="width:220px;min-height:180px;display:flex;flex-direction:column;background:' + col.bg + ';border:1.5px solid ' + col.border + ';border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);overflow:hidden;transition:box-shadow .2s;">' +
-      '<div style="display:flex;align-items:center;gap:5px;padding:8px 10px;border-bottom:1px solid ' + col.border + ';background:rgba(255,255,255,.5);">' +
+    return '<div id="sc-'+s.id+'" style="break-inside:avoid;margin-bottom:12px;display:flex;flex-direction:column;background:'+col.bg+';border:1.5px solid '+col.border+';border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;">' +
+      '<div style="display:flex;align-items:center;gap:5px;padding:8px 10px;border-bottom:1px solid '+col.border+';background:rgba(255,255,255,.45);flex-shrink:0;">' +
         colorPickers +
-        '<button onclick="stickyDelete(' + s.id + ')" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:13px;color:#aaa;line-height:1;padding:2px 4px;border-radius:4px;transition:.15s;" onmouseover="this.style.color=\'#e11d48\'" onmouseout="this.style.color=\'#aaa\'">✕</button>' +
+        '<button onclick="stickyDelete('+s.id+')" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:13px;color:#bbb;padding:2px 4px;border-radius:4px;" onmouseover="this.style.color=\'#e11d48\'" onmouseout="this.style.color=\'#bbb\'">✕</button>' +
       '</div>' +
-      '<textarea oninput="stickyEdit(' + s.id + ',this.value)" style="flex:1;min-height:140px;padding:12px;border:none;background:transparent;resize:none;font-size:13.5px;line-height:1.65;color:var(--text);font-family:var(--font);outline:none;" placeholder="寫點什麼…">' + (s.text||'').replace(/</g,'&lt;') + '</textarea>' +
+      '<textarea oninput="stickyEdit('+s.id+',this.value);stickyRenderList()" style="min-height:100px;max-height:300px;padding:12px;border:none;background:transparent;resize:none;font-size:13.5px;line-height:1.65;color:var(--text);font-family:var(--font);outline:none;overflow-y:auto;" placeholder="寫點什麼…">'+( s.text||'').replace(/</g,'&lt;')+'</textarea>' +
+    '</div>';
+  }).join('');
+}
+
+function stickyRenderList() {
+  var listPanel = document.getElementById('sticky-list-panel');
+  if (!listPanel) return;
+  listPanel.innerHTML = stickyData.map(function(s) {
+    var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
+    var preview = (s.text || '').replace(/\n/g,' ').slice(0, 20) || '（空白）';
+    return '<div onclick="document.getElementById(\'sc-'+s.id+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" ' +
+      'style="display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:.15s;" ' +
+      'onmouseover="this.style.background=\'var(--card2)\'" onmouseout="this.style.background=\'transparent\'">' +
+      '<span style="width:9px;height:9px;border-radius:50%;background:'+col.dot+';flex-shrink:0;"></span>' +
+      '<span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+preview+'</span>' +
     '</div>';
   }).join('');
 }
