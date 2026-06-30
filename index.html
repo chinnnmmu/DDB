@@ -472,19 +472,6 @@ body.sidebar-collapsed .app{margin-left:44px;}
               </div>
             </div>
 
-            <div style="padding:0.5rem; background:var(--card2); border-bottom:1px solid var(--border); display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
-              <span style="font-size:0.875rem; color:var(--text2); font-weight:600;">🔍 篩選：</span>
-              <input id="filter-name" placeholder="人名..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
-              <input id="filter-auntie" placeholder="阿姨..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
-              <input id="filter-time" placeholder="時間..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
-              <select id="filter-status" style="width:100px; height:28px; font-size:0.8125rem;" onchange="applyWorkorderFilters()">
-                <option value="">全部狀態</option>
-                <option value="unsettled">未結清</option>
-                <option value="settled">已結清</option>
-              </select>
-              <button class="btn btn-plain btn-sm" onclick="clearWorkorderFilters()">清除篩選</button>
-            </div>
-
             <div class="tbl-wrap">
               <table class="etbl" id="etbl" style="display: table; min-width: 600px;">
                 <thead><tr>
@@ -521,14 +508,31 @@ body.sidebar-collapsed .app{margin-left:44px;}
             <div style="flex:1"></div>
             <button class="btn btn-plain btn-sm" id="btn-view-day" onclick="setWoView('day')">返回單日</button>
           </div>
+          <div style="padding:0.5rem 0.75rem; background:var(--card2); border-bottom:1px solid var(--border); display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+            <span style="font-size:0.875rem; color:var(--text2); font-weight:600;">🔍 篩選：</span>
+            <input id="filter-name" placeholder="人名..." style="width:110px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
+            <input id="filter-auntie" placeholder="阿姨..." style="width:110px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
+            <input id="filter-time" placeholder="時間地點..." style="width:120px; height:28px; font-size:0.8125rem;" onkeyup="applyWorkorderFilters()">
+            <select id="filter-status" style="width:100px; height:28px; font-size:0.8125rem;" onchange="applyWorkorderFilters()">
+              <option value="">全部狀態</option>
+              <option value="unsettled">未結清</option>
+              <option value="settled">已結清</option>
+            </select>
+            <button class="btn btn-plain btn-sm" onclick="clearWorkorderFilters()">清除篩選</button>
+          </div>
           <div class="tbl-wrap">
             <table class="etbl" style="min-width:650px">
               <thead><tr>
-                <th style="width:5.5rem; text-align:left; padding-left:0.4rem;">日期</th><th style="width:3rem">牌</th>
-                <th style="width:5rem; text-align:left; padding-left:0.4rem;">人名</th><th style="width:7.5rem; text-align:left; padding-left:0.4rem;">時間地點</th>
-                <th style="width:4.5rem; text-align:left; padding-left:0.4rem;">阿姨</th><th style="width:3.5rem">實收</th>
-                <th style="width:3.5rem">EE</th><th style="width:3rem">退</th>
-                <th style="width:5.5rem; text-align:left; padding-left:0.4rem;">備記</th><th style="width:4rem">狀態</th>
+                <th style="width:5.5rem; text-align:left; padding-left:0.4rem;">日期</th>
+                <th style="width:3rem; cursor:pointer;" onclick="weekSortBy('pai')">牌<span id="wsort-pai" style="font-size:10px;margin-left:2px;color:var(--text3)">⇅</span></th>
+                <th style="width:5rem; text-align:left; padding-left:0.4rem; cursor:pointer;" onclick="weekSortBy('name')">人名<span id="wsort-name" style="font-size:10px;margin-left:2px;color:var(--text3)">⇅</span></th>
+                <th style="width:7.5rem; text-align:left; padding-left:0.4rem; cursor:pointer;" onclick="weekSortBy('place')">時間地點<span id="wsort-place" style="font-size:10px;margin-left:2px;color:var(--text3)">⇅</span></th>
+                <th style="width:4.5rem; text-align:left; padding-left:0.4rem; cursor:pointer;" onclick="weekSortBy('auntie')">阿姨<span id="wsort-auntie" style="font-size:10px;margin-left:2px;color:var(--text3)">⇅</span></th>
+                <th style="width:3.5rem; cursor:pointer;" onclick="weekSortBy('shi')">實收<span id="wsort-shi" style="font-size:10px;margin-left:2px;color:var(--text3)">⇅</span></th>
+                <th style="width:3.5rem; cursor:pointer;" onclick="weekSortBy('ee')">EE<span id="wsort-ee" style="font-size:10px;margin-left:2px;color:var(--text3)">⇅</span></th>
+                <th style="width:3rem;">退</th>
+                <th style="width:5.5rem; text-align:left; padding-left:0.4rem;">備記</th>
+                <th style="width:4rem; cursor:pointer;" onclick="weekSortBy('settled')">狀態<span id="wsort-settled" style="font-size:10px;margin-left:2px;color:var(--text3)">⇅</span></th>
               </tr></thead>
               <tbody id="week-body"></tbody>
             </table>
@@ -1098,22 +1102,36 @@ function saveMultiNote(num) {
 }
 
 // ===== 工單篩選和刪除功能 =====
+var weekSortCol = '';
+var weekSortDir = 1; // 1=asc, -1=desc
+
+function weekSortBy(col) {
+  if (weekSortCol === col) { weekSortDir *= -1; } else { weekSortCol = col; weekSortDir = 1; }
+  // update arrow icons
+  ['pai','name','place','auntie','shi','ee','settled'].forEach(function(c){
+    var el = document.getElementById('wsort-'+c);
+    if (!el) return;
+    el.textContent = (c === col) ? (weekSortDir === 1 ? '↑' : '↓') : '⇅';
+    el.style.color = (c === col) ? 'var(--rose)' : 'var(--text3)';
+  });
+  RW();
+}
+
 function applyWorkorderFilters() {
-  workorderFilters.name = document.getElementById('filter-name').value.toLowerCase();
-  workorderFilters.auntie = document.getElementById('filter-auntie').value.toLowerCase();
-  workorderFilters.time = document.getElementById('filter-time').value.toLowerCase();
-  workorderFilters.status = document.getElementById('filter-status').value;
-  
-  RR(); // 重新渲染表格
+  workorderFilters.name = (document.getElementById('filter-name')||{}).value ? document.getElementById('filter-name').value.toLowerCase() : '';
+  workorderFilters.auntie = (document.getElementById('filter-auntie')||{}).value ? document.getElementById('filter-auntie').value.toLowerCase() : '';
+  workorderFilters.time = (document.getElementById('filter-time')||{}).value ? document.getElementById('filter-time').value.toLowerCase() : '';
+  workorderFilters.status = (document.getElementById('filter-status')||{}).value || '';
+  RW();
 }
 
 function clearWorkorderFilters() {
-  document.getElementById('filter-name').value = '';
-  document.getElementById('filter-auntie').value = '';
-  document.getElementById('filter-time').value = '';
-  document.getElementById('filter-status').value = '';
+  var fn = document.getElementById('filter-name'); if(fn) fn.value = '';
+  var fa = document.getElementById('filter-auntie'); if(fa) fa.value = '';
+  var ft = document.getElementById('filter-time'); if(ft) ft.value = '';
+  var fs = document.getElementById('filter-status'); if(fs) fs.value = '';
   workorderFilters = { name: '', auntie: '', time: '', status: '' };
-  RR();
+  RW();
 }
 
 function deleteWorkorder(rowIndex) {
@@ -1979,28 +1997,67 @@ function RW(){
   var sd=new Date(selDate.y,selDate.m,selDate.d);var dow=(sd.getDay()+6)%7;var mon=new Date(sd);mon.setDate(sd.getDate()-dow);
   var days=[];for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d);}
   var s=days[0],e=days[6];document.getElementById('week-range').textContent=(s.getMonth()+1)+'/'+s.getDate()+' ～ '+(e.getMonth()+1)+'/'+e.getDate();
-  var html='';
-  days.forEach(function(d,di){
+
+  // 蒐集所有行（含日期資訊）供排序/篩選
+  var fName = workorderFilters.name || '';
+  var fAuntie = workorderFilters.auntie || '';
+  var fTime = workorderFilters.time || '';
+  var fStatus = workorderFilters.status || '';
+  var allRows = [];
+  days.forEach(function(d, di){
     var y=d.getFullYear(),m=d.getMonth(),day=d.getDate(),k=DK(y,m,day),rows=notes[k]||[];
     var isTod=y===today.getFullYear()&&m===today.getMonth()&&day===today.getDate();
     var isSel=selDate&&y===selDate.y&&m===selDate.m&&day===selDate.d;
     var dl=(m+1)+'/'+day+' 週'+WDS[di];
-    if(rows.length===0){
-      html+='<tr style="opacity:.4"><td><div class="cv" style="font-size:.75rem;color:var(--text3)">'+dl+'</div></td><td colspan="9"><div class="cv" style="font-size:.75rem;color:var(--text3)">—</div></td></tr>';
-    } else {
-      rows.forEach(function(row,ri){
-        var eeN=parseFloat(row.ee)||0,eeC=row.ee?(eeN>=0?' r':' g'):'';
-        var isSettled = row.settled === true;
-        var settleMark = isSettled ? '<span style="color:var(--sage);font-weight:700;font-size:0.8125rem">✓ 已結</span>' : '';
-        var bg = isSel ? 'var(--gold-light)' : (isTod ? 'var(--rose-light)' : '');
-        var trStyle = isSettled ? 'opacity:0.55; background:#f5f5f5;' : (bg ? 'background:'+bg+';' : '');
-
-        html+='<tr style="'+trStyle+'">';
-        if(ri===0)html+='<td rowspan="'+rows.length+'"><div class="wc" style="font-size:.75rem;font-weight:'+(isSel||isTod?600:400)+';color:'+(isSel?'var(--gold)':isTod?'var(--rose)':'var(--text3)')+'">'+dl+'</div></td>';
-        html+='<td><div class="wc mono">'+(row.pai||'')+'</div></td><td><div class="wc bold">'+(row.name||'')+'</div></td><td><div class="wc">'+(row.place||'')+'</div></td><td><div class="wc">'+(row.auntie||'')+'</div></td><td><div class="wc mono">'+(row.shi||'')+'</div></td><td><div class="wc mono'+eeC+'">'+(row.ee||'')+'</div></td><td><div class="wc mono">'+(row.rebate||'')+'</div></td><td><div class="wc">'+(row.note||'')+'</div></td><td style="text-align:center">'+settleMark+'</td></tr>';
-      });
+    rows.forEach(function(row){
+      // 篩選
+      if(fName && (row.name||'').toLowerCase().indexOf(fName)<0) return;
+      if(fAuntie && (row.auntie||'').toLowerCase().indexOf(fAuntie)<0) return;
+      if(fTime && (row.place||'').toLowerCase().indexOf(fTime)<0) return;
+      if(fStatus==='settled' && !row.settled) return;
+      if(fStatus==='unsettled' && row.settled) return;
+      allRows.push({ row: row, dl: dl, isTod: isTod, isSel: isSel, sortKey: k+'_'+dl });
+    });
+    // 若無篩選條件且該天無工單，還是顯示空行
+    if(!fName && !fAuntie && !fTime && !fStatus && rows.length===0){
+      allRows.push({ row: null, dl: dl, isTod: isTod, isSel: isSel, sortKey: k });
     }
   });
+
+  // 排序
+  if(weekSortCol){
+    allRows.sort(function(a, b){
+      if(!a.row && !b.row) return 0;
+      if(!a.row) return weekSortDir;
+      if(!b.row) return -weekSortDir;
+      var av, bv;
+      if(weekSortCol==='pai'||weekSortCol==='shi'||weekSortCol==='ee'){
+        av = parseFloat(a.row[weekSortCol])||0; bv = parseFloat(b.row[weekSortCol])||0;
+      } else if(weekSortCol==='settled'){
+        av = a.row.settled?1:0; bv = b.row.settled?1:0;
+      } else {
+        av = (a.row[weekSortCol]||'').toLowerCase(); bv = (b.row[weekSortCol]||'').toLowerCase();
+      }
+      return av < bv ? -weekSortDir : av > bv ? weekSortDir : 0;
+    });
+  }
+
+  var html='';
+  allRows.forEach(function(item){
+    if(!item.row){
+      html+='<tr style="opacity:.4"><td><div class="cv" style="font-size:.75rem;color:var(--text3)">'+item.dl+'</div></td><td colspan="9"><div class="cv" style="font-size:.75rem;color:var(--text3)">—</div></td></tr>';
+      return;
+    }
+    var row=item.row;
+    var eeN=parseFloat(row.ee)||0,eeC=row.ee?(eeN>=0?' r':' g'):'';
+    var isSettled = row.settled === true;
+    var settleMark = isSettled ? '<span style="color:var(--sage);font-weight:700;font-size:0.8125rem">✓ 已結</span>' : '<span style="color:var(--rose);font-size:0.8125rem">未結</span>';
+    var bg = item.isSel ? 'var(--gold-light)' : (item.isTod ? 'var(--rose-light)' : '');
+    var trStyle = isSettled ? 'opacity:0.55; background:#f5f5f5;' : (bg ? 'background:'+bg+';' : '');
+    html+='<tr style="'+trStyle+'"><td><div class="cv" style="font-size:.75rem;color:'+(item.isSel?'var(--gold)':item.isTod?'var(--rose)':'var(--text3)')+'">'+item.dl+'</div></td>';
+    html+='<td><div class="wc mono">'+(row.pai||'')+'</div></td><td><div class="wc bold">'+(row.name||'')+'</div></td><td><div class="wc">'+(row.place||'')+'</div></td><td><div class="wc">'+(row.auntie||'')+'</div></td><td><div class="wc mono">'+(row.shi||'')+'</div></td><td><div class="wc mono'+eeC+'">'+(row.ee||'')+'</div></td><td><div class="wc mono">'+(row.rebate||'')+'</div></td><td><div class="wc">'+(row.note||'')+'</div></td><td style="text-align:center">'+settleMark+'</td></tr>';
+  });
+
   var weekBody = document.getElementById('week-body');
   if(weekBody) weekBody.innerHTML=html;
   updateWeekStats(days);
