@@ -2531,12 +2531,12 @@ window.onload=function(){
   // ★ 每 30 秒自動重新抓雲端資料，讓多人同時使用時畫面保持最新
   setInterval(function(){ loadAllDataFromCloud(true); }, 30000);
 
-  // Admin panel init
-  adminRenderWeekGrid();
-  walkInitDate();
-  walkSyncTabNames();
-  walkRenderPresetSettings();
-  loadAdminFromSheets();
+  // Admin/walk panel init (wrapped in try-catch: these panels may not exist in current HTML)
+  try { adminRenderWeekGrid(); } catch(e) {}
+  try { walkInitDate(); } catch(e) {}
+  try { walkSyncTabNames(); } catch(e) {}
+  try { walkRenderPresetSettings(); } catch(e) {}
+  try { loadAdminFromSheets(); } catch(e) {}
 };
 
 /* ══════════════════════════════════════════
@@ -3454,4 +3454,6 @@ function stickyLoadFromCloud() {
     .getMemo();
 }
 
-
+</script>
+</body>
+</html>
