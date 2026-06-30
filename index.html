@@ -838,13 +838,7 @@ input:focus {
   <div class="sidebar-logo sidebar-expand-only">✦ DDB</div>
   <div class="sidebar-label sidebar-expand-only">WORKSPACE</div>
   <div class="sidebar-menu">
-    <button class="snav-item" data-tab="note" onclick="ST('note')"><span class="snav-icon">📝</span> 便簽</button>
     <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📅</span> 每日工單</button>
-    <button class="snav-item" data-tab="all" onclick="ST('all')"><span class="snav-icon">🗂</span> 所有工單</button>
-    <button class="snav-item" data-tab="bb" onclick="ST('bb')"><span class="snav-icon">🔍</span> 探索搜尋</button>
-    <button class="snav-item" data-tab="stat" onclick="ST('stat')"><span class="snav-icon">📊</span> 數據紀錄</button>
-    <button class="snav-item" data-tab="admin" onclick="ST('admin')"><span class="snav-icon">📋</span> 班表管理</button>
-    <button class="snav-item" data-tab="walk" onclick="ST('walk')"><span class="snav-icon">✦</span> 現走表</button>
     <button class="snav-item" data-tab="fin" onclick="ST('fin')"><span class="snav-icon">💰</span><span class="sidebar-expand-only">財務帳務</span></button>
     <button class="snav-item" data-tab="tf" onclick="ST('tf')"><span class="snav-icon">📊</span> 轉檔器</button>
   </div>
@@ -876,49 +870,7 @@ input:focus {
 
 <div class="app">
 
-<div id="tab-note" class="panel">
-  <div style="padding: 0.4rem; height:calc(100vh - 16px); display:flex; flex-direction:column;">
-    <div style="display:flex; gap:10px; flex:1; min-height:0;">
-      <!-- 左側清單 -->
-      <div style="width: 180px; background: var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(0,0,0,.04); flex-shrink:0;">
-        <div style="padding:6px 8px; background:#E8F0F8; border-bottom:1px solid var(--border); display:flex; gap:6px; align-items:center;">
-          <input type="text" id="multi-note-search" placeholder="搜尋..."
-                 style="flex:1; min-width:0; padding:5px 6px; font-size:12px; border:1px solid var(--border); border-radius:6px;"
-                 onkeyup="filterMultiNoteList()">
-          <button class="btn btn-sage" onclick="addMultiNote()" style="padding:4px 8px; font-size:12px; white-space:nowrap; flex-shrink:0;">＋</button>
-        </div>
-        <div id="multi-note-list" style="flex:1; overflow-y:auto; padding:6px; font-size:13px;"></div>
-      </div>
-      <!-- 右側 3 個彩色編輯區 -->
-      <div style="flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; min-width:0;">
-        <!-- 1. Lavender -->
-        <div style="background:var(--card); border:2px solid #c8c0d8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
-          <div style="padding:7px 10px; background:#e8e2f4; color:#4a3a6a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; flex-shrink:0;">
-            <span id="multi-time1">💜 Lavender</span>
-            <button onclick="saveMultiNote(1)" style="padding:2px 8px; background:white; border:1px solid #c8c0d8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
-          </div>
-          <textarea id="multi-editor1" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第1個行程..."></textarea>
-        </div>
-        <!-- 2. Rose -->
-        <div style="background:var(--card); border:2px solid #e8b8c4; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
-          <div style="padding:7px 10px; background:#fce4ec; color:#6a2a3a; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; flex-shrink:0;">
-            <span id="multi-time2">🌹 Rose</span>
-            <button onclick="saveMultiNote(2)" style="padding:2px 8px; background:white; border:1px solid #e8b8c4; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
-          </div>
-          <textarea id="multi-editor2" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第2個行程..."></textarea>
-        </div>
-        <!-- 3. Mint -->
-        <div style="background:var(--card); border:2px solid #a8d4b8; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.06);">
-          <div style="padding:7px 10px; background:#d8f0e4; color:#2a5a40; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600; flex-shrink:0;">
-            <span id="multi-time3">🌿 Mint</span>
-            <button onclick="saveMultiNote(3)" style="padding:2px 8px; background:white; border:1px solid #a8d4b8; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">儲存</button>
-          </div>
-          <textarea id="multi-editor3" style="flex:1; padding:10px; border:none; font-size:13.5px; line-height:1.55; resize:none; outline:none; background:var(--card); color:var(--text);" placeholder="第3個行程..."></textarea>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <div id="tab-cal" class="panel active">
     <div class="wo-desktop">
@@ -1065,321 +1017,16 @@ input:focus {
     </div>
   </div>
 
-<div id="tab-all" class="panel">
-  <div class="card">
-    <div class="card-head" style="flex-wrap:wrap; gap:6px;">
-      <input id="search-all-input" placeholder="搜尋妹妹名字、阿姨、地點或日期 (例如 6/19)..." oninput="renderAllOrders()" style="flex:1; min-width:200px;">
-      <div id="month-filter-btns" style="display:flex; gap:4px; flex-wrap:wrap; align-items:center;"></div>
-    </div>
-    <div class="tbl-wrap" style="max-height: calc(100vh - 180px); overflow-y: auto;">
-      <table class="etbl" style="min-width:650px">
-        <thead>
-          <tr>
-            <th class="sortable" onclick="sortAllOrders('date')" style="width:5.5rem; text-align:center;">日期</th>
-            <th style="width:3rem; text-align:center;">牌</th>
-            <th class="sortable" onclick="sortAllOrders('name')" style="width:5rem; text-align:center;">人名</th>
-            <th class="sortable" onclick="sortAllOrders('place')" style="width:7.5rem; text-align:center;">時間地點</th>
-            <th style="width:4.5rem;">阿姨</th>
-            <th style="width:3.5rem; text-align:center;">實收</th>
-            <th style="width:3.5rem; text-align:center;">EE</th>
-            <th style="width:3rem; text-align:center;">退</th>
-            <th style="width:5.5rem;">備記</th>
-            <th style="width:4rem; text-align:center;">狀態</th>
-            <th style="width:3rem; text-align:center;">刪除</th>
-          </tr>
-        </thead>
-        <tbody id="all-orders-body"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
 
 
-<div id="tab-bb" class="panel">
 
-  <!-- 資料來源：自動讀取班表管理→自由編輯區，移到最上方方便操作 -->
-  <div class="card" style="margin-bottom:8px;padding:0.6rem 0.75rem;">
-    <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">📋 班表資料來源：<b>班表管理 → 自由編輯區</b>（切換到此頁自動載入）</div>
-    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
-      <button class="btn btn-sage btn-sm" onclick="parseBBFromNotepad()">⚡ 重新解析</button>
-      <button class="btn btn-plain btn-sm" id="paste-btn" onclick="togglePaste()">✎ 手動貼上</button>
-      <span class="msg" id="bb-msg"></span>
-    </div>
-    <!-- 手動貼上備用（收起狀態） -->
-    <div class="paste-area" id="bb-paste" style="margin-top:8px;">
-      <textarea style="height:4.5rem;font-size:0.9375rem" id="bb-raw" placeholder="貼上班表原始文字..." oninput="saveLS('bb-raw-cache',this.value)"></textarea>
-      <div style="display:flex;gap:0.4rem;margin-top:0.4rem;flex-wrap:wrap;align-items:center">
-        <button class="btn btn-sage btn-sm" onclick="parseBB()">⚡ 解析</button>
-        <button class="btn btn-rose-outline btn-sm" onclick="clearBB()">清除</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- 篩選＋搜尋控制列 -->
-  <div class="card">
-    <div style="padding:0.5rem">
-      <div class="chips" id="chips">
-        <span class="chip" data-f="真奶" onclick="TC(this)">真奶</span>
-        <span class="chip" data-f="無刺青" onclick="TC(this)">無刺青</span>
-        <span class="chip" data-f="雙飛" onclick="TC(this)">雙飛</span>
-        <span class="chip" data-f="二王" onclick="TC(this)">二王</span>
-        <span class="chip" data-f="外帶" onclick="TC(this)">外帶</span>
-        <span class="chip" data-f="住家" onclick="TC(this)">住家</span>
-        <span class="chip" data-f="無套內" onclick="TC(this)">無套內</span>
-        <span class="chip" data-f="無套外" onclick="TC(this)">無套外</span>
-        <span class="chip" data-f="口爆" onclick="TC(this)">口爆</span>
-        <span class="chip" data-f="顏射" onclick="TC(this)">顏射</span>
-        <span class="chip" data-f="毒龍" onclick="TC(this)">毒龍</span>
-        <span class="chip" data-f="後門" onclick="TC(this)">後門</span>
-        <span class="chip" data-f="入珠" onclick="TC(this)">入珠</span>
-        <span class="chip" data-f="攝影" onclick="TC(this)">攝影</span>
-        <span class="chip" data-f="SM" onclick="TC(this)">SM</span>
-        <span class="chip" data-f="自慰秀" onclick="TC(this)">自慰秀</span>
-        <span class="chip" data-f="情趣用品" onclick="TC(this)">情趣用品</span>
-        <span class="chip" data-f="2+1" onclick="TC(this)">2+1</span>
-        <span class="chip" data-f="日韓" onclick="TC(this)">日韓</span>
-        <span class="chip" data-f="台妹" onclick="TC(this)">台妹</span>
-      </div>
-      <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;margin-top:0.3rem;">
-        <input id="bbq" placeholder="搜尋人名、服務..." oninput="RBB()" style="flex:1;min-width:8rem">
-        <div style="display:flex;gap:0.4rem;font-size:0.8125rem;color:var(--text2)">
-          <label style="display:flex;align-items:center;gap:3px;cursor:pointer"><input type="radio" name="bm" value="and" checked onchange="RBB()"> AND</label>
-          <label style="display:flex;align-items:center;gap:3px;cursor:pointer"><input type="radio" name="bm" value="or" onchange="RBB()"> OR</label>
-        </div>
-        <!-- 排序：直接按鈕，不用下拉選單 -->
-        <div style="display:flex;gap:3px;">
-          <button onclick="setBBSort('price-asc')" id="bsort-asc" class="btn btn-plain btn-sm bsort-btn bsort-active">低→高</button>
-          <button onclick="setBBSort('price-desc')" id="bsort-desc" class="btn btn-plain btn-sm bsort-btn">高→低</button>
-          <button onclick="setBBSort('name')" id="bsort-name" class="btn btn-plain btn-sm bsort-btn">名字</button>
-        </div>
-        <button class="btn btn-rose-outline btn-sm" onclick="resetBB()">清除</button>
-      </div>
-      <div class="bb-stats" id="bb-stats">共 0 位｜顯示 0 位</div>
-    </div>
-  </div>
 
-  <!-- 左右並排：左=精簡（勾選服務），右=完整資料 -->
-  <div id="bb-results">
-    <div class="card" id="bb-list-left"><div class="empty">請先解析班表</div></div>
-    <div class="card" id="bb-list"><div class="empty">請先解析班表</div></div>
-  </div>
 
-</div>
 
-<div id="tab-stat" class="panel">
-  <div class="card">
-    <div class="card-head" style="background:var(--cream)">
-      <span class="card-title">⚠️ 阿姨未結應收催收看板 (跨週滾動累計)</span>
-      <span class="card-sub" id="stat-unpaid-count">0 位阿姨未回款</span>
-    </div>
-    <div style="padding:0.5rem" id="stat-dashboard-list"></div>
-  </div>
-</div>
+<!-- /tab-admin -->
 
-<div id="tab-admin" class="panel">
-<div class="sch-wrap">
-
-  <!-- 上層 3 欄 -->
-  <div class="top-zone">
-
-    <!-- 左：日班表 -->
-    <div class="top-left">
-      <div class="card">
-        <div class="lbl">📋 當日班表輸入</div>
-        <textarea id="admin-inputA" placeholder="在此貼上本日班表…" spellcheck="false"
-          oninput="adminAutoSave('day',this.value)"></textarea>
-        <div class="btn-row" style="margin-top:10px;">
-          <button class="primary" onclick="adminConvertDay()">執行轉檔</button>
-          <button onclick="adminSortDayInput()">↕ 排序</button>
-          <button class="subtle" onclick="adminClearDayInput()">清除</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 中：轉換結果 -->
-    <div class="top-middle">
-      <div class="card">
-        <div class="lbl">✨ 轉換結果</div>
-        <div id="admin-outputDiv" class="ro-box">（轉換結果將顯示於此）</div>
-        <div id="admin-missing"></div>
-        <button class="copy-wide-a" onclick="adminCopyOutput()" style="margin-top:10px;">📋 複製結果</button>
-      </div>
-    </div>
-
-    <!-- 右：自由編輯 / 母檔同步源 -->
-    <div class="top-right">
-      <div class="card">
-        <div class="lbl">📝 自由編輯區 <span style="font-size:10px;color:var(--sage);font-weight:400;">（同步至探索搜尋）</span></div>
-        <textarea id="admin-notepad" placeholder="在此自由輸入或整理內容…" spellcheck="false"
-          oninput="adminAutoSave('note',this.value);syncNotepadToBb()"></textarea>
-        <div class="btn-row" style="margin-top:10px;">
-          <button class="primary" onclick="adminCopyNotepad()">📋 複製此欄</button>
-          <button class="subtle" onclick="adminClearNotepad()">清除</button>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /top-zone -->
-
-  <!-- 週報輸入 + 乾淨名單 -->
-  <div class="week-zone">
-    <div class="card">
-      <div class="lbl">本週預報輸入</div>
-      <div class="hint">支援：30米莎➜㈣㈤ 或 18悅潔➜㈢㈣1300-2200㈤1200-1700</div>
-      <textarea id="admin-weekInput" placeholder="在此貼上整週預報內容…" spellcheck="false"
-        oninput="adminAutoSave('week',this.value)"></textarea>
-      <div class="btn-row">
-        <button class="primary" onclick="adminConvertWeek()">⚡ 彙整週報</button>
-        <button onclick="adminSortWeekInput()">↕ 排序</button>
-        <button class="subtle" onclick="adminClearWeekInput()">清除</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="lbl">預報乾淨名單</div>
-      <div class="hint">已去除時間，只顯示每人出班日期。</div>
-      <div id="admin-pureOutput" class="ro-box">（彙整週報後顯示於此）</div>
-      <button class="copy-wide-b" onclick="adminCopyPure()">📋 複製乾淨名單</button>
-    </div>
-  </div>
-
-  <!-- 週間看板 -->
-  <div class="day-panel card">
-    <div class="lbl">📅 週間排程一覽</div>
-    <div class="admin-day-grid" id="admin-weekGrid"></div>
-  </div>
-
-  <!-- 母檔資料庫 -->
-  <div class="db-zone">
-    <div class="card">
-      <div class="lbl">🗂 母檔資料庫 <span style="font-size:10px;color:var(--sage);font-weight:400;">（自動同步至探索搜尋貼上區）</span></div>
-      <div class="hint">「整理並儲存」可去重 + 降序並立即上雲。</div>
-      <div class="btn-row db-top-buttons">
-        <button class="primary" onclick="adminSortDB()">整理並儲存</button>
-        <button onclick="adminOpenPatchModal()">🔄 一鍵覆蓋更新</button>
-      </div>
-      <div style="margin-top:12px;">
-        <textarea id="admin-db" placeholder="請在此貼入母檔資料…" spellcheck="false"
-          oninput="adminAutoSave('db',this.value)"></textarea>
-        <div id="admin-dbStatus">（整理後顯示統計）</div>
-        <button id="toggleDbBtn" onclick="adminToggleDbCollapse()">▼ 展開完整母檔</button>
-      </div>
-    </div>
-  </div>
-
-  <div style="text-align:right;margin-bottom:8px;">
-    <span id="admin-globalStatus" style="font-size:12px;color:var(--text2);"></span>
-  </div>
-
-</div><!-- /sch-wrap -->
-</div><!-- /tab-admin -->
-
-<div id="tab-walk" class="panel">
-<div class="walk-wrap">
-
-  <div class="walk-hdr">
-    <div>
-      <div class="walk-hdr-title">✦ 老闆娘 現走表 ✦</div>
-      <div class="walk-hdr-sub">Schedule Formatter</div>
-    </div>
-    <div style="text-align:right;">
-      <div id="walk-status"></div>
-      <button class="walk-save-btn" onclick="walkSaveToSheet()">☁️ 儲存設定到 Sheets</button>
-    </div>
-  </div>
-
-  <div class="walk-grid">
-
-    <!-- 左側操作面板 -->
-    <div class="walk-panel-left">
-
-      <div class="walk-card">
-        <div class="walk-card-title"><span class="wdot"></span>今日日期</div>
-        <div class="date-row">
-          <input type="date" id="walk-datePicker" onchange="walkOnDateChange()">
-          <div class="date-weekday" id="walk-weekdayDisplay">（一）</div>
-        </div>
-      </div>
-
-      <div class="walk-card">
-        <div class="walk-card-title"><span class="wdot" style="background:var(--sage)"></span>每日快速編輯</div>
-        <div class="quick-label">今日改休內容</div>
-        <textarea class="quick-textarea quick-gap" id="walk-quickRest" rows="3"
-          placeholder="▫️ 今日改休 ➜&#10;35 妹妹名字"></textarea>
-        <div class="quick-label">今日約滿內容</div>
-        <textarea class="quick-textarea" id="walk-quickFull" rows="2"
-          placeholder="▫️ 今日約滿 ➜&#10;｜無｜"></textarea>
-      </div>
-
-      <div class="walk-card">
-        <div class="walk-card-title"><span class="wdot" style="background:var(--sky)"></span>貼上原始廣告文案</div>
-        <textarea id="walkInputText" class="raw-input" placeholder="將廣告原文貼在這裡 · · ·"></textarea>
-        <button class="btn-convert" onclick="walkProcessAll()">✦ 四款同時轉檔 ✦</button>
-      </div>
-
-      <div class="walk-card">
-        <div class="adv-toggle" onclick="walkToggleAdv()">
-          <span>⚙ 進階符號設定</span>
-          <span class="adv-arrow" id="walk-advArrow">▼</span>
-        </div>
-        <div class="adv-body" id="walk-advBody">
-          <div class="adv-inner">
-            <div class="adv-preset-tabs">
-              <div class="adv-tab" onclick="walkSwitchPreset(0)"><input class="adv-tab-name" id="walk-tabName0" value="款式 A" onclick="event.stopPropagation()"></div>
-              <div class="adv-tab" onclick="walkSwitchPreset(1)"><input class="adv-tab-name" id="walk-tabName1" value="款式 B" onclick="event.stopPropagation()"></div>
-              <div class="adv-tab" onclick="walkSwitchPreset(2)"><input class="adv-tab-name" id="walk-tabName2" value="款式 C" onclick="event.stopPropagation()"></div>
-              <div class="adv-tab active" onclick="walkSwitchPreset(3)"><input class="adv-tab-name" id="walk-tabName3" value="款式 D" onclick="event.stopPropagation()"></div>
-            </div>
-            <div class="adv-row"><label>大抬頭樣式</label><input type="text" id="walk-symTitle"></div>
-            <div class="adv-row"><label>名單前綴符號</label><input type="text" id="walk-symDot"></div>
-            <div class="adv-row"><label>中間分隔點</label><input type="text" id="walk-symMid"></div>
-            <div class="adv-row"><label>日韓分類抬頭</label><input type="text" id="walk-symJp"></div>
-            <div class="adv-row"><label>本地分類抬頭</label><input type="text" id="walk-symTw"></div>
-            <div class="adv-row"><label>時間前綴括號</label><input type="text" id="walk-timePrefix"></div>
-            <div class="adv-row"><label>時間後綴括號</label><input type="text" id="walk-timeSuffix"></div>
-            <div class="adv-row"><label>年齡組分隔線</label><input type="text" id="walk-symGroupSep"></div>
-            <div class="adv-row"><label>異動分區線</label><input type="text" id="walk-symStatusLine"></div>
-            <div class="adv-row"><label>即將登場線</label><input type="text" id="walk-symComing"></div>
-            <button class="btn-reset-adv" onclick="walkResetAll()">↺ 恢復所有預設</button>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /walk-panel-left -->
-
-    <!-- 右側輸出 -->
-    <div class="walk-panel-right">
-
-      <div class="main-output-card">
-        <div class="main-output-header">
-          <div class="main-output-title">
-            <span id="walkMainLabel">款式 A</span>
-            <span class="main-badge">主要</span>
-          </div>
-          <button class="btn-copy-main" onclick="walkCopyMain()">複製</button>
-        </div>
-        <textarea id="walkMainOutput" readonly placeholder="點擊「四款同時轉檔」後顯示 · · ·"></textarea>
-      </div>
-
-      <div class="sub-outputs-grid">
-        <div class="sub-card">
-          <div class="sub-card-header"><span class="sub-card-label" id="walkSubLabel1">款式 B</span><button class="btn-copy-sub" onclick="walkCopySub(1)">複製</button></div>
-          <textarea class="sub-output-box" id="walkSubOutput1" readonly placeholder="· · ·"></textarea>
-        </div>
-        <div class="sub-card">
-          <div class="sub-card-header"><span class="sub-card-label" id="walkSubLabel2">款式 C</span><button class="btn-copy-sub" onclick="walkCopySub(2)">複製</button></div>
-          <textarea class="sub-output-box" id="walkSubOutput2" readonly placeholder="· · ·"></textarea>
-        </div>
-        <div class="sub-card">
-          <div class="sub-card-header"><span class="sub-card-label" id="walkSubLabel3">款式 D</span><button class="btn-copy-sub" onclick="walkCopySub(3)">複製</button></div>
-          <textarea class="sub-output-box" id="walkSubOutput3" readonly placeholder="· · ·"></textarea>
-        </div>
-      </div>
-
-    </div><!-- /walk-panel-right -->
-
-  </div><!-- /walk-grid -->
-</div><!-- /walk-wrap -->
-</div><!-- /tab-walk -->
+<!-- /tab-walk -->
 
 <!-- ==================== 轉檔器 Tab ==================== -->
 <div id="tab-tf" class="panel">
@@ -1592,13 +1239,7 @@ input:focus {
 </div>
 
 <nav class="bottom-nav">
-  <button class="bnav-item" data-tab="note" onclick="ST('note')"><span class="bnav-icon">📝</span>便簽</button>
   <button class="bnav-item active" data-tab="cal" onclick="ST('cal')"><span class="bnav-icon">📅</span>工單</button>
-  <button class="bnav-item" data-tab="all" onclick="ST('all')"><span class="bnav-icon">🗂</span>所有</button>
-  <button class="bnav-item" data-tab="bb" onclick="ST('bb')"><span class="bnav-icon">🔍</span>搜尋</button>
-  <button class="bnav-item" data-tab="stat" onclick="ST('stat')"><span class="bnav-icon">📊</span>統計</button>
-  <button class="bnav-item" data-tab="admin" onclick="ST('admin')"><span class="bnav-icon">📋</span>班表</button>
-  <button class="bnav-item" data-tab="walk" onclick="ST('walk')"><span class="bnav-icon">✦</span>現走</button>
   <button class="bnav-item" data-tab="tf" onclick="ST('tf')"><span class="bnav-icon">📊</span>轉檔</button>
   <button class="bnav-item" data-tab="fin" onclick="ST('fin')"><span class="bnav-icon">💰</span><span>財務</span></button>
 </nav>
@@ -2459,7 +2100,7 @@ function submitStatPartPayment(ui, auntieName) {
 
 function ST(id){
   window.scrollTo(0,0); // 切換 tab 時，回到頁面最頂端
-  var allTabs=['note','cal','all','bb','stat','admin','walk','tf','fin'];
+  var allTabs=['cal','tf','fin'];
   allTabs.forEach(function(t){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
