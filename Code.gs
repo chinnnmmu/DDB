@@ -6,8 +6,9 @@
 var SHEET_ID = '1bm_b-0CUiUGhqcNzPfQEXgI7V3fwdy1_9MT6yUQn2mw';
 
 var SHEET_NAMES = {
-  kv:     'KV_Store',     // 所有 key-value 資料（工單、便簽、對應表等）
-  rawLog: 'RawOrdersLog', // 轉檔器歷史備份
+  kv:      'KV_Store',     // 所有 key-value 資料（工單、便簽、對應表等）
+  notepad: 'Notepad',      // 記事本內容
+  rawLog:  'RawOrdersLog', // 轉檔器歷史備份
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -83,6 +84,28 @@ function loadAllData() {
     };
   } catch (e) {
     return { workOrders: {}, multiNotes: [], kvData: {} };
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// 記事本 — 單一純文字，存在 Notepad sheet A1
+// ════════════════════════════════════════════════════════════════
+function saveMemo(text) {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAMES.notepad);
+    sh.getRange('A1').setValue(text || '');
+    return { success: true };
+  } catch (e) {
+    return { success: false, message: e.message };
+  }
+}
+
+function getMemo() {
+  try {
+    var sh = getOrCreateSheet(SHEET_NAMES.notepad);
+    return sh.getRange('A1').getValue() || '';
+  } catch (e) {
+    return '';
   }
 }
 

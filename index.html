@@ -310,7 +310,8 @@ body.sidebar-collapsed .app{margin-left:44px;}
   <div class="sidebar-logo sidebar-expand-only">✦ DDB</div>
   <div class="sidebar-label sidebar-expand-only">WORKSPACE</div>
   <div class="sidebar-menu">
-    <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📅</span> 每日工單</button>
+    <button class="snav-item active" data-tab="cal" onclick="ST('cal')"><span class="snav-icon">📌</span> 📌每日工單</button>
+    <button class="snav-item" data-tab="memo" onclick="ST('memo')"><span class="snav-icon">📓</span> 記事本</button>
   </div>
   <div class="sidebar-footer">
     <div class="theme-toggle-inline sidebar-expand-only" id="themeToggle">
@@ -548,6 +549,19 @@ body.sidebar-collapsed .app{margin-left:44px;}
 <!-- /tab-walk -->
 
 <!-- ==================== 轉檔器 Tab ==================== -->
+<div id="tab-memo" class="panel">
+  <div style="display:flex;flex-direction:column;height:calc(100vh - var(--bottom-h));max-width:900px;margin:0 auto;padding:16px;gap:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <h2 style="font-size:16px;font-weight:800;margin:0;">📓 記事本</h2>
+      <span id="memo-sync-label" style="font-size:12px;color:var(--text3);"></span>
+    </div>
+    <textarea id="memo-body"
+      placeholder="在這裡輸入重要記事…"
+      oninput="memoAutoSave()"
+      style="flex:1;width:100%;padding:14px;font-size:14px;line-height:1.7;border:1px solid var(--border);border-radius:10px;resize:none;background:var(--card);color:var(--text);font-family:var(--font);box-sizing:border-box;"></textarea>
+  </div>
+</div>
+
 <div id="tab-tf" class="panel">
 <div style="max-width:1400px;margin:0 auto;">
 
@@ -688,7 +702,8 @@ body.sidebar-collapsed .app{margin-left:44px;}
 </div>
 
 <nav class="bottom-nav">
-  <button class="bnav-item active" data-tab="cal" onclick="ST('cal')"><span class="bnav-icon">📅</span>工單</button>
+  <button class="bnav-item active" data-tab="cal" onclick="ST('cal')"><span class="bnav-icon">📌</span>工單</button>
+  <button class="bnav-item" data-tab="memo" onclick="ST('memo')"><span class="bnav-icon">📓</span>記事本</button>
 </nav>
 
 
@@ -1543,7 +1558,7 @@ function submitStatPartPayment(ui, auntieName) {
 
 function ST(id){
   window.scrollTo(0,0); // 切換 tab 時，回到頁面最頂端
-  var allTabs=['note','cal','tf'];
+  var allTabs=['note','cal','memo','tf'];
   allTabs.forEach(function(t){
     var elPanel = document.getElementById('tab-'+t);
     if(elPanel) elPanel.classList.toggle('active',t===id);
@@ -1561,6 +1576,7 @@ function ST(id){
   // 切換到探索搜尋時，自動從自由編輯區重新解析
   if(id==='bb') { syncNotepadToBb(); if(document.getElementById('bb-raw').value.trim()) parseBB(); }
   if(id==='tf') { if(!tf_initialized){ tf_loadG(); tf_initialized=true; } }
+    if(id==='memo') { memoLoadFromCloud(); }
     if(id==='fin') { if(!fin_initialized){ finInit(); fin_initialized=true; } finRenderPage(finCurrentPage); }
 }
 
@@ -3328,5 +3344,55 @@ function tf_loadHistory() {
     }); }
   });
 })();
+
+
+// ══ 記事本 Auto-Save (1.5s debounce) ══
+var _memoTimer = null;
+
+function memoAutoSave() {
+  document.getElementById('memo-sync-label').textContent = '✏️ 輸入中…';
+  clearTimeout(_memoTimer);
+  _memoTimer = setTimeout(function() {
+    memoSaveToCloud();
+  }, 1500);
+}
+
+function memoSaveToCloud() {
+  if (typeof google === 'undefined' || !google.script || !google.script.run) {
+    document.getElementById('memo-sync-label').textContent = '（本地模式）';
+    return;
+  }
+  var text = document.getElementById('memo-body').value;
+  document.getElementById('memo-sync-label').textContent = '☁ 儲存中…';
+  google.script.run
+    .withSuccessHandler(function() {
+      document.getElementById('memo-sync-label').textContent = '✅ 已儲存';
+      setTimeout(function(){ document.getElementById('memo-sync-label').textContent = ''; }, 2000);
+    })
+    .withFailureHandler(function() {
+      document.getElementById('memo-sync-label').textContent = '❌ 儲存失敗';
+    })
+    .saveMemo(text);
+}
+
+function memoLoad(text) {
+  var el = document.getElementById('memo-body');
+  if (el) el.value = text || '';
+}
+
+
+function memoLoadFromCloud() {
+  if (typeof google === 'undefined' || !google.script || !google.script.run) return;
+  document.getElementById('memo-sync-label').textContent = '☁ 載入中…';
+  google.script.run
+    .withSuccessHandler(function(text) {
+      memoLoad(text);
+      document.getElementById('memo-sync-label').textContent = '';
+    })
+    .withFailureHandler(function() {
+      document.getElementById('memo-sync-label').textContent = '';
+    })
+    .getMemo();
+}
 
 </script>
