@@ -566,14 +566,12 @@ body.sidebar-collapsed .app{margin-left:44px;}
       <span id="sticky-sync" style="font-size:11px;color:var(--text3);margin-left:auto;font-weight:500;"></span>
     </div>
 
-    <!-- 主體：左清單 + 右2欄瀑布 -->
-    <div style="display:flex;flex:1;gap:12px;min-height:0;">
+    <!-- 主體：左清單 + 右4欄固定 -->
+    <div style="display:flex;flex:1;gap:12px;min-height:0;overflow:hidden;">
       <!-- 左側清單 -->
-      <div id="sticky-list-panel" style="width:160px;flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow-y:auto;padding:8px 6px;display:flex;flex-direction:column;gap:2px;"></div>
-      <!-- 右側2欄瀑布 -->
-      <div style="flex:1;overflow-y:auto;min-height:0;">
-        <div id="sticky-board" style="columns:2;column-gap:14px;padding:2px 4px;"></div>
-      </div>
+      <div id="sticky-list-panel" style="width:150px;flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow-y:auto;padding:8px 6px;display:flex;flex-direction:column;gap:2px;"></div>
+      <!-- 右側4欄固定 -->
+      <div id="sticky-board" style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;min-width:0;"></div>
     </div>
   </div>
 </div>
@@ -3404,53 +3402,70 @@ function stickyRender() {
   var listPanel = document.getElementById('sticky-list-panel');
   if (!board) return;
 
-  if (stickyData.length === 0) {
-    board.innerHTML = '<div style="padding:60px 0;text-align:center;color:var(--text3);font-size:14px;">按「＋ 新便簽」新增第一張便簽</div>';
-    if (listPanel) listPanel.innerHTML = '';
-    return;
-  }
-
-  // 左側清單
+  // 左側清單：顯示所有便簽，前4個標記為「顯示中」
   if (listPanel) {
-    listPanel.innerHTML = stickyData.map(function(s) {
-      var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
-      var preview = (s.text || '').replace(/\n/g,' ').slice(0, 20) || '（空白）';
-      return '<div onclick="document.getElementById(\'sc-'+s.id+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" ' +
-        'style="display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:.15s;" ' +
-        'onmouseover="this.style.background=\'var(--card2)\'" onmouseout="this.style.background=\'transparent\'">' +
-        '<span style="width:9px;height:9px;border-radius:50%;background:'+col.dot+';flex-shrink:0;"></span>' +
-        '<span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+preview+'</span>' +
-      '</div>';
-    }).join('');
+    if (stickyData.length === 0) {
+      listPanel.innerHTML = '<div style="padding:16px 8px;text-align:center;color:var(--text3);font-size:12px;">暫無便簽</div>';
+    } else {
+      listPanel.innerHTML = stickyData.map(function(s, idx) {
+        var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
+        var preview = (s.text || '').replace(/\n/g,' ').slice(0, 18) || '（空白）';
+        var isVisible = idx < 4;
+        return '<div onclick="stickySwitchToView('+idx+')" ' +
+          'style="display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;background:'+(isVisible?'var(--rose-light)':'transparent')+';transition:.15s;" ' +
+          'onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">' +
+          '<span style="width:9px;height:9px;border-radius:50%;background:'+col.dot+';flex-shrink:0;"></span>' +
+          '<span style="font-size:12px;color:'+(isVisible?'var(--rose)':'var(--text2)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:'+(isVisible?'600':'400')+';">'+preview+'</span>' +
+        '</div>';
+      }).join('');
+    }
   }
 
-  // 右側瀑布流卡片
-  board.innerHTML = stickyData.map(function(s) {
-    var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
-    var colorPickers = STICKY_COLORS.map(function(c, i) {
-      return '<span onclick="stickyChangeColor('+s.id+','+i+')" title="'+c.label+'" style="display:inline-block;width:13px;height:13px;border-radius:50%;background:'+c.dot+';cursor:pointer;flex-shrink:0;box-shadow:'+(i===s.color?'0 0 0 2.5px #fff,0 0 0 4px '+c.dot:'none')+';transition:.15s;"></span>';
-    }).join('');
-    return '<div id="sc-'+s.id+'" style="break-inside:avoid;margin-bottom:12px;display:flex;flex-direction:column;background:'+col.bg+';border:1.5px solid '+col.border+';border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;">' +
-      '<div style="display:flex;align-items:center;gap:5px;padding:8px 10px;border-bottom:1px solid '+col.border+';background:rgba(255,255,255,.45);flex-shrink:0;">' +
-        colorPickers +
-        '<button onclick="stickyDelete('+s.id+')" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:13px;color:#bbb;padding:2px 4px;border-radius:4px;" onmouseover="this.style.color=\'#e11d48\'" onmouseout="this.style.color=\'#bbb\'">✕</button>' +
-      '</div>' +
-      '<textarea oninput="stickyEdit('+s.id+',this.value);stickyRenderList()" style="min-height:100px;max-height:300px;padding:12px;border:none;background:transparent;resize:none;font-size:13.5px;line-height:1.65;color:var(--text);font-family:var(--font);outline:none;overflow-y:auto;" placeholder="寫點什麼…">'+( s.text||'').replace(/</g,'&lt;')+'</textarea>' +
-    '</div>';
-  }).join('');
+  // 右側：固定4欄，只顯示前4張
+  var slots = '';
+  for (var i = 0; i < 4; i++) {
+    var s = stickyData[i];
+    if (s) {
+      var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
+      var colorPickers = STICKY_COLORS.map(function(c, ci) {
+        return '<span onclick="stickyChangeColor('+s.id+','+ci+')" title="'+c.label+'" style="display:inline-block;width:13px;height:13px;border-radius:50%;background:'+c.dot+';cursor:pointer;flex-shrink:0;box-shadow:'+(ci===s.color?'0 0 0 2.5px #fff,0 0 0 4px '+c.dot:'none')+';transition:.15s;"></span>';
+      }).join('');
+      slots += '<div style="display:flex;flex-direction:column;background:'+col.bg+';border:1.5px solid '+col.border+';border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;height:100%;">' +
+        '<div style="display:flex;align-items:center;gap:5px;padding:8px 10px;border-bottom:1px solid '+col.border+';background:rgba(255,255,255,.45);flex-shrink:0;">' +
+          colorPickers +
+          '<button onclick="stickyDelete('+s.id+')" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:13px;color:#bbb;padding:2px 4px;border-radius:4px;" onmouseover="this.style.color=\'#e11d48\'" onmouseout="this.style.color=\'#bbb\'">✕</button>' +
+        '</div>' +
+        '<textarea oninput="stickyEdit('+s.id+',this.value);stickyRenderListOnly()" style="flex:1;padding:12px;border:none;background:transparent;resize:none;font-size:13.5px;line-height:1.65;color:var(--text);font-family:var(--font);outline:none;overflow-y:auto;" placeholder="寫點什麼…">'+( s.text||'').replace(/</g,'&lt;')+'</textarea>' +
+      '</div>';
+    } else {
+      slots += '<div style="border:2px dashed var(--border);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px;cursor:pointer;" onclick="stickyAdd()">＋ 新增</div>';
+    }
+  }
+  board.innerHTML = slots;
 }
 
-function stickyRenderList() {
+// 點左側清單，把第 idx 張移到第0位（出現在第1欄），原第3位推到清單
+function stickySwitchToView(idx) {
+  if (idx < 4) return;
+  var item = stickyData.splice(idx, 1)[0];
+  stickyData.unshift(item);
+  stickyRender();
+  stickyScheduleSave();
+}
+
+// 只更新左側清單（打字時呼叫，不重繪右側避免焦點跑掉）
+function stickyRenderListOnly() {
   var listPanel = document.getElementById('sticky-list-panel');
   if (!listPanel) return;
-  listPanel.innerHTML = stickyData.map(function(s) {
+  listPanel.innerHTML = stickyData.map(function(s, idx) {
     var col = STICKY_COLORS[s.color] || STICKY_COLORS[0];
-    var preview = (s.text || '').replace(/\n/g,' ').slice(0, 20) || '（空白）';
-    return '<div onclick="document.getElementById(\'sc-'+s.id+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" ' +
-      'style="display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:.15s;" ' +
-      'onmouseover="this.style.background=\'var(--card2)\'" onmouseout="this.style.background=\'transparent\'">' +
+    var preview = (s.text || '').replace(/\n/g,' ').slice(0, 18) || '（空白）';
+    var isVisible = idx < 4;
+    return '<div onclick="stickySwitchToView('+idx+')" ' +
+      'style="display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:8px;cursor:pointer;background:'+(isVisible?'var(--rose-light)':'transparent')+';transition:.15s;" ' +
+      'onmouseover="this.style.opacity=\'.8\'" onmouseout="this.style.opacity=\'1\'">' +
       '<span style="width:9px;height:9px;border-radius:50%;background:'+col.dot+';flex-shrink:0;"></span>' +
-      '<span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+preview+'</span>' +
+      '<span style="font-size:12px;color:'+(isVisible?'var(--rose)':'var(--text2)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:'+(isVisible?'600':'400')+';">'+preview+'</span>' +
     '</div>';
   }).join('');
 }
